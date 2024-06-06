@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--제이쿼리 추가-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- UIkit CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.17.11/dist/css/uikit.min.css" />
+<!-- UIkit JS -->
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.17.11/dist/js/uikit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/uikit@3.17.11/dist/js/uikit-icons.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/css/index.css">
+
+<!-- <script src="/js/index.js"></script> -->
+
+<title>당근마켓</title>
+</head>
+<body>
+	<div id="wrap">
+		<th:block th:insert="~{indexHeader.html}"></th:block>
+		<main>
+			<div style="max-width: 2000px; margin: 0 auto;">
+				<img src="/img/daangnMainPage2.png" alt="당근 메인페이지2"/>
+			</div>
+		</main>
+	</div>
+	<footer>
+		<div id="footer-inner" style="width: 800px; margin: auto; color: #fff; padding: 30px 0;">
+			김성식 포트폴리오입니다. 당근마켓 클론코딩<br />
+			<span uk-icon="icon: github" ></span> <a class="uk-icon-link" style="color: #fff;" href="https://github.com/kim-sung-sig/daangnMySql" target="_blank">GitHub 바로가기</a>
+		</div>
+	</footer>
+	<th:block th:if="${session.user == null}">
+		로그인 안했음
+	</th:block>
+	<th:block th:if="${session.user != null}">
+		로그인 했음~~~~~~
+		<th:block th:insert="~{chat/chatAlarm.html}"></th:block>
+	</th:block>
+</body>
+</html>
