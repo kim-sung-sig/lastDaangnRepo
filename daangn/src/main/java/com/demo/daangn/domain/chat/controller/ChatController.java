@@ -18,8 +18,8 @@ import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.repository.DaangnUserRepository;
 import com.demo.daangn.global.config.websocket.WebscoketChatRoomRegistry;
 import com.demo.daangn.global.exception.AuthException;
-import com.demo.daangn.global.exception.EntityNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,6 +36,7 @@ public class ChatController {
     private final ChatRoomUserRepository chatRoomUserRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final NotificationEventPublisher eventPublisher;
+
 
     @MessageMapping("/chat/message")
     public void message(@Payload ChatMessageRequest messageRequest, SimpMessageHeaderAccessor headerAccessor){
@@ -88,6 +89,6 @@ public class ChatController {
         messagingTemplate.convertAndSend("/sub/chat2/room/" + response.getChatRoomId(), response); // 채팅방에 메시지
 
         eventPublisher.publishChatMessageEvent(response); // 챗 알림 이벤트 발행!
-
     }
+
 }
