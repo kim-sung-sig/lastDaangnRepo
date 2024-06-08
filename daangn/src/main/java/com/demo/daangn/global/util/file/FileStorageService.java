@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.demo.daangn.global.exception.FileStorageException;
 
+/** File Util Class */
 @Service
 public class FileStorageService {
 
@@ -40,13 +42,13 @@ public class FileStorageService {
      */
     public String storeFile(MultipartFile file) throws Exception{
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
+        String saveFileName = UUID.randomUUID() + "_" + fileName;
         try {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path targetLocation = this.fileStorageLocation.resolve(saveFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
@@ -77,5 +79,12 @@ public class FileStorageService {
 
     /**
      * 파일 삭제하기
+     * @param fileName
+     * @throws IOException
      */
+    public void deleteFile(String fileName) throws IOException {
+        Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+        Files.deleteIfExists(filePath);
+    }
+
 }

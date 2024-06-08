@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.demo.daangn.global.dto.response.RsData;
 
+import jakarta.persistence.EntityNotFoundException;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,7 +30,7 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -47,4 +49,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(RsData.of(ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
+    /**
+     *  FileNotFoundException handler (없는 파일일때)
+     */
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<RsData< String >> handleFileNotFoundExceptions(FileStorageException ex) {
+        return new ResponseEntity<>(RsData.of(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }
