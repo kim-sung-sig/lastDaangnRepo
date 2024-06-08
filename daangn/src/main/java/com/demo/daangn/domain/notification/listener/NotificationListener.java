@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.alarm.listener;
+package com.demo.daangn.domain.notification.listener;
 
 import java.util.List;
 
@@ -6,10 +6,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import com.demo.daangn.domain.alarm.event.ChatMessageEvent;
 import com.demo.daangn.domain.chat.dto.ChatMessageResponse;
 import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
+import com.demo.daangn.domain.notification.event.ChatMessageEvent;
 
 import lombok.RequiredArgsConstructor;
 

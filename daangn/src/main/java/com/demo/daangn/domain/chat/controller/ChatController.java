@@ -6,7 +6,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import com.demo.daangn.domain.alarm.event.NotificationEventPublisher;
 import com.demo.daangn.domain.chat.dto.ChatMessageRequest;
 import com.demo.daangn.domain.chat.dto.ChatMessageResponse;
 import com.demo.daangn.domain.chat.entity.ChatMessageEntity;
@@ -14,6 +13,7 @@ import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
+import com.demo.daangn.domain.notification.event.NotificationEventPublisher;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.repository.DaangnUserRepository;
 import com.demo.daangn.global.config.websocket.WebscoketChatRoomRegistry;

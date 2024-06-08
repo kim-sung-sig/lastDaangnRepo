@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.alarm.event;
+package com.demo.daangn.domain.notification.event;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

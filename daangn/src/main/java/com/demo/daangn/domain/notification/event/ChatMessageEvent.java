@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.alarm.event;
+package com.demo.daangn.domain.notification.event;
 
 import com.demo.daangn.domain.chat.dto.ChatMessageResponse;
 
