@@ -49,12 +49,12 @@ public class SecurityConfig {
             authorize
                 .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-
-                .requestMatchers("/", "/join").permitAll()
-                // 지역 검색
-                .requestMatchers("/region").permitAll()
-                // 키워드 검색
-                .requestMatchers("/word").permitAll()
+                .requestMatchers("/", "/status","/login", "/join").permitAll()
+                // // 지역 검색
+                // .requestMatchers("/region").permitAll()
+                // // 키워드 검색
+                // .requestMatchers("/word").permitAll()
+                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated();
         });
 

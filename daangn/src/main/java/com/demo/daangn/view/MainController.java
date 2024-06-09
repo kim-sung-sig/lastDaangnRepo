@@ -11,7 +11,8 @@ import jakarta.servlet.http.HttpSession;
 public class MainController {
 
     @GetMapping("/")
-    public String index(){
+    public String index(Model model){
+        // model.addAttribute("id", "st");
         return "index";
     }
 
@@ -44,4 +45,10 @@ public class MainController {
 		}
 		return "join";
 	}
+
+    @GetMapping("/api/status")
+    public boolean status(HttpSession session) {
+        return session.getAttribute("user") != null;
+    }
+    
 }
