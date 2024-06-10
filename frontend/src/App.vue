@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @mousemove="resetSessionTimeout" @keydown="resetSessionTimeout">
     <MainHeader />
     <div class="main-container">
       <MainNavbar />
@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex';
+import { watch } from 'vue';
 import MainHeader from "./components/MainHeader.vue";
 import MainNavbar from "./components/MainNavbar.vue";
 
@@ -19,6 +21,26 @@ export default {
   components: {
     MainHeader,
     MainNavbar,
+  },
+  computed: {
+    ...mapState(['isLoggedIn']),
+  },
+  created() {
+    this.startPollingSession();
+    this.resetSessionTimeout();
+  },
+  methods: {
+    ...mapActions(['startPollingSession']),
+    resetSessionTimeout() {
+      this.resetSessionTimeout();
+    },
+  },
+  watch: {
+    isLoggedIn(newVal) {
+      if (!newVal) {
+        window.location.href = '/login';
+      }
+    },
   },
 };
 </script>

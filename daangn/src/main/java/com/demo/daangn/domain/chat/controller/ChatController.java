@@ -1,94 +1,19 @@
 package com.demo.daangn.domain.chat.controller;
 
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.daangn.domain.chat.dto.ChatMessageRequest;
-import com.demo.daangn.domain.chat.dto.ChatMessageResponse;
-import com.demo.daangn.domain.chat.entity.ChatMessageEntity;
-import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
-import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
-import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
-import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
-import com.demo.daangn.domain.notification.event.NotificationEventPublisher;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.DaangnUserRepository;
-import com.demo.daangn.global.config.websocket.WebscoketChatRoomRegistry;
-import com.demo.daangn.global.exception.AuthException;
-
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@Controller
-@RequiredArgsConstructor
+@RestController
 public class ChatController {
-    
-    // @Autowired
-    private final SimpMessagingTemplate messagingTemplate;
-    private final WebscoketChatRoomRegistry chatRoomRegistry;
-    private final DaangnUserRepository userRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final ChatRoomUserRepository chatRoomUserRepository;
-    private final ChatMessageRepository chatMessageRepository;
-    private final NotificationEventPublisher eventPublisher;
 
+    // 1. 채팅 메시지 가져오기(get)
 
-    @MessageMapping("/chat/message")
-    public void message(@Payload ChatMessageRequest messageRequest, SimpMessageHeaderAccessor headerAccessor){
-        log.info("메시지 받았음! msg => {}", messageRequest);
-        ChatMessageResponse response = null;
+    // 2. 채팅방 목록가져오기(나의 채팅방)(get)
 
-        DaangnUserEntity sender = userRepository.findById(messageRequest.getSender())
-                .orElseThrow(() -> new EntityNotFoundException("not id"));
+    // 3. 채팅방 생성하기(post)
 
-        ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(messageRequest.getChatRoomId())
-                .orElseThrow(() -> new EntityNotFoundException("not id"));
+    // 4. 채팅방 커스텀하기(put)
 
-        chatRoomUserRepository.findByUserAndChatRoom(sender, chatRoomEntity)
-                .orElseThrow(() -> new AuthException("this is not your chatRoom"));
+    // 5. 채팅방 나가기(delete)
 
-        if(messageRequest.getType() == 1){
-            log.info("입장메시지 였음");
-            Long senderId = messageRequest.getSender();
-            Long roomId = messageRequest.getChatRoomId();
-            headerAccessor.getSessionAttributes().put("userId", senderId);
-            headerAccessor.getSessionAttributes().put("roomId", roomId);
-            chatRoomRegistry.addUser(roomId, senderId);
-            
-			log.info("RoomUserMapByRoomId => {}", chatRoomRegistry.getRoomUsers(roomId));
-            response = ChatMessageResponse.builder()
-                    .type(messageRequest.getType())
-                    .chatRoomId(messageRequest.getChatRoomId())
-                    .sender(senderId)
-                    .build();
-            
-            // 입장메시지 보내기
-			messagingTemplate.convertAndSend("/sub/chat/room/" + messageRequest.getChatRoomId(), response);
-			return ;
-        }
-
-        // 진짜 메시지인 경우
-        log.info("진짜 메시지임!");
-
-        ChatMessageEntity messageEntity = ChatMessageEntity.builder()
-                .type(messageRequest.getType())
-                .sender(sender)
-                .room(chatRoomEntity)
-                .readed(chatRoomRegistry.hasUser(chatRoomEntity.getId()) ? 0 : 1)
-                .content(messageRequest.getContent()).build();
-
-        chatMessageRepository.save(messageEntity);
-
-        response = new ChatMessageResponse(messageEntity);
-        // 메시지 전송!
-        messagingTemplate.convertAndSend("/sub/chat2/room/" + response.getChatRoomId(), response); // 채팅방에 메시지
-
-        eventPublisher.publishChatMessageEvent(response); // 챗 알림 이벤트 발행!
-    }
 
 }
