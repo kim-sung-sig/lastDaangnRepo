@@ -49,7 +49,7 @@ public class SecurityConfig {
             authorize
                 .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/", "/status","/login", "/join").permitAll()
+                .requestMatchers("/", "/api/status","/login", "/join").permitAll()
                 // // 지역 검색
                 // .requestMatchers("/region").permitAll()
                 // // 키워드 검색

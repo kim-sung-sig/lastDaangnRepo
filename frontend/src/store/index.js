@@ -21,8 +21,9 @@ const store = createStore({
     actions: {
         async checkLoginStatus({ commit }) {
             const response = await axios.get('/api/status');
+            console.log(response.data);
             commit('setLoggedIn', response.data);
-            if (!response.data.isLoggedIn) {
+            if (this.isLoggedIn) {
                 window.location.href = '/login'; // 세션 만료 시 로그인 페이지로 이동
             }
         },

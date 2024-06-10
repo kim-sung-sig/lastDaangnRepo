@@ -11,8 +11,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-import { watch } from 'vue';
+import { mapActions, mapState } from "vuex";
 import MainHeader from "./components/MainHeader.vue";
 import MainNavbar from "./components/MainNavbar.vue";
 
@@ -23,23 +22,16 @@ export default {
     MainNavbar,
   },
   computed: {
-    ...mapState(['isLoggedIn']),
+    ...mapState(["isLoggedIn"]),
   },
   created() {
     this.startPollingSession();
     this.resetSessionTimeout();
   },
   methods: {
-    ...mapActions(['startPollingSession']),
+    ...mapActions(["startPollingSession", "resetSessionTimeoutAction"]),
     resetSessionTimeout() {
-      this.resetSessionTimeout();
-    },
-  },
-  watch: {
-    isLoggedIn(newVal) {
-      if (!newVal) {
-        window.location.href = '/login';
-      }
+      this.resetSessionTimeoutAction();
     },
   },
 };
