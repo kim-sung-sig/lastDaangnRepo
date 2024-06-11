@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -41,10 +42,15 @@ public class ChatMessageEntity {
 
     private Integer type;
     
-    private String content;
+    private String content; // 파일저장시 여기에 파일 경로.. // 일정일시 여기에 YYYY-MM-DD HH:mm:ss
 
     private Integer readed;
 
+    @Column(name = "is_used", columnDefinition = "TINYINT(1) default 1")
+    private Integer isUsed; // 삭제여부
+
     @CreatedDate
     private LocalDateTime createDate;
+
+    //TODO 쳇 메시지 수정??
 }

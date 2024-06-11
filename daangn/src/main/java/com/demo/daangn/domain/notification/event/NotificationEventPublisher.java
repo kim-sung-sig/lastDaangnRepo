@@ -3,7 +3,7 @@ package com.demo.daangn.domain.notification.event;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import com.demo.daangn.domain.chat.dto.ChatMessageResponse;
+import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
 
 @Component
 public class NotificationEventPublisher {

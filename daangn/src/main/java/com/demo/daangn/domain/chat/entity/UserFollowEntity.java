@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
+//TODO 이건 chat이 아니라 그냥 으로 이관해야댐
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)

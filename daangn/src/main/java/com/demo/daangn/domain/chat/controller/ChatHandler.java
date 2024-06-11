@@ -6,8 +6,8 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import com.demo.daangn.domain.chat.dto.ChatMessageRequest;
-import com.demo.daangn.domain.chat.dto.ChatMessageResponse;
+import com.demo.daangn.domain.chat.dto.request.ChatMessageRequest;
+import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
 import com.demo.daangn.domain.chat.entity.ChatMessageEntity;
 import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
@@ -31,6 +31,7 @@ public class ChatHandler {
     // @Autowired
     private final SimpMessagingTemplate messagingTemplate;
     private final WebscoketChatRoomRegistry chatRoomRegistry;
+    
     private final DaangnUserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;

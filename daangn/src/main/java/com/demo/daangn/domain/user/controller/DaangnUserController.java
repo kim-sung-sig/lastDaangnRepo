@@ -17,7 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/api/v1/users")
 public class DaangnUserController {
 
-    @GetMapping()
+    @GetMapping(value = "")
     public ResponseEntity<?> getAll() {
         try {
             return new ResponseEntity<>("GetAll Results", HttpStatus.OK);
