@@ -2,7 +2,7 @@ const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
 
-  outputDir: "../daangn/src/main/resources/static",
+  outputDir: "../backend/src/main/resources/static",
 
   devServer: {
     proxy: {
