@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class WebscoketChatRoomRegistry {
+public class WebsocketChatRoomRegistry {
     
     private Map< Long, Set<Long> > roomUserMap = new ConcurrentHashMap<>();
 

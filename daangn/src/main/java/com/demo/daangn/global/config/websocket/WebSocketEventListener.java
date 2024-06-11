@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
-    private final WebscoketChatRoomRegistry chatRoomRegistry;
+    private final WebsocketChatRoomRegistry chatRoomRegistry;
 
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
