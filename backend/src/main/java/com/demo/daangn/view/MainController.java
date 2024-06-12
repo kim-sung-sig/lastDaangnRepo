@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MainController {
 
-    
     @GetMapping("/")
     public String index(Model model){
         // model.addAttribute("id", "st");
