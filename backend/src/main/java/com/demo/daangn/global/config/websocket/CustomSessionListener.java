@@ -27,8 +27,10 @@ public class CustomSessionListener implements HttpSessionListener{
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         log.info("Session Destroyed");
-        Long userId = ( (DaangnUserEntity) se.getSession().getAttribute("user") ).getId();
-        userRegistry.removeUser(userId);
+        if(se.getSession().getAttribute("user") != null){
+            Long userId = ( (DaangnUserEntity) se.getSession().getAttribute("user") ).getId();
+            userRegistry.removeUser(userId);
+        }
     }
     
 }

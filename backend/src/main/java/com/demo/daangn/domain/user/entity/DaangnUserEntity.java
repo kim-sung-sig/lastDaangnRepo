@@ -12,11 +12,17 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DaangnUserEntity {
 
     @Id
@@ -47,6 +53,6 @@ public class DaangnUserEntity {
     private LocalDateTime modifiedDate;
 
     @Column(name = "isUsed", nullable = false)
-    private Integer isUsed = 0;
+    private Integer isUsed;
 
 }

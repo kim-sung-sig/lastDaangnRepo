@@ -9,9 +9,11 @@ import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.repository.DaangnUserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomUserDeailsService implements UserDetailsService {
 
     //@Autowired
@@ -19,9 +21,10 @@ public class CustomUserDeailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        log.info(" : " + username + "으로 호출");
         DaangnUserEntity user = daangnUserRepository.findByUsername(username)
-                .orElseThrow(() -> new UnsupportedOperationException("Unimplemented method 'loadUserByUsername'"));
-
+                .orElseThrow(() -> new UsernameNotFoundException("Unimplemented method 'loadUserByUsername'"));
+        log.info("user => ", user);
         return new CustomUserDatails(user);
     }
 

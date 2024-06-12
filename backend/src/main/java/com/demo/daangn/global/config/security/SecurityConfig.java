@@ -3,6 +3,7 @@ package com.demo.daangn.global.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,7 +33,7 @@ public class SecurityConfig {
 
         http.formLogin((form) -> {
             form
-                .loginPage("/login").permitAll()
+                .loginPage("/api/login").permitAll()
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .defaultSuccessUrl("/")
@@ -49,7 +50,8 @@ public class SecurityConfig {
             authorize
                 .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/", "/api/status","/login", "/join").permitAll()
+                .requestMatchers("/api/status").permitAll() // 로그인과 로그인상태확인
+                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
                 // // 지역 검색
                 // .requestMatchers("/region").permitAll()
                 // // 키워드 검색

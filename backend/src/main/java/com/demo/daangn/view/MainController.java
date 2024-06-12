@@ -19,41 +19,21 @@ public class MainController {
         return "index";
     }
 
-    /** 로그인 페이지 */
-    @GetMapping("/login")
-    public String login(HttpSession session, Model model,
-        @RequestParam(value = "error", required = false) String error,
-        @RequestParam(value = "logout", required = false) String logout
-    ){
-
-        if(error != null && !error.isEmpty()){
-            model.addAttribute("error", "error");
-        }
-        if(logout != null && !logout.isEmpty()){
-            model.addAttribute("logout", "logout");
-        }
-        if(session.getAttribute("user") != null){
-            return "redirect:/";
-        }
-        return "login";
-    }
-
-    /** 회원가입 주소 */
-    @GetMapping(value = "/join")
-	public String join(HttpSession session) {
-		if (session.getAttribute("user") != null) { // 나쁜사람 방지
-			session.removeAttribute("user");
-			session.invalidate();
-			return "redirect:/";
-		}
-		return "join";
-	}
-
     @GetMapping("/api/status")
     @ResponseBody
     public boolean status(HttpSession session) {
-        log.info("?? {}", session.getAttribute("user"));
+        log.info("로그인 시도함 return {}", session.getAttribute("user") != null);
         return session.getAttribute("user") != null; // 로그인했으면 true 아니면 false
     }
+
+    @GetMapping(value = "/login")
+	public String login(@RequestParam(value = "error", required = false) String error,
+			@RequestParam(value = "logout", required = false) String logout, Model model) {
+		if (error != null)
+			model.addAttribute("error", "error");
+		if (logout != null)
+			model.addAttribute("logout", "logout");
+		return "login";
+	}
     
 }
