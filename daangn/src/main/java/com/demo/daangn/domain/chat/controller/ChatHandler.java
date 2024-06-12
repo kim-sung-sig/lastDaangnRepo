@@ -16,7 +16,7 @@ import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
 import com.demo.daangn.domain.notification.event.NotificationEventPublisher;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.repository.DaangnUserRepository;
-import com.demo.daangn.global.config.websocket.WebscoketChatRoomRegistry;
+import com.demo.daangn.global.config.websocket.WebsocketChatRoomRegistry;
 import com.demo.daangn.global.exception.AuthException;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -30,7 +30,7 @@ public class ChatHandler {
     
     // @Autowired
     private final SimpMessagingTemplate messagingTemplate;
-    private final WebscoketChatRoomRegistry chatRoomRegistry;
+    private final WebsocketChatRoomRegistry chatRoomRegistry;
     
     private final DaangnUserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
