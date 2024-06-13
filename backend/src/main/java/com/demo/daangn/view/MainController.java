@@ -26,7 +26,7 @@ public class MainController {
         return session.getAttribute("user") != null; // 로그인했으면 true 아니면 false
     }
 
-    @GetMapping(value = "/login")
+    @GetMapping(value = "/api/login")
 	public String login(@RequestParam(value = "error", required = false) String error,
 			@RequestParam(value = "logout", required = false) String logout, Model model) {
 		if (error != null)
