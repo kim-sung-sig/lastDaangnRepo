@@ -19,19 +19,24 @@ const store = createStore({
         },
     },
     actions: {
-        async checkLoginStatus({ commit }) {
+        async login({ commit }, formData) {
             try {
-                const response = await axios.get('/api/status');
-                console.log(response.data);
-                commit('setLoggedIn', response.data.isLoggedIn);
-                if (!response.data.isLoggedIn) {
-                    window.location.href = '/login'; // 세션 만료 시 로그인 페이지로 이동
+                const formDataToSend = new FormData();
+                formDataToSend.append('username', formData.username);
+                formDataToSend.append('password', formData.password);
+                const response = await axios.post('/api/login', formDataToSend);
+
+                if (response.status === 200) {
+                    commit('setLoggedIn', true);
+                    return response;
+                } else {
+                    throw new Error('Login failed');
                 }
             } catch (error) {
-                console.error('Error checking login status:', error);
-                window.location.href = '/login'; // 오류 발생 시 로그인 페이지로 이동
+                throw new Error('Login failed');
             }
         },
+
         resetSessionTimeout({ commit, dispatch }) {
             commit('clearSessionTimeout');
             const timeout = setTimeout(() => {

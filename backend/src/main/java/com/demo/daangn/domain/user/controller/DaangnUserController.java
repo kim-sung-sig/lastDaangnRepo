@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.demo.daangn.domain.user.dto.request.SignUpRequest;
+
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/v1/users")
 public class DaangnUserController {
 
@@ -36,7 +40,8 @@ public class DaangnUserController {
     }
     
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody Object dto) {
+    public ResponseEntity<?> create(@RequestBody SignUpRequest signUpRequest) {
+        log.info("로그인 요청 => {}", signUpRequest);
         try {
             return new ResponseEntity<>("Create Result", HttpStatus.OK);
         } catch (Exception e) {

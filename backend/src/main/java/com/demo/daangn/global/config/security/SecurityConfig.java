@@ -9,6 +9,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -36,32 +40,45 @@ public class SecurityConfig {
                 .loginPage("/api/login").permitAll()
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .defaultSuccessUrl("/")
                 .successHandler(new CustomLoginSuccessHandler());
         });
         http.logout((logout) -> {
             logout
-                .logoutUrl("/logout").permitAll()
-                .logoutSuccessUrl("/")
+                .logoutUrl("/api/logout").permitAll()
                 .invalidateHttpSession(true);
         });
 
         http.authorizeHttpRequests((authorize) -> {
             authorize
+                .requestMatchers("/", "/api/login", "/api/status").permitAll() // 로그인과 로그인상태확인
                 .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/status").permitAll() // 로그인과 로그인상태확인
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
-                // // 지역 검색
-                // .requestMatchers("/region").permitAll()
-                // // 키워드 검색
-                // .requestMatchers("/word").permitAll()
                 .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated();
         });
 
-
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         return http.build();
     }
 
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3000L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    CorsFilter corsFilter() {
+        CorsConfigurationSource source = corsConfigurationSource();
+        return new CorsFilter(source);
+    }
 }

@@ -1,55 +1,43 @@
 <template>
     <div class="login">
-        <h2>Login</h2>
-        <form @submit.prevent="login">
-            <div>
-                <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" required />
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" v-model="password" required />
-            </div>
+        <h1>Login</h1>
+        <form @submit.prevent="login2">
+            <label for="username">Username:</label>
+            <input type="text" v-model="username" id="username" required />
+
+            <label for="password">Password:</label>
+            <input type="password" v-model="password" id="password" required />
+
             <button type="submit">Login</button>
         </form>
+        <p v-if="errorMessage">{{ errorMessage }}</p>
+
+        <router-link :to="{ name : 'Signup' }">Sign Up</router-link>
     </div>
 </template>
 
 <script>
-import axios from "axios";
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex';
 
 export default {
     data() {
         return {
             username: "",
             password: "",
+            errorMessage: "",
         };
     },
     methods: {
-        ...mapActions(["resetSessionTimeout"]),
-        async login() {
-            let userName = this.username;
-            console.log(userName);
-            console.log(this.username);
-            console.log(this.password);
-            axios.post("/api/login", {
-                "username" : this.username,
-                "password" : this.password,
-            })
-            .then((res) => {
-                if (res.data === true) {
-                    this.$store.commit("setLoggedIn", true);
-                    this.resetSessionTimeout();
-                    this.$router.push("/");
-                } else {
-                    alert("Login failed");
-                }
-            })
-            .catch((error) => {
-                console.error("Login error:", error);
-                alert("An error occurred during login.");
-            });
+        ...mapActions(['login']),
+        login2() {
+            this.login({ "username": this.username, "password": this.password })
+                .then(() => {
+                    this.$router.push('/');
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.errorMessage = 'Login failed'
+                });
         },
     },
 };
