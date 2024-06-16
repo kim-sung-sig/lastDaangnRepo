@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "MainNavbar",
@@ -76,7 +76,7 @@ export default {
 <style scoped>
 .navbar-container {
   width: 70px;
-  background: #2f0932;
+  background: #3B0F40;
   color: white;
   height: calc(100vh - 40px);
   display: flex;
@@ -125,7 +125,7 @@ export default {
     background-color: #575757;
   }
   div .nav-icon svg {
-    filler: invert(1) brightness(1.5);
+    filter: invert(1) brightness(1.5);
   }
 }
 .navbar a:hover {

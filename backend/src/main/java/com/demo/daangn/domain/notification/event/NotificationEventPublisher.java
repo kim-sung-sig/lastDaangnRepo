@@ -5,16 +5,15 @@ import org.springframework.stereotype.Component;
 
 import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class NotificationEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public NotificationEventPublisher(ApplicationEventPublisher applicationEventPublisher){
-        this.applicationEventPublisher = applicationEventPublisher;
-    }
-
-
+    /** 채팅메시지가 말생하면! */
     public void publishChatMessageEvent(ChatMessageResponse messageResponse) {
         ChatMessageEvent event = new ChatMessageEvent(messageResponse);
         applicationEventPublisher.publishEvent(event);

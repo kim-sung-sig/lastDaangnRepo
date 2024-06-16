@@ -1,7 +1,18 @@
 <template>
     <MainLayout>
-        <h1>Home</h1>
-		<p>This is the Home page.</p>
+        <template #left>
+            <div class="home">
+                <h1>Home-left</h1>
+                <p>This is the Home page.</p>
+            </div>
+        </template>
+
+        <template #right>
+            <div class="home">
+                <h1>Home-right</h1>
+                <p>This is the Home page.</p>
+            </div>
+        </template>
     </MainLayout>
 </template>
 
@@ -15,4 +26,6 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+
+</style>

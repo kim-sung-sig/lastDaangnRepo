@@ -25,7 +25,6 @@ const store = createStore({
                 formDataToSend.append('username', formData.username);
                 formDataToSend.append('password', formData.password);
                 const response = await axios.post('/api/login', formDataToSend);
-
                 if (response.status === 200) {
                     commit('setLoggedIn', true);
                     return response;
@@ -36,6 +35,10 @@ const store = createStore({
                 throw new Error('Login failed');
             }
         },
+        // TODO 로그아웃 안들어야담!
+        logout({ commit }) {
+            commit('setLoggedIn', false);
+        },
 
         resetSessionTimeout({ commit, dispatch }) {
             commit('clearSessionTimeout');
@@ -44,9 +47,7 @@ const store = createStore({
             }, 1000 * 60 * 30 + 1000); // 30분 1초 뒤에 세션 상태 확인
             commit('setSessionTimeout', timeout);
         },
-        logout({ commit }) {
-            commit('setLoggedIn', false);
-        }
+        
     },
     getters : {
         isLoggedIn: state => state.isLoggedIn

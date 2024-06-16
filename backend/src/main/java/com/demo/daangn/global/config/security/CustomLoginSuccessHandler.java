@@ -32,7 +32,8 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         response.encodeURL(getDefaultTargetUrl());
         response.setContentType("application/json");
         response.getWriter().write(responseEntity.getBody().toString());
-		response.sendRedirect("http://localhost:3000");
+		// response.sendRedirect("http://localhost:3000"); // 뷰로 할시
+		response.sendRedirect("/"); // 스프링시
     }
 
 }

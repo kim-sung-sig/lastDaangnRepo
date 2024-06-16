@@ -26,7 +26,7 @@ public class AuthController {
     public ResponseEntity<RsData< Boolean >> status(HttpSession session) {
         Boolean result = session.getAttribute("user") != null;
         log.info("로그인 확인함 return {}", result);
-
+        // TODO 회원id도 보내주자
         if(result){
             return new ResponseEntity<>(RsData.of(result), HttpStatus.OK);
         }else {
