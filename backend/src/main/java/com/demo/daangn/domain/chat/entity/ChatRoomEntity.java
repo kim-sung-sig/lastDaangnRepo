@@ -1,9 +1,9 @@
 package com.demo.daangn.domain.chat.entity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
@@ -24,7 +24,7 @@ public class ChatRoomEntity {
     private Long id;
 
     @Column(name = "chat_room_cd", columnDefinition = "BINARY(16)", unique = true)
-    private UUID chatRoomCd;
+    private String chatRoomCd;
 
     // TODO UsedMarketEntity
     // @JoinColumn(name = "board_id")
@@ -33,4 +33,7 @@ public class ChatRoomEntity {
 
     @CreatedDate
     private LocalDateTime createDate;
+
+    @LastModifiedDate
+    private LocalDateTime modifiedDate;
 }
