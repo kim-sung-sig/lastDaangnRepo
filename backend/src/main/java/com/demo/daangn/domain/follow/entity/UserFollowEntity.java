@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.chat.entity;
+package com.demo.daangn.domain.follow.entity;
 
 import java.time.LocalDateTime;
 
