@@ -1,69 +1,92 @@
 <template>
-    <div class="split-layout">
-        <div id="left-pane">
+    <div class="container">
+        <div id="left" :style="{ width: leftFlexValue }">
             <slot name="left"></slot>
         </div>
-
-        <div id="right-pane">
+        <div class="bar" @mousedown="startDragging($event)"></div>
+        <div id="right" :style="{ width: rightFlexValue }">
             <slot name="right"></slot>
         </div>
     </div>
 </template>
-
+// 수정해야댐!
 <script>
-import Split from 'split.js';
-
 export default {
-    mounted() {
-        this.initializeSplit();
+    data() {
+        return {
+            startX: 0,
+            isDragging: false,
+            leftFlexValue: "50%",
+            rightFlexValue: "50%",
+        };
+    },
+    computed: {
+        // eslint-disable-next-line vue/no-dupe-keys
+        leftFlex() {
+            return this.leftFlex;
+        },
+        // eslint-disable-next-line vue/no-dupe-keys
+        rightFlex() {
+            return this.rightFlex;
+        },
     },
     methods: {
-        initializeSplit() {
-            Split(['#left-pane', '#right-pane'], {
-                sizes: ['30%', '70%'],
-                minSize: [200, 700],
-                gutterSize: 4,
-                cursor: 'col-resize',
-                direction: 'horizontal',
-                gutter: function (index, direction) {
-                    const gutter = document.createElement('div');
-                    gutter.className = `gutter gutter-${direction}`;
-                    return gutter;
-                }
-            });
-        }
-    }
-};
+        startDragging(event) {
+            this.dragging = true;
+            this.startX = event.clientX;
+            document.addEventListener("mousemove", this.handleDragging);
+            document.addEventListener("mouseup", this.stopDragging);
+        },
+        handleDragging(event) {
+            if (this.dragging) {
+                const diffX = event.clientX - this.startX;
+                if (diffX !== 0) {
+                    // 계산된 flex 값
+                    const newLeftFlex = this.startLeftFlex + diffX / 10;
+                    const newRightFlex = this.startRightFlex - diffX / 10;
 
+                    // 최소 flex 값 제한
+                    if (newLeftFlex >= 1 && newRightFlex >= 1) {
+                        this.startLeftFlex = newLeftFlex;
+                        this.startRightFlex = newRightFlex;
+                    }
+                }
+                this.startX = event.clientX;
+            }
+        },
+        stopDragging() {
+            this.dragging = false;
+            document.removeEventListener("mousemove", this.handleDragging);
+            document.removeEventListener("mouseup", this.stopDragging);
+        },
+    },
+};
 </script>
 
 <style scoped>
-.split-layout {
+.container {
     display: flex;
     height: 100%;
     width: 100%;
 }
 
-#left-pane, #right-pane {
+.left,
+.right {
     overflow: auto;
     padding: 20px;
 }
 
-#left-pane {
+.left {
     background-color: #f0f0f0;
 }
 
-#right-pane {
+.right {
     background-color: #e0e0e0;
 }
-.gutter {
-    background-color: #ccc;
-    background-repeat: no-repeat;
-    background-position: 50%;
-}
 
-.gutter.gutter-horizontal {
+.bar {
     cursor: col-resize;
     width: 4px;
+    background-color: #333;
 }
 </style>
