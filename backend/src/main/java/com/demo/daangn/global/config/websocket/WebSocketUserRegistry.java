@@ -1,8 +1,7 @@
 package com.demo.daangn.global.config.websocket;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WebSocketUserRegistry {
 
     // ConcurrentHashSet
-    private Set<Long> loginUsers = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private Set<Long> loginUsers = new ConcurrentSkipListSet<>();
 
     public void addUser(Long userId){
         log.info("userId => {} 입장", userId);

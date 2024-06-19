@@ -25,5 +25,4 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUserEntity
     @Query("select cu.chatRoom.id from ChatRoomUserEntity cu where cu.user = :user")
     List<Long> findByUser(DaangnUserEntity user);
 
-    Boolean existsByUserAndChatRoom(DaangnUserEntity user, ChatRoomEntity chatRoom);
 }

@@ -1,6 +1,5 @@
 package com.demo.daangn.global.config.websocket;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +15,7 @@ public class WebsocketChatRoomRegistry {
     private Map< Long, Set<Long> > roomUserMap = new ConcurrentHashMap<>();
 
     public void addUser(Long roomId, Long userId) {
-        roomUserMap.computeIfAbsent(roomId, k -> new HashSet<>()).add(userId);
+        roomUserMap.computeIfAbsent(roomId, k -> ConcurrentHashMap.newKeySet()).add(userId);
         log.info("roomUserMap -> {}", roomUserMap);
     }
 
