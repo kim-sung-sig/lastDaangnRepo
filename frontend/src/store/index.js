@@ -35,6 +35,7 @@ const store = createStore({
                 throw new Error('Login failed');
             }
         },
+
         // TODO 로그아웃 안들어야담!
         logout({ commit }) {
             commit('setLoggedIn', false);
@@ -48,6 +49,31 @@ const store = createStore({
             commit('setSessionTimeout', timeout);
         },
         
+        async checkLoginStatus({ commit, dispatch }) {
+            try {
+                const response = await axios.get('/api/status');
+                if (response.status === 200) {
+                    if(JSON.parse(response.data.msg) === true){
+                        console.debug('login success 라고!!')
+                        commit('setLoggedIn', true);
+                        dispatch('resetSessionTimeout');
+                        return true;
+                    } else {
+                        commit('setLoggedIn', false);
+                        return false;
+                    }
+                } else {
+                    throw new Error('Login failed');
+                }
+            } catch (error) {
+                commit('setLoggedIn', false);
+                return false;
+            }
+        },
+
+        async initializeLogin({ dispatch }) {
+            await dispatch('checkLoginStatus');
+        }
     },
     getters : {
         isLoggedIn: state => state.isLoggedIn

@@ -31,10 +31,26 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+    // 디버그
+    console.debug('to:', to.path);
+    console.debug('from:', from.path);
+    console.debug('isLoggedIn:', store.state.isLoggedIn);
+
     if (to.matched.some(record => record.meta.requiresAuth)) {
+        console.debug('requiresAuth:', true); // 추가 디버깅 로그
         if (!store.state.isLoggedIn) {
-            next("/login");
+            try {
+                const res = await store.dispatch('checkLoginStatus');
+                console.debug('checkLoginStatus result:', res);
+                if (res) {
+                    next();
+                } else {
+                    next('/login');
+                }
+            } catch (error) {
+                next('/login');
+            }
         } else {
             next();
         }
