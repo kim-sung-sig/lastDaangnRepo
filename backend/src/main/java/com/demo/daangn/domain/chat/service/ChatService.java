@@ -1,6 +1,7 @@
 package com.demo.daangn.domain.chat.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +40,12 @@ public class ChatService {
 
     private final JPAQueryFactory queryFactory;
 
-    // 3. 채팅방 생성하기(post) 입장하기
+    // 1. 채팅방 만들기
+    // 2. 채팅방 목록보기
+    // 3. 채팅방 꾸미기
+    // 4. 채팅방 나가기
+
+    // 1. 채팅방 생성하기(post) 입장하기
     public Long createChatRoom(Long user1Id, Long user2Id) throws Exception { // user1Id가 방을 만드는 사람
         DaangnUserEntity user1 = userRepository.findById(user1Id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
         DaangnUserEntity user2 = userRepository.findById(user2Id).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
@@ -56,24 +62,31 @@ public class ChatService {
         chatRoomEntity.setChatRoomCd(UUID.randomUUID().toString());
         chatRoomRepository.save(chatRoomEntity);
         
-        ChatRoomUserEntity chatRoomUserEntity1 = new ChatRoomUserEntity();
-        chatRoomUserEntity1.setChatRoom(chatRoomEntity);
-        chatRoomUserEntity1.setUser(user1);
+        List<ChatRoomUserEntity> savedEntity = new ArrayList<>();
+        savedEntity.add( // 1. 방장
+            ChatRoomUserEntity.builder()
+                .chatRoom(chatRoomEntity)
+                .user(user1)
+                .isUsed(1)
+                .build()
+        );
+        savedEntity.add( // 2. 참가자
+            ChatRoomUserEntity.builder()
+                .chatRoom(chatRoomEntity)
+                .user(user2)
+                .isUsed(0)
+                .build()
+        );
+        chatRoomUserRepository.saveAll(savedEntity);
 
-        ChatRoomUserEntity chatRoomUserEntity2 = new ChatRoomUserEntity();
-        chatRoomUserEntity2.setChatRoom(chatRoomEntity);
-        chatRoomUserEntity2.setUser(user2);
-        chatRoomUserEntity2.setIsUsed(0);
-
-        chatRoomUserRepository.save(chatRoomUserEntity1);
-        chatRoomUserRepository.save(chatRoomUserEntity2);
-
+        // return
         return chatRoomEntity.getId();
     }
 
-    // 2. 채팅방 목록가져오기(나의 채팅방)(get)
+    // 2. 채팅방 목록가져오기(나의 채팅방)(get) // 일단 노페이징처리..
     public PagingResponse<ChatRoomResponse> getChatRooms(Long userId) throws Exception { // 페이징 어캐함?
 
+        //TODO 여기도 querydsl에서 repo 방식으로 바꾸기
         DaangnUserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
 
         QDaangnUserEntity qDaangnUserEntity = QDaangnUserEntity.daangnUserEntity;
@@ -149,21 +162,27 @@ public class ChatService {
         return response;
     }
 
-    // 5. 채팅방 커스텀하기(put)
-    public void updateChatRoomName(Long userId, Long chatRoomId, String chatRoomName) throws Exception {
-        DaangnUserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+    // 3. 채팅방 커스텀하기(put) // 일단 여기는 채팅방 이름만 변경 나중에 추후 변경
+    public void updateChatRoom(Long userId, Long chatRoomId, String chatRoomName) throws Exception {
+        DaangnUserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
         chatRoomUser.setChatRoomName(chatRoomName);// 일단은 request 없이 채팅방 이름 변경만 //TODO request 추가
         chatRoomUserRepository.save(chatRoomUser);
     }
 
-    // 6. 채팅방 나가기(delete)
+    // 4. 채팅방 나가기(delete)
     public void leaveChatRoom(Long userId, Long chatRoomId) throws Exception {
-        DaangnUserEntity user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+        DaangnUserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
         chatRoomUser.setIsUsed(0);
         chatRoomUserRepository.save(chatRoomUser);

@@ -9,7 +9,7 @@ import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long> {
 
     // 1. 채팅방 생성하기
-
+    // save
     // 2. 채팅방 숨기기? 흠
-
+    // save isUsed = 0;
 }
