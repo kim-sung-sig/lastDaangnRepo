@@ -13,10 +13,10 @@ public class NotificationEventPublisher {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    /** 채팅메시지가 말생하면! */
+    /** 채팅메시지가 발생하면! 이벤트를 발행하자! */
     public void publishChatMessageEvent(ChatMessageResponse messageResponse) {
         ChatMessageEvent event = new ChatMessageEvent(messageResponse);
-        applicationEventPublisher.publishEvent(event);
+        applicationEventPublisher.publishEvent(event); // 이벤트 발행!
     }
 
     /*

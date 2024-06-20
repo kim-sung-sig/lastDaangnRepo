@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 //TODO 알림 만들어야댐
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/{userId}/notifications")
 public class NotificationController {
 
     /**
@@ -19,7 +19,7 @@ public class NotificationController {
      * @param userId
      * @return
      */
-    @GetMapping("{userId}/notifications")
+    @GetMapping("")
     public ResponseEntity<?> getAll(@PathVariable("userId") Long userId) {
         try {
             return new ResponseEntity<>("GetAll Results", HttpStatus.OK);
@@ -34,7 +34,7 @@ public class NotificationController {
      * @param notificationId
      * @return
      */
-    @GetMapping("/{userId}/notifications/{notificationId}")
+    @GetMapping("/{notificationId}")
     public ResponseEntity<?> getOne(@PathVariable("userId") Long userId, @PathVariable("notificationId") Long notificationId) {
         try {
             return new ResponseEntity<>("GetOne Result", HttpStatus.OK);
@@ -49,7 +49,7 @@ public class NotificationController {
      * @param dto
      * @return
      */
-    @PutMapping("/{userId}/notifications")
+    @PutMapping("")
     public ResponseEntity<?> updateAll(@PathVariable("usedId") Long usedId) {
         try {
             return new ResponseEntity<>("Update Result", HttpStatus.OK);
@@ -63,7 +63,7 @@ public class NotificationController {
      * @param dto
      * @return
      */
-    @PutMapping("/{userId}/notifications/{notificationId}")
+    @PutMapping("/{notificationId}")
     public ResponseEntity<?> updateByNotificationId(
             @PathVariable("usedId") Long usedId,
             @PathVariable("notificationId") Long notificationId
@@ -77,12 +77,16 @@ public class NotificationController {
     }
     
     /**
-     * 알림 가리기
+     * 알림 삭제하기
      * @param id
      * @return
      */
-    @DeleteMapping("/{userId}/notifications/{notificationId}")
-    public ResponseEntity<?> destroy(@PathVariable("userId") Long userId, @PathVariable("notificationId") Long notificationId) {
+    @DeleteMapping("/{notificationId}")
+    public ResponseEntity<?> deleteByNotificationId(
+        @PathVariable("userId") Long userId,
+        @PathVariable("notificationId") Long notificationId
+    ) {
+
         try {
             return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
         } catch (Exception e) {
@@ -90,4 +94,20 @@ public class NotificationController {
         }
     }
 
+    /**
+     * 알림 선택적으로 삭제하기 (일괄처리)
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteByCondition(
+        @PathVariable("userId") Long userId
+        // @RequestBody NotificationDeleteRequest dto // 일괄 삭제 리스트
+    ) {
+        try {
+            return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

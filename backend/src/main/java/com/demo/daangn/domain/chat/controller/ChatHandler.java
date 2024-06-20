@@ -10,6 +10,7 @@ import com.demo.daangn.domain.chat.dto.request.ChatMessageRequest;
 import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
 import com.demo.daangn.domain.chat.entity.ChatMessageEntity;
 import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
+import com.demo.daangn.domain.chat.enums.MessageType;
 import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
@@ -53,8 +54,9 @@ public class ChatHandler {
         chatRoomUserRepository.findByUserAndChatRoom(sender, chatRoomEntity)
                 .orElseThrow(() -> new AuthException("this is not your chatRoom"));
 
-        boolean result = switch( messageRequest.getType() ) {
-            case 1 -> { // enter chat room
+        // TODO 추후 메서드 빼기 + try-catch로 감싸기
+        boolean result = switch( MessageType.getMessageType(messageRequest.getType()) ) {
+            case ENTER -> { // enter chat room
                 log.info("This is enter chat Message!");
                 try {
                     Long senderId = messageRequest.getSender();
@@ -78,7 +80,7 @@ public class ChatHandler {
                     yield false;
                 }
             }
-            case 2 -> { // chat message
+            case TALK -> { // chat message
                 log.info("This is chat Message!");
                 ChatMessageEntity messageEntity = ChatMessageEntity.builder()
                         .type(messageRequest.getType())
@@ -96,9 +98,9 @@ public class ChatHandler {
                 eventPublisher.publishChatMessageEvent(response); // 챗 알림 이벤트 발행!
                 yield true;
             }
-            // case 3 -> { // file message( 멀티파트로 받아야되나? )
-
-            // }
+            case LEAVE -> { // file message( 멀티파트로 받아야되나? )
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
             default -> false;
         };
 

@@ -1,65 +1,59 @@
 <template>
     <div class="container">
-        <div id="left" :style="{ width: leftFlexValue }">
+        <div class="left" :style="{ width: leftPanelWidth }" ref="leftPanel">
             <slot name="left"></slot>
         </div>
-        <div class="bar" @mousedown="startDragging($event)"></div>
-        <div id="right" :style="{ width: rightFlexValue }">
+        <div class="bar" @mousedown="startDragging"></div>
+        <div class="right" :style="{ width: computedRightPanelWidth }" ref="rightPanel">
             <slot name="right"></slot>
         </div>
     </div>
 </template>
-// 수정해야댐!
+
 <script>
 export default {
     data() {
         return {
-            startX: 0,
             isDragging: false,
-            leftFlexValue: "50%",
-            rightFlexValue: "50%",
+            startX: 0,
+            initialLeftPanelWidth: '50%', // 초기 좌측 패널 너비
+            leftPanelWidth: '50%', // 좌측 패널 너비
+            rightPanelWidth: '50%' // 우측 패널 너비
         };
     },
     computed: {
-        // eslint-disable-next-line vue/no-dupe-keys
-        leftFlex() {
-            return this.leftFlex;
-        },
-        // eslint-disable-next-line vue/no-dupe-keys
-        rightFlex() {
-            return this.rightFlex;
-        },
+        computedRightPanelWidth() {
+            return `calc(100% - ${this.leftPanelWidth} - 4px)`;
+        }
     },
     methods: {
         startDragging(event) {
-            this.dragging = true;
+            this.isDragging = true;
+
             this.startX = event.clientX;
-            document.addEventListener("mousemove", this.handleDragging);
-            document.addEventListener("mouseup", this.stopDragging);
+            console.log(this.startX);
+
+            document.addEventListener('mousemove', this.handleDragging);
+            document.addEventListener('mouseup', this.endDragging);
         },
         handleDragging(event) {
-            if (this.dragging) {
-                const diffX = event.clientX - this.startX;
-                if (diffX !== 0) {
-                    // 계산된 flex 값
-                    const newLeftFlex = this.startLeftFlex + diffX / 10;
-                    const newRightFlex = this.startRightFlex - diffX / 10;
+            console.log(event);
+            this.leftPanelWidth = event.clientX;
+            /*
+            if (this.isDragging) {
+                const offset = event.clientX - this.startX;
+                const newLeftWidth = (parseFloat(this.leftPanelWidth) + offset / containerWidth * 100).toFixed(2) + '%';
 
-                    // 최소 flex 값 제한
-                    if (newLeftFlex >= 1 && newRightFlex >= 1) {
-                        this.startLeftFlex = newLeftFlex;
-                        this.startRightFlex = newRightFlex;
-                    }
-                }
-                this.startX = event.clientX;
+                this.leftPanelWidth = newLeftWidth;
             }
+                */
         },
-        stopDragging() {
-            this.dragging = false;
-            document.removeEventListener("mousemove", this.handleDragging);
-            document.removeEventListener("mouseup", this.stopDragging);
-        },
-    },
+        endDragging() {
+            this.isDragging = false;
+            document.removeEventListener('mousemove', this.handleDragging);
+            document.removeEventListener('mouseup', this.endDragging);
+        }
+    }
 };
 </script>
 
@@ -70,10 +64,10 @@ export default {
     width: 100%;
 }
 
-.left,
-.right {
+.left, .right {
     overflow: auto;
     padding: 20px;
+    min-width: 50px; /* 최소 너비 설정 */
 }
 
 .left {
