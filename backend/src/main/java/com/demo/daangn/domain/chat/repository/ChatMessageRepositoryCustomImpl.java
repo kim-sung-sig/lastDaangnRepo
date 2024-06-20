@@ -42,7 +42,7 @@ public class ChatMessageRepositoryCustomImpl implements ChatMessageRepositoryCus
                 .where(
                     lastId != null ? chatMessage.id.lt(lastId) : null,
                     user.id.eq(userId),
-                    chatRoomUser.cursor.gt(chatMessage.id),
+                    chatRoomUser.pointer.gt(chatMessage.id),
                     chatRoom.id.eq(chatRoomId)
                 )
                 .orderBy(chatMessage.id.desc())
@@ -66,7 +66,7 @@ public class ChatMessageRepositoryCustomImpl implements ChatMessageRepositoryCus
                 .where(
                     user.id.eq(userId),
                     chatRoom.id.eq(chatRoomId),
-                    chatRoomUser.cursor.gt(chatMessage.id)
+                    chatRoomUser.pointer.gt(chatMessage.id)
                 )
                 .fetchOne();
     }

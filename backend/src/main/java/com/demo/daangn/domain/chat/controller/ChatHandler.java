@@ -83,7 +83,7 @@ public class ChatHandler {
             case TALK -> { // chat message
                 log.info("This is chat Message!");
                 ChatMessageEntity messageEntity = ChatMessageEntity.builder()
-                        .type(messageRequest.getType())
+                        .types(messageRequest.getType())
                         .sender(sender)
                         .room(chatRoomEntity)
                         .readed(chatRoomRegistry.hasUser(chatRoomEntity.getId()) ? 0 : 1)

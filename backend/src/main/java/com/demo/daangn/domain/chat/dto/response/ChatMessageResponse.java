@@ -17,7 +17,7 @@ public class ChatMessageResponse {
 
     public ChatMessageResponse(ChatMessageEntity e){
         this.id = e.getId();
-        this.type = e.getType();
+        this.type = e.getTypes();
         this.chatRoomId = e.getRoom().getId();
         this.sender = e.getSender().getId();
         this.name = e.getSender().getNickName();

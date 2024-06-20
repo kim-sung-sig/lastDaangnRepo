@@ -10,17 +10,31 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
+import com.demo.daangn.domain.chat.service.ChatMessageService;
 import com.demo.daangn.global.dto.request.ScrollRequest;
+import com.demo.daangn.global.dto.response.PagingResponse;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/users/{userId}/chats/{chatRoomId}/messages/")
+@RequiredArgsConstructor
 public class ChatMessageController {
     
+    private final ChatMessageService chatMessageService;
+
     // 6. 채팅 메시지 가져오기
     @GetMapping("")
-    public ResponseEntity<?> getChatMessages(@PathVariable("chatRoomId") Long chatRoomId, @RequestBody ScrollRequest sc) {
+    public ResponseEntity<PagingResponse< ChatMessageResponse >> getChatMessages(
+        @PathVariable("userId") Long userId,
+        @PathVariable("chatRoomId") Long chatRoomId,
+        @Valid @RequestBody ScrollRequest sc
+    ) {
         try {
-            return new ResponseEntity<>("GetChatMessages Result", HttpStatus.OK);
+            PagingResponse<ChatMessageResponse> res = chatMessageService.getChatMessages(chatRoomId, userId, sc.getLastItemId(), sc.getSize());
+            return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

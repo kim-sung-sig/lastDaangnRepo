@@ -12,14 +12,16 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Table(name = "my_users")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,19 +31,19 @@ public class DaangnUserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", length = 50, nullable = false, unique = true)
+    @Column(name = "username")
     private String username;
 
-    @Column(name = "password", length = 255, nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "role", length = 20, nullable = false)
+    @Column(name = "role")
     private String role;
 
-    @Column(name = "nick_name", length = 50, nullable = false, unique = true)
+    @Column(name = "nick_name")
     private String nickName;
 
-    @Column(name = "user_profile", length = 255, nullable = true)
+    @Column(name = "user_profile")
     private String userProfile;
 
     @CreatedDate

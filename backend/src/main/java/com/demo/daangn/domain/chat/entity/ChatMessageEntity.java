@@ -15,17 +15,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Table(name = "chat_message")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ChatMessageEntity {
 
     @Id
@@ -40,7 +42,7 @@ public class ChatMessageEntity {
     @JoinColumn(name = "sender", nullable = false)
     private DaangnUserEntity sender;
 
-    private Integer type;
+    private Integer types;
     
     private String content; // 파일저장시 여기에 파일 경로.. // 일정일시 여기에 YYYY-MM-DD HH:mm:ss
 

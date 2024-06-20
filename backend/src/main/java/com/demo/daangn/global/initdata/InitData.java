@@ -2,7 +2,6 @@ package com.demo.daangn.global.initdata;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -15,7 +14,7 @@ public class InitData {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Bean
+    // @Bean
     CommandLineRunner init(DaangnUserRepository userRepository) {
         return args -> {
             // 유저

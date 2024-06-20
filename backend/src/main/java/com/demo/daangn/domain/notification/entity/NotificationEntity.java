@@ -17,17 +17,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Table(name = "notifications")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class NotificationEntity {
 
     @Id
@@ -38,7 +40,7 @@ public class NotificationEntity {
     @JoinColumn(name = "user_id")
     private DaangnUserEntity user;
 
-    private Integer type; // 주체 테이블 체크
+    private Integer types; // 주체 테이블 체크
 
     @Column(name = "object_id")
     private Long objectId; // 주체 테이블의 키
