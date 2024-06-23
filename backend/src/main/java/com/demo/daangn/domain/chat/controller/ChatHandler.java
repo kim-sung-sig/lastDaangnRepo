@@ -104,6 +104,7 @@ public class ChatHandler {
             default -> false;
         };
 
+        // TODO 추후 메서드 빼기 & void 타입 바꿔보기
         if (result) {
             log.info("메시지 전송 성공!");
         } else {

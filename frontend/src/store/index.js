@@ -54,7 +54,6 @@ const store = createStore({
                 const response = await axios.get('/api/status');
                 if (response.status === 200) {
                     if(JSON.parse(response.data.msg) === true){
-                        console.debug('login success 라고!!')
                         commit('setLoggedIn', true);
                         dispatch('resetSessionTimeout');
                         return true;

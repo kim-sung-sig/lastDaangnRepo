@@ -45,11 +45,16 @@ public class ChatService {
 
     // 0. 채팅방 입장 가능한지 확인하기
     public boolean isAvailableChatRoom(Long userId, Long chatRoomId) throws EntityNotFoundException {
-        DaangnUserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+        chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom)
+
+        DaangnUserEntity user = userRepository.findByIdWithChatRooms(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+
+        List<ChatRoomUserEntity> userChatRooms = user.getChatRoomUsers();
+        ChatRoomUserEntity chatRoomUser = userChatRooms.stream()
+                .filter(userChatRoom -> userChatRoom.getChatRoom().getId().equals(chatRoomId))
+                .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
         return chatRoomUser.getIsUsed() == 1;
@@ -187,28 +192,33 @@ public class ChatService {
         return response;
     }
 
-    // 채팅방 하나 얻기
+    // 채팅방 하나 얻기 //TODO 아마 흠 n+1 발생할듯?
     public ChatRoomResponse getChatRoom(Long userId, Long chatRoomId) throws EntityNotFoundException {
-        DaangnUserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+        ChatRoomEntity chatRoom = chatRoomRepository.findByIdWithChatRoomUser(chatRoomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다.")); // 못들어옴!
 
+        DaangnUserEntity user = userRepository.findByIdWithChatRooms(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+
+        ChatRoomUserEntity chatRoomUser = user.getChatRoomUsers().stream()
+                .filter(chatRoomUserEntity ->
+                        chatRoomUserEntity.getChatRoom().getId().equals(chatRoomId) &&
+                        chatRoomUserEntity.getIsUsed() == 1
+                )
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+
+        // 상대방 정보 설정
+        DaangnUserEntity otherUser = chatRoom.getChatRoomUsers().stream()
+                .filter(roomUser -> !roomUser.getUser().getId().equals(userId))
+                .map(ChatRoomUserEntity::getUser)
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("상대방 정보를 찾을 수 없습니다."));
+        
         ChatRoomResponse response = new ChatRoomResponse();
         response.setChatRoomId(chatRoom.getId());
         response.setChatRoomCd(chatRoom.getChatRoomCd());
         response.setChatRoomName(chatRoomUser.getChatRoomName());
-
-        // 상대방 정보 설정
-        List<ChatRoomUserEntity> usersInChatRoom = chatRoomUserRepository.findByChatRoom(chatRoom);
-        DaangnUserEntity otherUser = usersInChatRoom.stream()
-                .map(ChatRoomUserEntity::getUser)
-                .filter(users -> !users.getId().equals(userId))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("상대방 정보를 찾을 수 없습니다."));
-
         response.setUserId(otherUser.getId());
         response.setUserName(otherUser.getNickName());
         response.setUserProfile(otherUser.getUserProfile());
@@ -218,11 +228,18 @@ public class ChatService {
 
     // 3. 채팅방 커스텀하기(put) //TODO request 추가 일단 여기는 채팅방 이름만 변경 나중에 추후 변경
     public Boolean updateChatRoom(Long userId, Long chatRoomId, ChatRoomUpdateRequest req) throws EntityNotFoundException {
-        DaangnUserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
+        chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom)
+
+        DaangnUserEntity user = userRepository.findByIdWithChatRooms(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+
+        ChatRoomUserEntity chatRoomUser = user.getChatRoomUsers().stream()
+                .filter(chatRoomUserEntity ->
+                        chatRoomUserEntity.getChatRoom().getId().equals(chatRoomId) &&
+                        chatRoomUserEntity.getIsUsed() == 1
+                )
+                .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
         chatRoomUser.setChatRoomName(req.getChatRoomName());
@@ -234,15 +251,22 @@ public class ChatService {
 
     // 4. 채팅방 나가기(delete)
     public Boolean leaveChatRoom(Long userId, Long chatRoomId) throws EntityNotFoundException {
-        ChatRoomEntity chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        DaangnUserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        ChatRoomUserEntity chatRoomUser = chatRoomUserRepository.findByUserAndChatRoom(user, chatRoom)
+        chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
-        chatRoomUser.setIsUsed(0);
-        chatRoomUserRepository.save(chatRoomUser);
+        DaangnUserEntity user = userRepository.findByIdWithChatRooms(userId)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+
+        ChatRoomUserEntity userChatRoom =  user.getChatRoomUsers().stream()
+                .filter(chatRoomUserEntity ->
+                        chatRoomUserEntity.getChatRoom().getId().equals(chatRoomId) &&
+                        chatRoomUserEntity.getIsUsed() == 1
+                )
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
+
+        userChatRoom.setIsUsed(0);
+        chatRoomUserRepository.save(userChatRoom);
 
         return true;
     }
