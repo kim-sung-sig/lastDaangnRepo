@@ -14,7 +14,7 @@ import com.demo.daangn.domain.chat.enums.MessageType;
 import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
-import com.demo.daangn.domain.notification.event.NotificationEventPublisher;
+import com.demo.daangn.domain.event.service.EventPublisherService;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.repository.DaangnUserRepository;
 import com.demo.daangn.global.config.websocket.WebsocketChatRoomRegistry;
@@ -37,7 +37,7 @@ public class ChatHandler {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final NotificationEventPublisher eventPublisher;
+    private final EventPublisherService eventPublisher;
 
 
     @MessageMapping("/chat/message")

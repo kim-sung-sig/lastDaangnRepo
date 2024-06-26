@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
 import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
-import com.demo.daangn.domain.notification.event.ChatMessageEvent;
+import com.demo.daangn.domain.event.event.ChatMessageEvent;
 
 import lombok.RequiredArgsConstructor;
 
