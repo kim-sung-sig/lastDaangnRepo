@@ -50,8 +50,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorize) -> {
             authorize
-                .requestMatchers("/", "/api/login", "/api/status").permitAll() // 로그인과 로그인상태확인
+                .requestMatchers("/", "/api/status").permitAll() // 로그인과 로그인상태확인
                 .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
+                .requestMatchers("/test1", "/test2", "/test3").permitAll()
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
                 .requestMatchers("/admin").hasRole("ADMIN")

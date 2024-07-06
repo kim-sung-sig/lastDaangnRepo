@@ -31,14 +31,11 @@ public class EventPublisher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "json")
-    private String data;
-
-    @Column(name = "uuid")
-    private String uuid;
-
     @Column(name = "published")
     private Integer published;
+
+    @Column(columnDefinition = "json")
+    private String content;
 
     @CreatedDate
     private LocalDateTime createdDate;

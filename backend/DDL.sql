@@ -1,6 +1,7 @@
 -- 1. user & chat
 
 drop table if exists notifications;
+drop table if exists event_publisher;
 drop table if exists chat_Message;
 drop table if exists chat_Room_User;
 drop table if exists chat_Room;
@@ -17,14 +18,14 @@ CREATE TABLE my_users (
     user_profile varchar(255) DEFAULT NULL,
     isUsed tinyint(1) DEFAULT 1,
     createDate timestamp DEFAULT CURRENT_TIMESTAMP,
-    modifiedDate timestamp DEFAULT CURRENT_TIMESTAMP
+    modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE chat_room (
     id bigint PRIMARY KEY AUTO_INCREMENT,
     chat_room_cd varchar(64) UNIQUE,
     createDate timestamp DEFAULT CURRENT_TIMESTAMP,
-    modifiedDate timestamp DEFAULT CURRENT_TIMESTAMP
+    modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE chat_room_user (
@@ -35,9 +36,9 @@ CREATE TABLE chat_room_user (
     pointer bigint DEFAULT 0,
     is_used tinyint(1) DEFAULT 1,
     createDate timestamp DEFAULT CURRENT_TIMESTAMP,
-    modifiedDate timestamp DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT `FKa7w2jl4suqo9w1kdoxx05gqad` FOREIGN KEY (chatRoom_Id) REFERENCES chat_room (id),
-    CONSTRAINT `FKouwfit7m8dej5xl5b3yrkeeqv` FOREIGN KEY (user_Id) REFERENCES my_users (id)
+    modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT `chat_room_user_fk1` FOREIGN KEY (chatRoom_Id) REFERENCES chat_room (id),
+    CONSTRAINT `chat_room_user_fk12` FOREIGN KEY (user_Id) REFERENCES my_users (id)
 );
 
 CREATE TABLE chat_message (
@@ -49,21 +50,28 @@ CREATE TABLE chat_message (
     readed int NOT NULL,
     content varchar(400) NOT NULL,
     createDate timestamp DEFAULT CURRENT_TIMESTAMP,
-    modifiedDate timestamp DEFAULT CURRENT_TIMESTAMP,
+    modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT `FK2p19hry0blrv0frwcy3n650et` FOREIGN KEY (sender) REFERENCES my_users (id),
     CONSTRAINT `FK3w13lp8tgyj93dp7gpry5qp3m` FOREIGN KEY (roomId) REFERENCES chat_room (id)
 );
 
 CREATE TABLE notifications (
     id bigint PRIMARY KEY AUTO_INCREMENT,
-    types int NOT NULL,
     user_id bigint NOT NULL,
+    content JSON not null,
     is_readed tinyint(1) DEFAULT 1,
     is_used tinyint(1) DEFAULT 1,
     create_date timestamp DEFAULT CURRENT_TIMESTAMP,
-    modifed_date timestamp DEFAULT CURRENT_TIMESTAMP,
-    object_id bigint DEFAULT NULL,
+    modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT `FKkotomwqbglu6xq158eyuiqtsj` FOREIGN KEY (user_id) REFERENCES my_users (id)
+);
+
+CREATE TABLE event_publisher (
+	id bigint primary key auto_increment,
+	published tinyint(1) default 0,
+	content JSON not null,
+	createDate timestamp DEFAULT CURRENT_TIMESTAMP,
+    modifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 

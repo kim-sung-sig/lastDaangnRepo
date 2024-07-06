@@ -19,4 +19,9 @@ public class MainController {
         return "error";
     }
 
+    @GetMapping("/api/login")
+    public String login(Model model){
+        return "login";
+    }
+
 }

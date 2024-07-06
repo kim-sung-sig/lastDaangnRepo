@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" ref="container">
         <div class="left" :style="{ width: leftPanelWidth }" ref="leftPanel">
             <slot name="left"></slot>
         </div>
@@ -18,7 +18,6 @@ export default {
             startX: 0,
             initialLeftPanelWidth: '50%', // 초기 좌측 패널 너비
             leftPanelWidth: '50%', // 좌측 패널 너비
-            rightPanelWidth: '50%' // 우측 패널 너비
         };
     },
     computed: {
@@ -29,24 +28,23 @@ export default {
     methods: {
         startDragging(event) {
             this.isDragging = true;
-
             this.startX = event.clientX;
-            console.log(this.startX);
+            this.initialLeftPanelWidth = this.$refs.leftPanel.offsetWidth;
 
             document.addEventListener('mousemove', this.handleDragging);
             document.addEventListener('mouseup', this.endDragging);
         },
         handleDragging(event) {
-            console.log(event);
-            this.leftPanelWidth = event.clientX;
-            /*
             if (this.isDragging) {
+                const containerWidth = this.$refs.container.offsetWidth;
                 const offset = event.clientX - this.startX;
-                const newLeftWidth = (parseFloat(this.leftPanelWidth) + offset / containerWidth * 100).toFixed(2) + '%';
-
-                this.leftPanelWidth = newLeftWidth;
+                const newLeftWidth = ((this.initialLeftPanelWidth + offset) / containerWidth) * 100;
+                
+                // 최소 너비와 최대 너비 설정
+                if (newLeftWidth > 10 && newLeftWidth < 90) {
+                    this.leftPanelWidth = `${newLeftWidth}%`;
+                }
             }
-                */
         },
         endDragging() {
             this.isDragging = false;

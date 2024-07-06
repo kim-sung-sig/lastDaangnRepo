@@ -33,5 +33,5 @@ public class AuthController {
             return new ResponseEntity<>(RsData.of(result), HttpStatus.UNAUTHORIZED);
         }
     }
-    
+
 }

@@ -40,13 +40,14 @@ public class NotificationEntity {
     @JoinColumn(name = "user_id")
     private DaangnUserEntity user;
 
-    private Integer types; // 주체 테이블 체크
-
-    @Column(name = "object_id")
-    private Long objectId; // 주체 테이블의 키
+    @Column(name = "content")
+    private String content;
 
     @Column(name = "is_readed")
     private Integer isReaded;
+
+    @Column(name = "is_used")
+    private Integer isUsed; // 삭제여부
 
     @CreatedDate
     @Column(name = "create_date")
@@ -55,8 +56,5 @@ public class NotificationEntity {
     @LastModifiedDate
     @Column(name = "modifed_date")
     private LocalDateTime modifiedDate;
-
-    @Column(name = "is_used")
-    private Integer isUsed; // 삭제여부
 
 }
