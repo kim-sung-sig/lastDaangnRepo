@@ -1,84 +1,48 @@
 <template>
-    <div class="container" ref="container">
-        <div class="left" :style="{ width: leftPanelWidth }" ref="leftPanel">
+    <div id="splitter">
+        <div class="split split-horizontal" ref="pane1">
             <slot name="left"></slot>
         </div>
-        <div class="bar" @mousedown="startDragging"></div>
-        <div class="right" :style="{ width: computedRightPanelWidth }" ref="rightPanel">
+        <div class="split split-horizontal" ref="pane2">
             <slot name="right"></slot>
         </div>
     </div>
 </template>
 
 <script>
-export default {
-    data() {
-        return {
-            isDragging: false,
-            startX: 0,
-            initialLeftPanelWidth: '50%', // 초기 좌측 패널 너비
-            leftPanelWidth: '50%', // 좌측 패널 너비
-        };
-    },
-    computed: {
-        computedRightPanelWidth() {
-            return `calc(100% - ${this.leftPanelWidth} - 4px)`;
-        }
-    },
-    methods: {
-        startDragging(event) {
-            this.isDragging = true;
-            this.startX = event.clientX;
-            this.initialLeftPanelWidth = this.$refs.leftPanel.offsetWidth;
+import Split from "split.js";
 
-            document.addEventListener('mousemove', this.handleDragging);
-            document.addEventListener('mouseup', this.endDragging);
-        },
-        handleDragging(event) {
-            if (this.isDragging) {
-                const containerWidth = this.$refs.container.offsetWidth;
-                const offset = event.clientX - this.startX;
-                const newLeftWidth = ((this.initialLeftPanelWidth + offset) / containerWidth) * 100;
-                
-                // 최소 너비와 최대 너비 설정
-                if (newLeftWidth > 10 && newLeftWidth < 90) {
-                    this.leftPanelWidth = `${newLeftWidth}%`;
-                }
-            }
-        },
-        endDragging() {
-            this.isDragging = false;
-            document.removeEventListener('mousemove', this.handleDragging);
-            document.removeEventListener('mouseup', this.endDragging);
-        }
-    }
+export default {
+    name: "App",
+    mounted() {
+
+        Split([this.$refs.pane1, this.$refs.pane2], {
+        sizes: [50, 50],
+        minSize: [400, Infinity], // 왼쪽 최소 사이즈는 200px, 오른쪽은 100px
+        maxSize: [window.innerWidth * 0.5, Infinity], // 왼쪽 최대 사이즈는 50%, 오른쪽은 제한 없음
+        gutterSize: 10,
+        direction: "horizontal",
+        });
+    },
 };
 </script>
 
-<style scoped>
-.container {
+<style>
+#splitter {
     display: flex;
-    height: 100%;
     width: 100%;
+    height: calc(100vh - 40px);
 }
 
-.left, .right {
+.split {
     overflow: auto;
-    padding: 20px;
-    min-width: 50px; /* 최소 너비 설정 */
 }
 
-.left {
-    background-color: #f0f0f0;
+.split-horizontal {
+    flex-grow: 1;
 }
-
-.right {
-    background-color: #e0e0e0;
-}
-
-.bar {
+.gutter{
     cursor: col-resize;
-    width: 4px;
-    background-color: #333;
+    background: #333;
 }
 </style>

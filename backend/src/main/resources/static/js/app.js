@@ -18,6 +18,7 @@ function loadPage(page, event) {
         alert('Failed to load page');
     });
 }
+
 function activeNabBtn(page) {
     const navBtns = document.querySelectorAll('.navBtn');
     navBtns.forEach((btn) => {

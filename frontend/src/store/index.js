@@ -25,6 +25,7 @@ const store = createStore({
                 formDataToSend.append('username', formData.username);
                 formDataToSend.append('password', formData.password);
                 const response = await axios.post('/api/login', formDataToSend);
+                console.log(response);
                 if (response.status === 200) {
                     commit('setLoggedIn', true);
                     return response;

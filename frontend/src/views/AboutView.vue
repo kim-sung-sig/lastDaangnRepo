@@ -1,7 +1,25 @@
 <template>
 	<MainLayout>
-		<h1>About</h1>
-		<p>This is the about page.</p>
+		<template #left>
+            <div class="chat-left">
+                <h1>채팅방목록</h1>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+                <p>This is the Home page.</p>
+            </div>
+        </template>
+
+        <template #right>
+            <div class="chat-right">
+                <h1>Home-right</h1>
+                <p>This is the Home page.</p>
+            </div>
+        </template>
 	</MainLayout>
 </template>
 
@@ -15,4 +33,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+	.chat-left {
+		padding: 20px;
+		background: #ccc;
+	}
+	.chat-right {
+		padding: 20px;
+		background: #eee;
+	}
+</style>

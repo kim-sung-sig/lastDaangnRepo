@@ -3,7 +3,7 @@
     <MainHeader />
     <div class="layout">
         <MainNavbar />
-        <div class="content">
+        <div id="content">
             <SplitLayout>
                 <template #left>
                     <slot name="left"></slot>
@@ -36,7 +36,8 @@ export default {
     display: flex;
     height: calc(100vh - 40px);
 }
-.content {
+#content {
+    width: calc(100vw - 70px);
     flex: 1;
     display: flex;
 }
