@@ -19,9 +19,9 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
-        path: '/about',
-        name: 'about',
-        component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+        path: '/chat',
+        name: 'chat',
+        component: () => import(/* webpackChunkName: "about" */ '../views/ChatView.vue'),
         meta: { requiresAuth: true }
     },
 ]

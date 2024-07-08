@@ -24,7 +24,7 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
 
-    public FileStorageService(@Value("${custom.fileDirPath}") String uploadDir) throws Exception{
+    public FileStorageService(@Value("${custom.fileDirPath}") String uploadDir) throws Exception {
         this.fileStorageLocation = Paths.get(uploadDir)
             .toAbsolutePath().normalize();
         try {

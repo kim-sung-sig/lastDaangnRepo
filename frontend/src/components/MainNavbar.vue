@@ -23,7 +23,7 @@
           <span>홈</span>
         </div>
       </router-link>
-      <router-link to="/about">
+      <router-link to="/chat">
         <div style="display: flex; justify-content: center">
           <div class="nav-icon">
             <svg
