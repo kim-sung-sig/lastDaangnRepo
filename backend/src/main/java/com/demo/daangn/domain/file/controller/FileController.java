@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file;
+package com.demo.daangn.domain.file.controller;
 
 import java.io.FileNotFoundException;
 
@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.demo.daangn.global.util.file.FileStorageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/file")
 public class FileController {
 
     //@Autowired
