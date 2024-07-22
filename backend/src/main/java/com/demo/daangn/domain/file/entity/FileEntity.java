@@ -1,5 +1,6 @@
 package com.demo.daangn.domain.file.entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -28,14 +29,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileEntity {
+public class FileEntity implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 파일의 고유 ID
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "types")
+    @Column(name = "types", nullable = false)
     private FileEnums types;
 
     @Column(name = "file_name")
