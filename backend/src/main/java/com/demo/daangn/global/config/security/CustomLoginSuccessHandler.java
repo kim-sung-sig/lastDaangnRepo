@@ -26,7 +26,6 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         
         request.getSession().setAttribute("user", user); // 이제 유저를 세션에 올려준것!
 		request.getSession().setMaxInactiveInterval(60*30); // 세션 시간 30분
-		// response.sendRedirect("/");
         
         ResponseEntity<RsData<Boolean>> responseEntity = new ResponseEntity<>(RsData.of(true), HttpStatus.OK);
         response.encodeURL(getDefaultTargetUrl());

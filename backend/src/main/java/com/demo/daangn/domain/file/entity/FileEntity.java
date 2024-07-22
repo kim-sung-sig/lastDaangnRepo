@@ -1,16 +1,27 @@
 package com.demo.daangn.domain.file.entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.demo.daangn.domain.file.enums.FileEnums;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name = "미정")
+@Table(name = "daangn_files")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
@@ -19,32 +30,34 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileEntity {
 
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // 파일의 고유 ID
 
-    private String fileName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "types")
+    private FileEnums types;
 
-    private String filePath;
+    @Column(name = "file_name")
+    private String fileName; // 파일의 이름
+    @Column(name = "file_origin_name")
+    private String fileOriginName; // 원본 파일의 이름
 
-    private String fileOriginName;
+    @Column(name = "file_path")
+    private String filePath; // 파일의 경로 (/DATA/file/upload/)
+    @Column(name = "file_url")
+    private String fileUrl; // 파일의 URL (/api/v1/upload/{saveFileName})
 
-    private String fileUrl;
+    @Column(name = "file_type")
+    private String fileType; // 파일의 타입 (예: 이미지, 비디오 등)
+    @Column(name = "file_ext")
+    private String fileExt; // 파일의 확장자 (예: jpg, png 등)
 
-    private String fileType;
+    @Column(name = "file_size")
+    private Long fileSize; // 파일의 크기 (바이트 단위)
 
-    private Long fileSize;
+    @CreatedDate
+    @Column(name = "create_date")
+    private LocalDateTime createDate;
 
-    private String fileExt;
-
-    private String fileDownloadUrl;
-
-    private String fileThumbnailUrl;
-
-    private String fileThumbnailPath;
-
-    private String fileThumbnailName;
-
-    private String fileThumbnailExt;
-
-    private Long fileThumbnailSize;
-    
 }
