@@ -37,14 +37,14 @@ public class SecurityConfig {
 
         http.formLogin((form) -> {
             form
-                .loginPage("/api/login").permitAll()
+                .loginPage("/login").permitAll()
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .successHandler(new CustomLoginSuccessHandler());
         });
         http.logout((logout) -> {
             logout
-                .logoutUrl("/api/logout").permitAll()
+                .logoutUrl("/logout").permitAll()
                 .invalidateHttpSession(true);
         });
 
@@ -52,7 +52,7 @@ public class SecurityConfig {
             authorize
                 .requestMatchers("/", "/api/status").permitAll() // 로그인과 로그인상태확인
                 .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
-                .requestMatchers("/test1", "/test2", "/test3").permitAll()
+                .requestMatchers("/test1", "/test2", "/test3", "/test2/**").permitAll()
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
                 .requestMatchers("/admin").hasRole("ADMIN")

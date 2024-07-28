@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>테스트 2</title>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <th:block th:insert = "~{component/default/defaultCss.html}"></th:block>
+    <th:block th:insert = "~{component/default/defaultScript.html}"></th:block>
+</head>
+<body>
+    <div id="main_wrap">
+        <!-- header -->
+        <th:block th:insert = "~{component/mainNavigation.html}"></th:block>
+        <!-- //header -->
+
+        <!-- content -->
+        <div id="content">
+            <div id="component">
+                <h1>Test2 Page</h1>
+                <p>This is the content of Test2 page.</p>
+                <a href="/test2/4" onclick="loadPage('/test2/4', event)">이동 ??</a>
+            </div>
+        </div>
+        <!-- //content -->
+    </div>
+</body>
+</html>

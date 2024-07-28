@@ -1,7 +1,33 @@
 <!-- router.html -->
-<nav>
-    <a class="navBtn" href="/" onclick="loadPage('', event)">main</a>
-    <a class="navBtn" href="/test1" onclick="loadPage('test1', event)">Test1</a>
-    <a class="navBtn" href="/test2" onclick="loadPage('test2', event)">Test2</a>
-    <a class="navBtn" href="/test3" onclick="loadPage('test3', event)">Test3</a>
-</nav>
+<header id="main_header">
+    <nav id="main_nav">
+        <a th:classappend="${navUrl == '/' ? ' active' : ''}"       class="navBtn" href="/" onclick="loadPage('/', event)">main</a>
+        <a th:classappend="${navUrl == '/test1' ? ' active' : ''}"  class="navBtn" href="/test1" onclick="loadPage('/test1', event)">Test1</a>
+        <a th:classappend="${navUrl == '/test2' ? ' active' : ''}"  class="navBtn" href="/test2" onclick="loadPage('/test2', event)">Test2</a>
+        <a th:classappend="${navUrl == '/test3' ? ' active' : ''}"  class="navBtn" href="/test3" onclick="loadPage('/test3', event)">Test3</a>
+    </nav>
+</header>
+
+<style>
+    #main_header {
+        width: 250px;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #main_nav {
+        nav {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        
+        .navBtn {
+            font-size: 24px;
+        }
+        .active {
+            color: red;
+        }
+    }
+</style>
