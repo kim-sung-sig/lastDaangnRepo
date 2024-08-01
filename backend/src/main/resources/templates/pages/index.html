@@ -10,15 +10,126 @@
 </head>
 <body>
     <div id="main_wrap">
-        <!-- header -->
+        <!-- mainNav -->
         <th:block th:insert = "~{component/mainNavigation.html}"></th:block>
-        <!-- //header -->
+        <!-- //mainNav -->
 
         <!-- content -->
         <div id="content">
             <div id="component">
-                <h1>Main Page</h1>
-                <p>This is the content of Main page.</p>
+                <div id="wrap">
+                    <h1>main Page</h1>
+                    <p>This is the content of main page.</p>
+                    <div id="text-container1"></div>
+                    <br>
+                    <hr><hr>
+                    <div id="text-container2"></div>
+                </div>
+                <style>
+                    #wrap {
+                        padding: 24px;
+                    }
+                </style>
+                <script>
+                    /**
+                     * 메인 페이지 스크립트
+                     * 조아 이제 vue 처럼 개발 할 수 있는 환경을 만들었다.
+                     * 바인딩만 이제 잘해보자..
+                     */
+                    class SimpleComponent {
+                        constructor({ id, template, data }) {
+                            this.id = id;
+                            this.template = template;
+                            this.data = data;
+
+                            this.render();
+                        }
+
+                        setData(inputData) {
+                            this.data = [...this.data, ...inputData];
+                            this.render();
+                        }
+
+                        render() {
+                            const container = $(`#${this.id}`);
+
+                            if (container.length === 0) {
+                                console.error(`Container with id "${this.id}" not found.`);
+                                return;
+                            }
+                            // 기존 항목들을 추적하여 업데이트
+                            const existingIds = new Set(container.find('[data-id]').map(function() {
+                                return $(this).data('id');
+                            }).get());
+                            
+                            console.log(existingIds);
+
+                            // 신규 추가
+                            this.data.forEach(item => {
+                                if (!existingIds.has(item.id)) {
+                                    const html = this.template(item);
+                                    const element = $(html); // 템플릿에서 반환된 HTML을 jQuery 객체로 변환
+                                    container.append(element);
+                                }
+                                existingIds.delete(item.id);
+                            });
+
+                            console.log(existingIds);
+
+                            // 제거된 항목들을 DOM에서 삭제
+                            existingIds.forEach(id => {
+                                container.find(`[data-id="${id}"]`).remove();
+                            });
+                        }
+                    }
+
+                    $(function() {
+                        var data = {
+                            text1: [{ id: 1, value: 'Hello, World!' }],
+                            text2: [{ id: 1, value: '안녕하세요, 세계!' }],
+                        };
+
+                        const template1 = (item) => {
+                            return `<span style="display: block" data-id="${item.id}">${item.value}</span>`;
+                        };
+
+                        const template2 = (item) => {
+                            return `<span style="display: block" data-id="${item.id}">${item.value}222222</span>`;
+                        };
+
+                        const component1 = new SimpleComponent({
+                            id: 'text-container1',
+                            template: template1,
+                            data: data.text1
+                        });
+
+                        const component2 = new SimpleComponent({
+                            id: 'text-container2',
+                            template: template2,
+                            data: data.text2
+                        });
+
+                        // 데이터 변경 테스트
+                        setTimeout(function() {
+                            alert('데이터 변경 테스트1');
+                            const newArray1 = [
+                                { id: 2, value: '바보' },
+                                { id: 3, value: '멍청이' },
+                                { id: 4, value: '멍충이' }
+                            ];
+                            component1.setData(newArray1);
+                        }, 2000);
+                        
+                        setTimeout(function() {
+                            alert('데이터 변경 테스트2');
+                            const newArray2 = [
+                                { id: 2, value: 'New Text 1' },
+                                { id: 3, value: 'New Text 2' }
+                            ];
+                            component2.setData(newArray2);
+                        }, 4000);
+                    });
+                </script>
             </div>
         </div>
         <!-- //content -->

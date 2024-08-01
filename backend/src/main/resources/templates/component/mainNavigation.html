@@ -1,16 +1,35 @@
 <!-- router.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,200,0,0" />
 <nav id="main_nav">
     <div>
-        <a th:classappend="${navUrl == '/' ? ' active' : ''}"       class="navBtn" href="/" onclick="loadPage('/', event)">main</a>
+        <a th:classappend="${navUrl == '/' ? ' active' : ''}" class="navBtn" href="/" onclick="loadPage('/', event)">
+            <span class="material-symbols-outlined">home</span>
+            <span class="main_nav-text">홈</span>
+        </a>
     </div>
     <div>
-        <a th:classappend="${navUrl == '/test1' ? ' active' : ''}"  class="navBtn" href="/test1" onclick="loadPage('/test1', event)">Test1</a>
+        <a th:classappend="${navUrl == '/test1' ? ' active' : ''}"  class="navBtn" href="/test1" onclick="loadPage('/test1', event)">
+            <span class="material-symbols-outlined">tab_group</span>
+            <span class="main_nav-text">동네생활</span>
+        </a>
     </div>
     <div>
-        <a th:classappend="${navUrl == '/test2' ? ' active' : ''}"  class="navBtn" href="/test2" onclick="loadPage('/test2', event)">Test2</a>
+        <a th:classappend="${navUrl == '/test2' ? ' active' : ''}"  class="navBtn" href="/test2" onclick="loadPage('/test2', event)">
+            <span class="material-symbols-outlined">file_map</span>
+            <span class="main_nav-text">내 근처</span>
+        </a>
     </div>
     <div>
-        <a th:classappend="${navUrl == '/test3' ? ' active' : ''}"  class="navBtn" href="/test3" onclick="loadPage('/test3', event)">Test3</a>
+        <a th:classappend="${navUrl == '/test3' ? ' active' : ''}"  class="navBtn" href="/test3" onclick="loadPage('/test3', event)">
+            <span class="material-symbols-outlined">chat</span>
+            <span class="main_nav-text">채팅</span>
+        </a>
+    </div>
+    <div>
+        <a th:classappend="${navUrl == '/test3' ? ' active' : ''}"  class="navBtn" href="/test3" onclick="loadPage('/test3', event)">
+            <span class="material-symbols-outlined">person</span>
+            <span class="main_nav-text">나의 당근</span>
+        </a>
     </div>
 </nav>
 
@@ -30,8 +49,14 @@
         border-right: 1px solid rgba(204, 204, 204, 0.5);
 
     }
+
     #main_nav > div {
         width: 100%;
+    }
+    #main_nav > div > a{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
         text-align: center;
         padding: 6px 0;
         height: 55px;
@@ -40,10 +65,14 @@
 
     #main_nav {
         .navBtn {
-            font-size: 24px;
+            font-size: 12px;
         }
         .active {
             color: red;
+        }
+        .active .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 100
         }
     }
 </style>

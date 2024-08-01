@@ -28,6 +28,8 @@ function loadPage(page, event) {
         console.error('Failed to load page', e);
         alert('Failed to load page');
     });
+
+    $("#main_nav").show();
 }
 
 function getBasePath(path) {
