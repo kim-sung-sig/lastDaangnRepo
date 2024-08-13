@@ -17,23 +17,43 @@
         <!-- content -->
         <div id="content">
             <div id="component">
+                <!-- Vue.js 3 CDN -->
+                <script src="https://unpkg.com/vue@3"></script>
                 <div id="wrap">
                     <h1>main Page</h1>
                     <p>This is the content of main page.</p>
                     <div id="text-container1">
-                        <span style="display: block" data-id="${item.id}">${item.value}</span>
+                        <span v-for="item in items" :key="item.id" :data-id="item.id" style="display: block">{{ item.value }}</span>
                     </div>
-                    <br>
-                    <hr><hr>
-                    <div id="text-container2">
-                        <span style="display: block" data-id="${item.id}">${item.value}</span>
-                    </div>
+                    <div @click="addItem" style="cursor: pointer;"> + 더하기 </div>
                 </div>
                 <style>
                     #wrap {
                         padding: 24px;
                     }
                 </style>
+                <script>
+                    const { createApp } = Vue;
+
+                    createApp({
+                        data() {
+                            return {
+                                items : [
+                                    { id: 1, value: 'Item 1' },
+                                    { id: 2, value: 'Item 2' },
+                                    { id: 3, value: 'Item 3' }
+                                ],
+                            }
+                        },
+                        methods: {
+                            addItem() {
+                                const newItem = { id: this.items.length + 1, value: `Item ${this.items.length + 1}` };
+                                this.items.push(newItem);
+                            }
+                        },
+                    }).mount('#wrap');
+                </script>
+                <!--
                 <script>
                     function createSimpleComponent({ id, data }) {
                         let currentData = [...data];
@@ -138,6 +158,7 @@
 
                     })
                 </script>
+                -->
 
                 <script>
                     /*
