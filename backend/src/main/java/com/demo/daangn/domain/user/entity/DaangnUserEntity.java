@@ -24,7 +24,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Table(name = "my_user")
+@Table(name = "my_users")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data

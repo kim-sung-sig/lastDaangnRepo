@@ -1,14 +1,12 @@
 package com.demo.daangn.global.config.security;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.global.dto.response.RsData;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,12 +25,19 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         request.getSession().setAttribute("user", user); // 이제 유저를 세션에 올려준것!
 		request.getSession().setMaxInactiveInterval(60*30); // 세션 시간 30분
         
-        ResponseEntity<RsData<Boolean>> responseEntity = new ResponseEntity<>(RsData.of(true), HttpStatus.OK);
-        response.encodeURL(getDefaultTargetUrl());
         response.setContentType("application/json");
-        response.getWriter().write(responseEntity.getBody().toString());
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        // JSON 응답 데이터 생성
+        String jsonResponse = "{\"success\":true}";
+
+        // 응답을 작성
+        try (PrintWriter writer = response.getWriter()) {
+            writer.write(jsonResponse);
+            writer.flush();
+        }
 		// response.sendRedirect("http://localhost:3000"); // 뷰로 할시
-		response.sendRedirect("/"); // 스프링시
+		// response.sendRedirect("/"); // 스프링시
     }
 
 }

@@ -24,13 +24,13 @@ public class BcryptTest {
         DaangnUserEntity user = userRepository.findById(1L)
                 .orElseThrow(() -> new EntityNotFoundException());
 
-        user.setPassword(bCryptPasswordEncoder.encode("1234"));
+        user.setPassword(bCryptPasswordEncoder.encode("password1!"));
         
         userRepository.save(user);
         DaangnUserEntity user2 = userRepository.findById(2L)
                 .orElseThrow(() -> new EntityNotFoundException());
 
-        user2.setPassword(bCryptPasswordEncoder.encode("1234"));
+        user2.setPassword(bCryptPasswordEncoder.encode("password1!"));
         
         userRepository.save(user2);
     }

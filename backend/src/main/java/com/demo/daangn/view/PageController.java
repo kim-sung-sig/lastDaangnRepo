@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PageController {
@@ -15,7 +16,7 @@ public class PageController {
      * @param model
      * @return
      */
-    @GetMapping(value = "")
+    @GetMapping(value = "/")
     public String index(HttpServletRequest req, Model model){
         model.addAttribute("navUrl", req.getRequestURI());
         return "pages/index";
@@ -27,7 +28,10 @@ public class PageController {
      * @return
      */
     @GetMapping("/login")
-    public String login(Model model){
+    public String login(Model model, HttpSession session){
+        if(session.getAttribute("user") != null){
+            return "redirect:/";
+        }
         return "pages/login/login";
     }
 

@@ -18,21 +18,17 @@
 		<form @submit.prevent="login">
 			<div>
 				<label for="username">Username:</label>
-				<input v-model="username" id="username" ref="usernameInput" placeholder="Username" />
+				<input class="uk-input" v-model="username" id="username" ref="usernameInput" placeholder="Username" />
 				<span v-if="usernameError">{{ usernameError }}</span>
 			</div>
 			<div>
 				<label for="password">Password:</label>
-				<input v-model="password" id="password" type="password" ref="passwordInput" placeholder="Password" autocomplete="false"/>
+				<input class="uk-input" v-model="password" id="password" type="password" ref="passwordInput" placeholder="Password" autocomplete="false"/>
 				<span v-if="passwordError">{{ passwordError }}</span>
 			</div>
-			<button type="submit">Login</button>
+			<button class="uk-button" type="submit">Login</button>
 		</form>
 	</div>
-
-	<script>
-		
-	</script>
 
 	<script>
 		new Vue({
@@ -48,19 +44,19 @@
 					try {
 						const loginValidCheker = this.loginValidation(this.username, this.password);
 
-						const response = await axios.post('/login', {
-							username: this.username,
-							password: this.password
-						});
-						if(response.state === 200){
+						const formData = new FormData();
+						formData.append('username', this.username);
+						formData.append('password', this.password);
+
+						const response = await axios.post('/login', formData);
+
+						if(response.data?.success === true){
 							location.href = '/';
 						} else {
 							alert('로그인 실패');
-							this.username = '';
-							this.$refs.usernameInput.focus();
-							this.password = '';
-							this.$refs.passwordInput.focus();
+							this.clearForm();
 						}
+
 					} catch (e) {
 						console.error(e.message);
 					}
@@ -90,7 +86,13 @@
 					} else {
 						this.passwordError = '';
 					}
-				}
+				},
+
+				clearForm() {
+                    this.username = '';
+                    this.password = '';
+                    this.$refs.usernameInput.focus();
+                }
 			},
 
 			mounted() {

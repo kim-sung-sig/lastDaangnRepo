@@ -50,12 +50,18 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorize) -> {
             authorize
-                .requestMatchers("/", "/api/status").permitAll() // 로그인과 로그인상태확인
-                .requestMatchers("/img/**", "/js/**", "/css/**", "/upload/**").permitAll()
-                .requestMatchers("/test1", "/test2", "/test3", "/test2/**").permitAll()
-                .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // main
+                .requestMatchers("/img/**", "/js/**", "/css/**", "/api/upload/file/**").permitAll()
+                // user
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
-                .requestMatchers("/admin").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/check/**").permitAll() // 중복확인
+                // usedBoard
+                .requestMatchers("/test1", "/test2", "/test3", "/test2/**").permitAll()
+
+                // swagger
+                .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // admin
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated();
         });
 
@@ -67,6 +73,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://127.0.0.1:3000");
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
