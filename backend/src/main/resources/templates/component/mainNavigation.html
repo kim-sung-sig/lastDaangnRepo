@@ -1,34 +1,10 @@
 <!-- router.html -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,200,0,0" />
 <nav id="main_nav">
-    <div>
-        <a th:classappend="${navUrl == '/' ? ' active' : ''}" class="navBtn" href="/" onclick="loadPage('/', event)">
-            <span class="material-symbols-outlined">home</span>
-            <span class="main_nav-text">홈</span>
-        </a>
-    </div>
-    <div>
-        <a th:classappend="${navUrl == '/test1' ? ' active' : ''}"  class="navBtn" href="/test1" onclick="loadPage('/test1', event)">
-            <span class="material-symbols-outlined">tab_group</span>
-            <span class="main_nav-text">동네생활</span>
-        </a>
-    </div>
-    <div>
-        <a th:classappend="${navUrl == '/test2' ? ' active' : ''}"  class="navBtn" href="/test2" onclick="loadPage('/test2', event)">
-            <span class="material-symbols-outlined">file_map</span>
-            <span class="main_nav-text">내 근처</span>
-        </a>
-    </div>
-    <div>
-        <a th:classappend="${navUrl == '/test3' ? ' active' : ''}"  class="navBtn" href="/test3" onclick="loadPage('/test3', event)">
-            <span class="material-symbols-outlined">chat</span>
-            <span class="main_nav-text">채팅</span>
-        </a>
-    </div>
-    <div>
-        <a th:classappend="${navUrl == '/test3' ? ' active' : ''}"  class="navBtn" href="/test3" onclick="loadPage('/test3', event)">
-            <span class="material-symbols-outlined">person</span>
-            <span class="main_nav-text">나의 당근</span>
+    <div v-for="item in navItems" :key="index">
+        <a :href="item.url" @click="loadPage(item.url, $event)" :class="{ active: currentUrl === item.url }" class="navBtn">
+            <span class="material-symbols-outlined">{{ item.icon }}</span>
+            <span class="main_nav-text">{{ item.text }}</span>
         </a>
     </div>
 </nav>
@@ -76,3 +52,29 @@
         }
     }
 </style>
+
+<script>
+    createApp({
+        data() {
+            return {
+                currentUrl: window.location.pathname,
+                navItems: [
+                    { url: '/', text: '홈', icon: 'home' },
+                    { url: '/test1', text: '동네생활', icon: 'tab_group' },
+                    { url: '/test2', text: '내 근처', icon: 'file_map' },
+                    { url: '/test3', text: '채팅', icon: 'chat' },
+                    { url: '/test4', text: '나의 당근', icon: 'person' },
+                ]
+            }
+        },
+
+        methods: {
+            loadPage(url, event) {
+                event.preventDefault();
+                this.currentUrl = url;
+                window.history.pushState(null, null, url);
+            }
+        }
+
+    }).mount('#main_nav');
+</script>

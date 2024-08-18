@@ -7,18 +7,78 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <th:block th:insert = "~{component/default/defaultCss.html}"></th:block>
     <th:block th:insert = "~{component/default/defaultScript.html}"></th:block>
+    <style>
+        #main_nav {
+            width: 600px;
+            display: flex;
+            justify-content: space-between;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 16px 16px 0 0;
+            background: #fff;
+            border-left: 1px solid rgba(204, 204, 204, 0.5);
+            border-top: 1px solid rgba(204, 204, 204, 0.5);
+            border-right: 1px solid rgba(204, 204, 204, 0.5);
+    
+        }
+    
+        #main_nav > div {
+            width: 100%;
+        }
+        #main_nav > div > a{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            padding: 6px 0;
+            height: 55px;
+    
+        }
+    
+        #main_nav {
+            .navBtn {
+                font-size: 12px;
+            }
+            .active {
+                color: red;
+            }
+            .active .material-symbols-outlined {
+                font-variation-settings:
+                'FILL' 100
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="main_wrap">
         <!-- mainNav -->
-        <th:block th:insert = "~{component/mainNavigation.html}"></th:block>
+        <nav id="main_nav">
+            <div v-for="(item, index) in navItems" :key="index">
+                <router-link :to="item.url" class="navBtn" :class="{ active: item.url === currentUrl }">
+                    <span class="material-symbols-outlined">{{ item.icon }}</span>
+                    <span class="main_nav-text">{{ item.text }}</span>
+                </router-link>
+            </div>
+        </nav>
         <!-- //mainNav -->
 
         <!-- content -->
         <div id="content">
-            <div id="component">
-                <!-- Vue.js 3 CDN -->
-                <script src="https://unpkg.com/vue@3"></script>
+            <router-view></router-view> <!-- Vue Router가 컴포넌트를 렌더링하는 위치 -->
+        </div>
+        <!-- //content -->
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        const { createRouter, createWebHistory } = VueRouter;
+    </script>
+
+    <script>
+        const Home = {
+            template: `
                 <div id="wrap">
                     <h1>main Page</h1>
                     <p>This is the content of main page.</p>
@@ -27,242 +87,68 @@
                     </div>
                     <div @click="addItem" style="cursor: pointer;"> + 더하기 </div>
                 </div>
-                <style>
-                    #wrap {
-                        padding: 24px;
-                    }
-                </style>
-                <script>
-                    const { createApp } = Vue;
+            `,
+            data() {
+                return {
+                    items : [
+                        { id: 1, value: 'Item 1' },
+                        { id: 2, value: 'Item 2' },
+                        { id: 3, value: 'Item 3' }
+                    ],
+                }
+            },
+            methods: {
+                addItem() {
+                    const newItem = { id: this.items.length + 1, value: `Item ${this.items.length + 1}` };
+                    this.items.push(newItem);
+                }
+            },
+        };
+        const Test1 = { template: '<h1>Test1 Page</h1><p>This is the content of Test1 page.</p>' };
+        const Test2 = { template: '<h1>Test2 Page</h1><p>This is the content of Test2 page.</p>' };
+        const Test3 = { template: '<h1>Test3 Page</h1><p>This is the content of Test3 page.</p>' };
+        const Test4 = { template: '<h1>Test4 Page</h1><p>This is the content of Test4 page.</p>' };
 
-                    createApp({
-                        data() {
-                            return {
-                                items : [
-                                    { id: 1, value: 'Item 1' },
-                                    { id: 2, value: 'Item 2' },
-                                    { id: 3, value: 'Item 3' }
-                                ],
-                            }
-                        },
-                        methods: {
-                            addItem() {
-                                const newItem = { id: this.items.length + 1, value: `Item ${this.items.length + 1}` };
-                                this.items.push(newItem);
-                            }
-                        },
-                    }).mount('#wrap');
-                </script>
-                <!--
-                <script>
-                    function createSimpleComponent({ id, data }) {
-                        let currentData = [...data];
-                        const container = $(`#${id}`);
-                        const template = container.html();
-                        container.empty();
+        // 라우터 설정
+        const routes = [
+            { path: '/', component: Home },
+            { path: '/test1', component: Test1 },
+            { path: '/test2', component: Test2 },
+            { path: '/test3', component: Test3 },
+            { path: '/test4', component: Test4 }
+        ];
 
-                        const render = () => {
-                            if (container.length === 0) {
-                                console.error(`Container with id "${id}" not found.`);
-                                return;
-                            }
-                            
-                            const existingIds = new Set(container.find('[data-id]').map(function() {
-                                return $(this).data('id');
-                            }).get());
+        const router = createRouter({
+            history: createWebHistory(),
+            routes
+        });
 
-                            // Helper function to replace placeholders with actual data
-                            const populateTemplate = (template, data) => {
-                                console.log(typeof template);
-                                console.log('Template before replacement:', template);
-                                console.log('Data:', data);
+        // 메인 Vue 앱 생성 및 설정
+        const app = createApp({
+            data() {
+                return {
+                    currentUrl: window.location.pathname,
+                    navItems: [
+                        { url: '/', text: '홈', icon: 'home' },
+                        { url: '/test1', text: '동네생활', icon: 'tab_group' },
+                        { url: '/test2', text: '내 근처', icon: 'file_map' },
+                        { url: '/test3', text: '채팅', icon: 'chat' },
+                        { url: '/test4', text: '나의 당근', icon: 'person' },
+                    ]
+                };
+            },
+            watch: {
+                $route(to) {
+                    this.currentUrl = to.path;
+                }
+            }
+        });
 
-                                const result = template.replace(/\$\{(\w+)\}/g, (_, key) => data[key] || '');
-                
-                                console.log('Template after replacement:', result);
-                                return result;
-                            };
-                            
-                            // 신규 추가
-                            currentData.forEach(item => {
-                                if (!existingIds.has(item.id)) {
-                                    const html = populateTemplate(template, item);
-                                    console.log(html);
-                                    const element = $(html); // 템플릿에서 반환된 HTML을 jQuery 객체로 변환
-                                    container.append(element);
-                                }
-                                existingIds.delete(item.id);
-                            });
-                            
-                            // 제거된 항목들을 DOM에서 삭제
-                            existingIds.forEach(id => {
-                                container.find(`[data-id="${id}"]`).remove();
-                            });
-                        };
-                        
-                        const setData = (inputData) => {
-                            currentData = [...currentData, ...inputData];
-                            render();
-                        };
-                        
-                        // 초기 렌더링
-                        render();
-                        
-                        return { setData };
-                    }
-                </script>
-                <script>
-                    $(function(){
-                        var data = {
-                            text1: [{ id: 1, value: 'Hello, World!' }],
-                            text2: [{ id: 1, value: '안녕하세요, 세계!' }],
-                        };
+        // Vue Router 연결
+        app.use(router);
 
-                        // const template1 = (item) => {
-                        //     return `<span style="display: block" data-id="${item.id}">${item.value}</span>`;
-                        // };
-
-                        // const template2 = (item) => {
-                        //     return `<span style="display: block" data-id="${item.id}">${item.value}222222</span>`;
-                        // };
-
-                        const component1 = createSimpleComponent({
-                            id: 'text-container1',
-                            data: data.text1
-                        });
-
-                        // const component2 = createSimpleComponent({
-                        //     id: 'text-container2',
-                        //     data: data.text2
-                        // });
-
-                        // // 데이터 변경 테스트
-                        // setTimeout(function() {
-                        //     alert('데이터 변경 테스트1');
-                        //     const newArray1 = [
-                        //         { id: 2, value: '바보' },
-                        //         { id: 3, value: '멍청이' },
-                        //         { id: 4, value: '멍충이' }
-                        //     ];
-                        //     component1.setData(newArray1);
-                        // }, 2000);
-                        
-                        // setTimeout(function() {
-                        //     alert('데이터 변경 테스트2');
-                        //     const newArray2 = [
-                        //         { id: 2, value: 'New Text 1' },
-                        //         { id: 3, value: 'New Text 2' }
-                        //     ];
-                        //     component2.setData(newArray2);
-                        // }, 4000);
-
-                    })
-                </script>
-                -->
-
-                <script>
-                    /*
-                    class SimpleComponent {
-                        constructor({ id, template, data }) {
-                            this.id = id;
-                            this.template = template;
-                            this.data = data;
-
-                            this.render();
-                        }
-
-                        setData(inputData) {
-                            this.data = [...this.data, ...inputData];
-                            this.render();
-                        }
-
-                        render() {
-                            const container = $(`#${this.id}`);
-
-                            if (container.length === 0) {
-                                console.error(`Container with id "${this.id}" not found.`);
-                                return;
-                            }
-                            // 기존 항목들을 추적하여 업데이트
-                            const existingIds = new Set(container.find('[data-id]').map(function() {
-                                return $(this).data('id');
-                            }).get());
-                            
-                            console.log(existingIds);
-
-                            // 신규 추가
-                            this.data.forEach(item => {
-                                if (!existingIds.has(item.id)) {
-                                    const html = this.template(item);
-                                    const element = $(html); // 템플릿에서 반환된 HTML을 jQuery 객체로 변환
-                                    container.append(element);
-                                }
-                                existingIds.delete(item.id);
-                            });
-
-                            console.log(existingIds);
-
-                            // 제거된 항목들을 DOM에서 삭제
-                            existingIds.forEach(id => {
-                                container.find(`[data-id="${id}"]`).remove();
-                            });
-                        }
-                    }
-                     */
-                </script>
-                <script>
-                    /*
-                    $(function() {
-                        var data = {
-                            text1: [{ id: 1, value: 'Hello, World!' }],
-                            text2: [{ id: 1, value: '안녕하세요, 세계!' }],
-                        };
-
-                        const template1 = (item) => {
-                            return `<span style="display: block" data-id="${item.id}">${item.value}</span>`;
-                        };
-
-                        const template2 = (item) => {
-                            return `<span style="display: block" data-id="${item.id}">${item.value}222222</span>`;
-                        };
-
-                        const component1 = new SimpleComponent({
-                            id: 'text-container1',
-                            template: template1,
-                            data: data.text1
-                        });
-
-                        const component2 = new SimpleComponent({
-                            id: 'text-container2',
-                            template: template2,
-                            data: data.text2
-                        });
-
-                        // 데이터 변경 테스트
-                        setTimeout(function() {
-                            alert('데이터 변경 테스트1');
-                            const newArray1 = [
-                                { id: 2, value: '바보' },
-                                { id: 3, value: '멍청이' },
-                                { id: 4, value: '멍충이' }
-                            ];
-                            component1.setData(newArray1);
-                        }, 2000);
-                        
-                        setTimeout(function() {
-                            alert('데이터 변경 테스트2');
-                            const newArray2 = [
-                                { id: 2, value: 'New Text 1' },
-                                { id: 3, value: 'New Text 2' }
-                            ];
-                            component2.setData(newArray2);
-                        }, 4000);
-                    });
-                    */
-                </script>
-            </div>
-        </div>
-        <!-- //content -->
-    </div>
+        // Vue 인스턴스를 #main_wrap에 마운트
+        app.mount('#main_wrap');
+    </script>
 </body>
 </html>

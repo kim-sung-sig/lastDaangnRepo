@@ -1,9 +1,11 @@
 package com.demo.daangn.view;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -35,40 +37,14 @@ public class PageController {
         return "pages/login/login";
     }
 
-    /**
-     * 회원 가입 페이지
-     * @param model
-     * @return
-     */
-    @GetMapping("/signup")
-    public String signup(Model model){
-        return "pages/login/join";
-    }
-
-    @GetMapping("/test1")
-    public String test1(HttpServletRequest req, Model model) {
-        model.addAttribute("navUrl", req.getRequestURI());
-        return "pages/test1";
-    }
-
-    @GetMapping("/test2")
-    public String test2(HttpServletRequest req, Model model) {
-        model.addAttribute("navUrl", req.getRequestURI());
-        return "pages/test2";
-    }
-
-    @GetMapping("/test2/{id}")
-    public String test2Detail(HttpServletRequest req, Model model, @PathVariable("id") String id) {
-        model.addAttribute("navUrl", "/test2");
-        model.addAttribute("title", "title" + id);
-        model.addAttribute("id", id);
-        return "pages/test2Detail";
-    }
-
-    @GetMapping("/test3")
-    public String test3(HttpServletRequest req, Model model) {
-        model.addAttribute("navUrl", req.getRequestURI());
-        return "pages/test3";
+    @GetMapping("/api/user/status")
+    @ResponseBody
+    public Map<String, Boolean> userStatus(HttpSession session){
+        if(session.getAttribute("user") != null){
+            return Map.of("status", true);
+        } else {
+            return Map.of("status", false);
+        }
     }
 
     @GetMapping("/{path:[^\\.]*}")

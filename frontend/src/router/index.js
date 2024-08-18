@@ -10,6 +10,7 @@ const routes = [
         path: '/',
         name: 'Home',
         component: Home,
+        meta : { requiresAuth: true }
     },
     {
         path: '/login',
@@ -23,19 +24,29 @@ const router = createRouter({
     routes
 });
 
-// 네비게이션 가드 설정
-router.beforeEach((to, from, next) => {
-    // 라우트에 'requiresAuth' 메타 필드가 있는 경우
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        // 사용자 인증 상태를 확인
-        if (!store.getters.isAuthenticated) {
-            // 인증되지 않은 경우 로그인 페이지로 리디렉션
-            next('/login');
+router.beforeEach(async (to, from, next) => {
+    const isLoggedIn = store.getters.isAuthenticated; // Vuex에서 로그인 상태 확인
+
+    if (!isLoggedIn) {
+        const loginStatus = await store.dispatch('checkLoginStatus'); // 로그인 상태를 API로 확인
+
+        if (loginStatus) {
+            if (to.path === '/login') {
+                next('/');  // 이미 로그인한 경우 홈으로 리다이렉트
+            } else {
+                next();  // 다음 라우트로 이동
+            }
+
         } else {
-            next(); // 인증된 경우 원래의 경로로 이동
+            if (to.matched.some(record => record.meta.requiresAuth)) {
+                next('/login');  // 로그인 필요 라우트 접근 시 로그인 페이지로 리다이렉트
+            } else {
+                next();  // 로그인 필요하지 않은 페이지로 이동
+            }
         }
+
     } else {
-      next(); // 인증이 필요 없는 경로는 그냥 이동
+      next();  // 이미 로그인된 경우
     }
 });
 

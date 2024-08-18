@@ -55,6 +55,7 @@ public class SecurityConfig {
                 // user
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/check/**").permitAll() // 중복확인
+                .requestMatchers(HttpMethod.GET, "/api/user/status").permitAll() // 로그인 상태 확인
                 // usedBoard
                 .requestMatchers("/test1", "/test2", "/test3", "/test2/**").permitAll()
 
@@ -89,4 +90,5 @@ public class SecurityConfig {
         CorsConfigurationSource source = corsConfigurationSource();
         return new CorsFilter(source);
     }
+
 }

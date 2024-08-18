@@ -5,7 +5,6 @@
 </template>
 
 <script>
-
 import Feed from '@/components/FeedComp.vue';
 
 export default {
@@ -16,6 +15,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
 </style>>
