@@ -4,22 +4,25 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.demo.daangn.domain.chat.dto.request.ScrollRequest;
 import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
 import com.demo.daangn.domain.chat.service.ChatMessageService;
-import com.demo.daangn.global.dto.request.ScrollRequest;
 import com.demo.daangn.global.dto.response.PagingResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 채팅 메시지 컨트롤러
+ */
 @RestController
-@RequestMapping("/api/v1/users/{userId}/chats/{chatRoomId}/messages/")
+@RequestMapping("/api/v1/users/{userId}/chats/{chatRoomId}/messages/") // TODO : URL 수정
 @RequiredArgsConstructor
 public class ChatMessageController {
     
@@ -30,10 +33,10 @@ public class ChatMessageController {
     public ResponseEntity<PagingResponse< ChatMessageResponse >> getChatMessages(
         @PathVariable("userId") Long userId,
         @PathVariable("chatRoomId") Long chatRoomId,
-        @Valid @RequestBody ScrollRequest sc
+        @Valid @ModelAttribute ScrollRequest sc
     ) {
         try {
-            PagingResponse<ChatMessageResponse> res = chatMessageService.getChatMessages(chatRoomId, userId, sc.getLastItemId(), sc.getSize());
+            PagingResponse<ChatMessageResponse> res = chatMessageService.getChatMessages(chatRoomId, userId, sc.getLastItemId(), sc.getPageSize());
             return new ResponseEntity<>(res, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

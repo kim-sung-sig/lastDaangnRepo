@@ -21,6 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/users")
 public class DaangnUserController {
 
+    /**
+     * 사용자 전체 조회(관리자용)
+     * @return
+     */
     @GetMapping(value = "")
     public ResponseEntity<?> getAll() {
         try {
@@ -29,7 +33,12 @@ public class DaangnUserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
+    /**
+     * 사용자 단건 조회(관리자용)
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable Long id) {
         try {
@@ -38,7 +47,13 @@ public class DaangnUserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+    // TODO : 사용자 단건 조회(사용자용) API 추가
+
+    /**
+     * 회원가입
+     * @param signUpRequest
+     * @return
+     */
     @PostMapping()
     public ResponseEntity<?> create(@RequestBody SignUpRequest signUpRequest) {
         log.info("로그인 요청 => {}", signUpRequest);
@@ -48,7 +63,13 @@ public class DaangnUserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
+    /**
+     * 회원 정보 수정
+     * @param id
+     * @param dto
+     * @return
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody Object dto) {
         try {
@@ -57,6 +78,8 @@ public class DaangnUserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    // TODO : 사용자 단건 수정(사용자용) API 추가
+    // TODO : 사용자 다건 수정(관리자용) API 추가
     
     @DeleteMapping("/{id}")
     public ResponseEntity<?> destroy(@PathVariable Long id, HttpServletRequest request) {

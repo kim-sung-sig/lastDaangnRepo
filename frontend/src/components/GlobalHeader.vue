@@ -17,10 +17,10 @@ export default {
             currentUrl: window.location.pathname,
             navItems: [
                 { url: '/', text: '홈', icon: 'home' },
-                { url: '/test1', text: '동네생활', icon: 'tab_group' },
+                { url: '/life', text: '동네생활', icon: 'tab_group' },
                 { url: '/test2', text: '내 근처', icon: 'file_map' },
-                { url: '/test3', text: '채팅', icon: 'chat' },
-                { url: '/test4', text: '나의 당근', icon: 'person' },
+                { url: '/chats', text: '채팅', icon: 'chat' },
+                { url: '/test4', text: '나의 당근', icon: 'person' }, // 유저 nickname으로 변경하자
             ]
         }
     },
