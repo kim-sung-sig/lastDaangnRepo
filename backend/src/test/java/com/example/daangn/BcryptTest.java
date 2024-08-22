@@ -14,24 +14,24 @@ import jakarta.persistence.EntityNotFoundException;
 
 @SpringBootTest(classes = BackendApplication.class)
 public class BcryptTest {
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private DaangnUserRepository userRepository;
 
     @Test
-    void bcryptTest(){
-        DaangnUserEntity user = userRepository.findById(1L)
+        void bcryptTest(){
+        DaangnUserEntity dbuser = userRepository.findById(1L)
                 .orElseThrow(() -> new EntityNotFoundException());
 
-        user.setPassword(bCryptPasswordEncoder.encode("password1!"));
-        
-        userRepository.save(user);
-        DaangnUserEntity user2 = userRepository.findById(2L)
+        dbuser.updatePassword(bCryptPasswordEncoder.encode("password1!"));
+        userRepository.save(dbuser);
+
+        DaangnUserEntity dbuser2 = userRepository.findById(2L)
                 .orElseThrow(() -> new EntityNotFoundException());
 
-        user2.setPassword(bCryptPasswordEncoder.encode("password1!"));
-        
-        userRepository.save(user2);
+        dbuser2.updatePassword(bCryptPasswordEncoder.encode("password1!")); // setter 대신 update 메소드를 사용하여 변경 (이로서 SRP 원칙을 지킬 수 있다.)
+        userRepository.save(dbuser2);
     }
 }
