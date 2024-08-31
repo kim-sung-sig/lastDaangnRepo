@@ -13,8 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartRequest;
 
 import com.demo.daangn.global.util.file.FileStorageService;
 
@@ -26,9 +28,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/file")
 public class FileController {
 
-    //@Autowired
-    private final FileStorageService fileStorageService;
+    /*
+     * 파일 입출력을 담담하는 컨트롤러
+     */
 
+    private final FileStorageService fileStorageService;
 
     /**
      * 파일 읽기 주소
@@ -77,6 +81,12 @@ public class FileController {
         }
     }
 
+    /**
+     * 파일 스트리밍 주소
+     * @param fileName
+     * @param rangeHeader
+     * @return
+     */
     @GetMapping("/streaming/{fileName:.+}")
     public ResponseEntity<Resource> streamingFile(
         @PathVariable("fileName") String fileName,
@@ -132,5 +142,13 @@ public class FileController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // TODO
+    // 1. 파일 임시저장
+    // return randomKey
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadFile(MultipartRequest request) {
+        return null;
     }
 }

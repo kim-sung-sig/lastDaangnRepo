@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     *  FileNotFoundException handler (없는 파일일때)
+     *  FileStorageException handler (없는 파일일때)
      */
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<RsData< String >> handleFileNotFoundExceptions(FileStorageException ex) {

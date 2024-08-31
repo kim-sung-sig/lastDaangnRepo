@@ -18,6 +18,9 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseAuditEntity {
 
+    @Column(name = "isUsed", nullable = false, columnDefinition = "TINYINT(1) default 1")
+    private Integer isUsed;
+
     @CreatedDate
     @Column(name = "create_date", updatable = false)
     private LocalDateTime createDate;
@@ -25,5 +28,10 @@ public class BaseAuditEntity {
     @LastModifiedDate
     @Column(name = "modified_date")
     private LocalDateTime modifiedDate;
+
+
+    public void updateIsUsed(Integer isUsed) {
+        this.isUsed = isUsed;
+    }
 
 }

@@ -1,16 +1,12 @@
 package com.demo.daangn.domain.file.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.demo.daangn.domain.file.enums.FileEnums;
+import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -19,17 +15,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Table(name = "daangn_files")
+@Table(name = "daangn_temp_file")
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Data
-@Builder
-@NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
+@Getter
+@ToString(callSuper = true)
 @AllArgsConstructor
-public class FileEntity implements Serializable{
+@NoArgsConstructor
+@Builder
+public class FileEntity extends BaseAuditEntity implements Serializable  {
+
+    /*
+     * 백업용 데이터베이스 테이블?? 흠?? temp용으로 써야될꺼같은데?
+     */
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +59,5 @@ public class FileEntity implements Serializable{
 
     @Column(name = "file_size")
     private Long fileSize; // 파일의 크기 (바이트 단위)
-
-    @CreatedDate
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
 
 }

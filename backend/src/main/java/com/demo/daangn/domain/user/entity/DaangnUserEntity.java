@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Table(name = "my_users")
+@Table(name = "daangn_user")
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -40,29 +40,26 @@ public class DaangnUserEntity extends BaseAuditEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID uuid;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private String role;
 
-    @Column(name = "nick_name")
+    @Column(name = "nick_name", nullable = false)
     private String nickName; // seq
 
-    @Column(name = "nick_name_seq")
+    @Column(name = "nick_name_seq", nullable = false)
     private Long nickNameSeq;
 
-    @Column(name = "nick_name_seq_final")
+    @Column(name = "nick_name_seq_final", unique = true, nullable = false)
     private String nickNameSeqFinal;
 
     @Column(name = "user_profile")
     private String userProfile;
-
-    @Column(name = "isUsed")
-    private Integer isUsed;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<ChatRoomUserEntity> chatRoomUsers;
@@ -78,10 +75,6 @@ public class DaangnUserEntity extends BaseAuditEntity {
 
     public void updatePassword(String password) {
         this.password = password;
-    }
-
-    public void updateIsUsed(Integer isUsed) {
-        this.isUsed = isUsed;
     }
 
     public void updateNickName(String nickName) {
