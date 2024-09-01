@@ -2,13 +2,10 @@ package com.demo.daangn.domain.file.entity;
 
 import java.io.Serializable;
 
-import com.demo.daangn.domain.file.enums.FileEnums;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +25,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileEntity extends BaseAuditEntity implements Serializable  {
+public class FileTempEntity extends BaseAuditEntity implements Serializable  {
 
     /*
      * 백업용 데이터베이스 테이블?? 흠?? temp용으로 써야될꺼같은데?
@@ -38,17 +35,14 @@ public class FileEntity extends BaseAuditEntity implements Serializable  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 파일의 고유 ID
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "types", nullable = false)
-    private FileEnums types;
+    @Column(name = "random_key")
+    private String randomKey; // 파일의 랜덤 키
 
     @Column(name = "file_name")
     private String fileName; // 파일의 이름
     @Column(name = "file_origin_name")
     private String fileOriginName; // 원본 파일의 이름
 
-    @Column(name = "file_path")
-    private String filePath; // 파일의 경로 (/DATA/file/upload/)
     @Column(name = "file_url")
     private String fileUrl; // 파일의 URL (/api/v1/upload/{saveFileName})
 

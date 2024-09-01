@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 
 @Repository
-public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>, ChatRoomRepositoryCustom{
+public interface ChatRoomRepository extends JpaRepository<ChatRoomEntity, Long>, ChatRoomRepositoryCustom {
 
     @Query("SELECT c FROM ChatRoomEntity c WHERE c.id = :id")
     Optional<ChatRoomEntity> findById(@Param("id") Long id);

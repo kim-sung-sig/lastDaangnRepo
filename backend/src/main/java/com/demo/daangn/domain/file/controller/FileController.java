@@ -2,6 +2,7 @@ package com.demo.daangn.domain.file.controller;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.http.HttpRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartRequest;
 
-import com.demo.daangn.global.util.file.FileStorageService;
+import com.demo.daangn.domain.file.service.FileStorageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,6 @@ public class FileController {
         log.info("fileName => {}", fileName);
         try {
             Resource resource = fileStorageService.loadFileAsResource(fileName);
-
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
@@ -138,17 +138,15 @@ public class FileController {
         } catch (FileNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            log.debug("여기문제터짐,, {}", fileName);
-            e.printStackTrace();
+            log.error("Failed to load file : " + fileName, e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // TODO
     // 1. 파일 임시저장
     // return randomKey
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadFile(MultipartRequest request) {
+    public ResponseEntity<String> uploadFile(HttpRequest request, MultipartRequest multipartRequest) {
         return null;
     }
 }

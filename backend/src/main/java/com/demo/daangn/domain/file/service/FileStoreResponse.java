@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file;
+package com.demo.daangn.domain.file.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
