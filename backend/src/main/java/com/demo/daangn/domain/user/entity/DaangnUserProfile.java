@@ -1,6 +1,5 @@
 package com.demo.daangn.domain.user.entity;
 
-import com.demo.daangn.domain.file.entity.FileEntity;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
@@ -35,9 +34,6 @@ public class DaangnUserProfile extends BaseAuditEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private DaangnUserEntity user;
-
-    @JoinColumn(name = "file_id")
-    private FileEntity file;
 
     @Column(name = "file_url")
     private String fileUrl;

@@ -1,7 +1,6 @@
 package com.demo.daangn.domain.chat.service;
 
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -83,29 +82,27 @@ public class ChatService {
             return chatRoomId;
         }
         // 없으면 새로운 채팅방 생성!
-        ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
-        chatRoomEntity.setChatRoomCd(UUID.randomUUID().toString());
-        chatRoomEntity.setCreateDate(LocalDateTime.now());
-        chatRoomEntity.setModifiedDate(LocalDateTime.now());
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.builder()
+                .chatRoomCd(UUID.randomUUID().toString())
+                .build();
         chatRoomRepository.save(chatRoomEntity);
         
         List<ChatRoomUserEntity> savedEntity = new ArrayList<>();
-        savedEntity.add( // 1. 방장
-            ChatRoomUserEntity.builder()
+
+        ChatRoomUserEntity creater = ChatRoomUserEntity.builder()
                 .chatRoom(chatRoomEntity)
                 .pointer(0L)
                 .user(user1)
-                .isUsed(1)
-                .build()
-        );
-        savedEntity.add( // 2. 참가자
-            ChatRoomUserEntity.builder()
+                .build();
+        savedEntity.add(creater);
+
+        ChatRoomUserEntity joiner = ChatRoomUserEntity.builder()
                 .chatRoom(chatRoomEntity)
                 .pointer(0L)
                 .user(user2)
-                .isUsed(0)
-                .build()
-        );
+                .build();
+        joiner.setIsUsed(0);
+        savedEntity.add(joiner);
         chatRoomUserRepository.saveAll(savedEntity);
 
         // return
@@ -227,7 +224,7 @@ public class ChatService {
     }
 
     // 3. 채팅방 커스텀하기(put) //TODO request 추가 일단 여기는 채팅방 이름만 변경 나중에 추후 변경
-    public Boolean updateChatRoom(Long userId, Long chatRoomId, ChatRoomUpdateRequest req) throws EntityNotFoundException {
+    public Boolean updateChatRoom(Long userId, Long chatRoomId, ChatRoomUpdateRequest updateReq) throws EntityNotFoundException {
         chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
@@ -242,7 +239,7 @@ public class ChatService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
 
-        chatRoomUser.setChatRoomName(req.getChatRoomName());
+        chatRoomUser.updateChatRoomName(updateReq.getChatRoomName());
         // 여기서 계속 추가되는 방향으로
         chatRoomUserRepository.save(chatRoomUser);
 

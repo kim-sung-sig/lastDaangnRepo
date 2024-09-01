@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.service;
+package com.demo.daangn.domain.file.dto.response;
 
 import java.util.List;
 

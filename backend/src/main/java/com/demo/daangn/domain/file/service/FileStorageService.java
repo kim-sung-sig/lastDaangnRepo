@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
+import com.demo.daangn.domain.file.dto.response.FileStoreTempResponse;
+import com.demo.daangn.domain.file.entity.FileTempEntity;
+import com.demo.daangn.domain.file.repository.FileTempRepository;
 import com.demo.daangn.global.exception.AuthException;
 import com.demo.daangn.global.exception.FileStorageException;
 import com.demo.daangn.global.util.file.CustomFileUtil;
@@ -28,8 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class FileStorageService {
 
+    private final FileTempRepository fileTempRepository;
+
     private final Path fileStorageLocation;
     private final Path tempRootLocation;
+
 
     private final String RANDOM_KEY_PREFIX = "V1_";
 
@@ -41,11 +47,10 @@ public class FileStorageService {
      * @param tempDir
      * @throws Exception
      */
-    public FileStorageService(@Value("${custom.fileDirPath}") String uploadDir,
-                              @Value("${custom.fileTempDirPath}") String tempDir) throws FileStorageException {
+    public FileStorageService(@Value("${custom.fileDirPath}") String uploadDir, @Value("${custom.fileTempDirPath}") String tempDir, FileTempRepository fileTempRepository) throws FileStorageException {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         this.tempRootLocation = Paths.get(tempDir).toAbsolutePath().normalize();
-
+        this.fileTempRepository = fileTempRepository;
         try {
             CustomFileUtil.createDirectoryIfNotExists(this.fileStorageLocation);
             CustomFileUtil.createDirectoryIfNotExists(this.tempRootLocation);
@@ -92,8 +97,8 @@ public class FileStorageService {
             List<String> savedFileNames = new ArrayList<>();
             for (MultipartFile file : files) {
                 validateFile(file);
-                Long fileId = saveRandomKeyInDatabase(randomKey, file); // DB 저장
                 String savedFileName = CustomFileUtil.storeFile(randomTempDir, file);
+                Long fileId = saveRandomKeyInDatabase(randomKey, savedFileName, file); // DB 저장
                 fileIds.add(fileId);
                 savedFileNames.add(savedFileName);
             }
@@ -116,13 +121,24 @@ public class FileStorageService {
         }
     }
 
-    private Long saveRandomKeyInDatabase(String randomKey, MultipartFile file) throws FileStorageException {
+    private Long saveRandomKeyInDatabase(String randomKey, String savedFileName, MultipartFile file) throws FileStorageException {
         try {
-            // RandomKeyEntity randomKeyEntity = new RandomKeyEntity();
-            // randomKeyEntity.setKey(randomKey);
-            // RandomKeyEntity savedEntity = randomKeyRepository.save(randomKeyEntity);
-            // return savedEntity.getId();
-            return 1L;
+            String fileName = file.getOriginalFilename();
+            Long fileSize = file.getSize();
+            String fileType = file.getContentType();
+            String fileExt = CustomFileUtil.getFileExtension(fileName);
+
+            FileTempEntity fileTempEntity = FileTempEntity.builder()
+                    .randomKey(randomKey)
+                    .fileName(savedFileName)
+                    .fileOriginName(fileName)
+                    .fileType(fileType)
+                    .fileExt(fileExt)
+                    .fileSize(fileSize)
+                    .build();
+
+            return fileTempRepository.save(fileTempEntity).getId();
+
         } catch (Exception e) {
             log.error("Failed to save random key in database.", e);
             throw new FileStorageException("Failed to save random key in database.", e);

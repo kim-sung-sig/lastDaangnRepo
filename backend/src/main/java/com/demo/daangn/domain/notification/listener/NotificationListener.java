@@ -24,8 +24,7 @@ public class NotificationListener {
     @EventListener
     public void handleChatMessageEvent(ChatMessageEvent event) {
         ChatMessageResponse response = event.getMessageResponse();
-        ChatRoomEntity chatRoomEntity = new ChatRoomEntity();
-        chatRoomEntity.setId(response.getChatRoomId());
+        ChatRoomEntity chatRoomEntity = ChatRoomEntity.builder().id(response.getChatRoomId()).build();
 
         List<Long> receivedUserIds = chatRoomUserRepository.findUserIdByChatRoom(chatRoomEntity);
         receivedUserIds.removeIf(num -> num.equals(response.getSender()));

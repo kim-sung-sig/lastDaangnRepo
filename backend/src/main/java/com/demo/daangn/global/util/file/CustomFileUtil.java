@@ -204,4 +204,21 @@ public class CustomFileUtil {
                 .trim();
 	}
 
+    /**
+     * Extracts the file extension from a given file name.
+     * @param fileName the name of the file
+     * @return the file extension, or an empty string if no extension is found
+     */
+    public static String getFileExtension(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
+
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == fileName.length() - 1) {
+            return "";
+        }
+
+        return fileName.substring(lastDotIndex + 1).toLowerCase();
+    }
 }
