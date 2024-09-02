@@ -22,7 +22,6 @@ import com.demo.daangn.global.exception.AuthException;
 import com.demo.daangn.global.exception.FileStorageException;
 import com.demo.daangn.global.util.file.CustomFileUtil;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,7 +79,7 @@ public class FileStorageService {
      * @throws FileStorageException
      * @throws Exception
      */
-    public FileStoreTempResponse saveTempFile(HttpServletRequest request, MultipartRequest multipartRequest) throws FileStorageException {
+    public FileStoreTempResponse saveTempFile(MultipartRequest multipartRequest) throws FileStorageException {
         try {
             // 1. 랜덤키 생성
             String randomKey = RANDOM_KEY_PREFIX + UUID.randomUUID().toString() + "_" + System.currentTimeMillis();

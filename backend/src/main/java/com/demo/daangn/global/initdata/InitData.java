@@ -27,7 +27,6 @@ public class InitData {
                     .nickName("테스트계정1")
                     .nickNameSeq(1L)
                     .nickNameSeqFinal("테스트계정1#1")
-                    .role("ROLE_USER")
                     .build();
 
             DaangnUserEntity user2 = DaangnUserEntity.builder()
@@ -37,7 +36,6 @@ public class InitData {
                     .nickName("테스트계정2")
                     .nickNameSeq(1L)
                     .nickNameSeqFinal("테스트계정2#1")
-                    .role("ROLE_USER")
                     .build();
             
             List<DaangnUserEntity> users = List.of(user1, user2);

@@ -1,5 +1,6 @@
 package com.demo.daangn.domain.file.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,7 @@ public interface FileTempRepository extends JpaRepository<FileTempEntity, Long>,
     List<FileTempEntity> findByRandomKey(String randomKey);
 
     void deleteByRandomKey(String randomKey);
+
+    List<FileTempEntity> findByIsUsedAndCreateDateBefore(Integer isUsed, LocalDateTime createDate);
 
 }

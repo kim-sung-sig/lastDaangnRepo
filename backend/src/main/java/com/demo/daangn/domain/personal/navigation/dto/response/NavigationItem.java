@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.config.dto.response;
+package com.demo.daangn.domain.personal.navigation.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,36 +1,37 @@
 package com.demo.daangn.domain.notification.entity;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Table(name = "notifications")
+@Table(
+    name = "daangn_notifications",
+    indexes = {
+        @Index(name = "idx_daangn_notifications_user_id", columnList = "user_id")})
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Data
-@Builder
-@NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Getter
 @AllArgsConstructor
-public class NotificationEntity {
+@NoArgsConstructor
+@Builder
+public class NotificationEntity extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,16 +46,5 @@ public class NotificationEntity {
 
     @Column(name = "is_readed")
     private Integer isReaded;
-
-    @Column(name = "is_used")
-    private Integer isUsed; // 삭제여부
-
-    @CreatedDate
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @LastModifiedDate
-    @Column(name = "modifed_date")
-    private LocalDateTime modifiedDate;
 
 }

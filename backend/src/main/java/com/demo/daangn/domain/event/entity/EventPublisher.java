@@ -1,31 +1,33 @@
 package com.demo.daangn.domain.event.entity;
 
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Table(
+    name = "event_publisher",
+    indexes = {
+        @Index(name = "idx_event_publisher_published", columnList = "published")})
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "event_publisher")
-@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EventPublisher {
+public class EventPublisher extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,11 +38,5 @@ public class EventPublisher {
 
     @Column(columnDefinition = "json")
     private String content;
-
-    @CreatedDate
-    private LocalDateTime createdDate;
-
-    @LastModifiedDate
-    private LocalDateTime modifiedDate;
 
 }

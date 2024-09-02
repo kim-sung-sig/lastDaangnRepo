@@ -13,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Table(name = "daangn_user")
+@Table(
+    name = "daangn_user",
+    indexes = {
+        @Index(name = "idx_daangn_user_username", columnList = "username"),
+        @Index(name = "idx_daangn_user_uuid", columnList = "uuid"),
+        @Index(name = "idx_daangn_user_nick_name", columnList = "nick_name"),
+        @Index(name = "idx_daangn_user_nick_name_seq", columnList = "nick_name_seq"),
+        @Index(name = "idx_daangn_user_nick_name_seq_final", columnList = "nick_name_seq_final")})
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter

@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Table(name = "chat_room")
+@Table(name = "daangn_chat_room")
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter

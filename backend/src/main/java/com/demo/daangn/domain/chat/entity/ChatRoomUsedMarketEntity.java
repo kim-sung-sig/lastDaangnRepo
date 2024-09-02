@@ -1,9 +1,10 @@
 package com.demo.daangn.domain.chat.entity;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.usedmarket.entity.UsedMarketEntity;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,10 +20,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Table(
-    name = "daangn_chat_message",
+    name = "chat_room_used_market_map",
     indexes = {
-        @Index(name = "idx_daangn_chat_message_room_id", columnList = "roomId"),
-        @Index(name = "idx_daangn_chat_message_sender", columnList = "sender")})
+        @Index(name = "idx_chat_room_used_market_id", columnList = "used_market_id"),
+        @Index(name = "idx_chat_room_used_market_id", columnList = "chat_room_id")})
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -30,24 +31,18 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatMessageEntity extends BaseAuditEntity {
+public class ChatRoomUsedMarketEntity extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "roomId", nullable = false)
-    private ChatRoomEntity room;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "used_market_id", nullable = false)
+    private UsedMarketEntity usedMarket;
 
-    @ManyToOne
-    @JoinColumn(name = "sender", nullable = false)
-    private DaangnUserEntity sender;
-
-    private Integer types;
-
-    private String content; // 파일저장시 여기에 파일 경로.. // 일정일시 여기에 YYYY-MM-DD HH:mm:ss
-
-    private Integer readed;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id", nullable = false)
+    private ChatRoomEntity chatRoom;
 
 }

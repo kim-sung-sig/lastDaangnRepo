@@ -2,7 +2,6 @@ package com.demo.daangn.domain.file.controller;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.net.http.HttpRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -19,8 +18,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartRequest;
 
+import com.demo.daangn.domain.file.dto.response.FileStoreTempResponse;
 import com.demo.daangn.domain.file.service.FileStorageService;
+import com.demo.daangn.global.dto.response.RsData;
+import com.demo.daangn.global.exception.AuthException;
+import com.demo.daangn.global.exception.FileStorageException;
+import com.demo.daangn.global.util.common.CommonUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 @Controller
@@ -144,9 +149,26 @@ public class FileController {
     }
 
     // 1. 파일 임시저장
-    // return randomKey
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadFile(HttpRequest request, MultipartRequest multipartRequest) {
-        return null;
+    public ResponseEntity<RsData< FileStoreTempResponse >> uploadFile(HttpServletRequest request, MultipartRequest multipartRequest) {
+        try {
+            CommonUtil.getUser(request); // 로그인 확인
+
+            // 임시 파일 저장 및 randomKey 생성
+            FileStoreTempResponse fileStoreTempResponse = fileStorageService.saveTempFile(multipartRequest);
+
+            // randomKey 반환
+            return new ResponseEntity<>(RsData.of("ok", fileStoreTempResponse), HttpStatus.OK);
+
+        } catch (AuthException e) {
+            // 인증 실패 시 401 응답
+            return new ResponseEntity<>(RsData.of("Unauthorized"), HttpStatus.UNAUTHORIZED);
+        } catch (FileStorageException e) {
+            // 파일 저장 실패 시 500 응답
+            return new ResponseEntity<>(RsData.of("File storage failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            // 기타 예외 발생 시 500 응답
+            return new ResponseEntity<>(RsData.of("An unexpected error occurred: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

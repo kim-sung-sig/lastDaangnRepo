@@ -1,48 +1,48 @@
 package com.demo.daangn.domain.usedmarket.entity;
 
-import java.time.LocalDateTime;
+import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
-@Table(name = "미정")
+@Table(
+    name = "user_used_market_like_map",
+    indexes = {
+        @Index(name = "idx_daangn_user_used_market_like_user_id", columnList = "user_id"),
+        @Index(name = "idx_daangn_user_used_market_like_used_market_id", columnList = "used_market_id")})
 @Entity
-@EntityListeners(AuditingEntityListener.class)
-@Data
-@Builder
-@NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@Getter
 @AllArgsConstructor
-public class User_UsedMarketLikeEntity {
+@NoArgsConstructor
+@Builder
+public class User_UsedMarketLikeEntity extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Long userId;
+    private DaangnUserEntity user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_market_id", nullable = false)
-    private Long usedMarketId;
+    private UsedMarketEntity usedMarket;
 
-    @CreatedDate
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @LastModifiedDate
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 }

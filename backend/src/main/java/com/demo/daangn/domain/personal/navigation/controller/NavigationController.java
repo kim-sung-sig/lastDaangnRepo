@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.config.controller;
+package com.demo.daangn.domain.personal.navigation.controller;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.daangn.domain.config.dto.response.NavigationItem;
+import com.demo.daangn.domain.personal.navigation.dto.response.NavigationItem;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -18,7 +19,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Table(name = "chat_room_user")
+@Table(
+    name = "user_chat_room_map",
+    indexes = {
+        @Index(name = "idx_user_chat_room_user_id", columnList = "user_id"),
+        @Index(name = "idx_user_chat_room_chat_room_id", columnList = "chat_room_id")})
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter
