@@ -12,7 +12,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.demo.daangn.domain.file.entity.FileTempEntity;
@@ -35,7 +34,7 @@ public class FileCleanupTasklet implements Tasklet {
     }
 
     @Override
-    public RepeatStatus execute(@NonNull StepContribution contribution, @NonNull ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
 
         // 1. 1시간 이상 된 isUsed=0인 파일 목록 조회

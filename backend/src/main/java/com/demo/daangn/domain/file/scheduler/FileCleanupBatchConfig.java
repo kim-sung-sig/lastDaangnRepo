@@ -10,7 +10,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class FileCleanupBatchConfig {
     JobExecutionListener fileCleanupTimeListener() {
         return new JobExecutionListener() {
             @Override
-            public void beforeJob(@NonNull JobExecution jobExecution) { // null 은 안뜸
+            public void beforeJob(JobExecution jobExecution) { // null 은 안뜸
                 startTime = System.currentTimeMillis();
                 log.info("-----------------------------------------------");
                 log.info("-File cleanup job started");
@@ -41,7 +40,7 @@ public class FileCleanupBatchConfig {
             }
 
             @Override
-            public void afterJob(@NonNull JobExecution jobExecution) { // null 은 안뜸
+            public void afterJob(JobExecution jobExecution) { // null 은 안뜸
                 long endTime = System.currentTimeMillis();
                 log.info("File cleanup job finished at: " + endTime);
                 log.info("File cleanup job took: " + (endTime - startTime) + "ms");

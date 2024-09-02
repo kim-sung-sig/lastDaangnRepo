@@ -30,7 +30,6 @@ public class BaseAuditEntity {
     @Column(name = "modified_date")
     private LocalDateTime modifiedDate;
 
-
     public void updateIsUsed(Integer isUsed) {
         this.isUsed = isUsed;
     }

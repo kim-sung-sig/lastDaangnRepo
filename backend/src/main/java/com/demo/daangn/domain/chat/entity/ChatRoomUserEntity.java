@@ -5,6 +5,7 @@ import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,15 +38,15 @@ public class ChatRoomUserEntity extends BaseAuditEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_Id", nullable = false)
     private DaangnUserEntity user;
 
-    @ManyToOne
-    @JoinColumn(name = "chatRoom_Id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_Id", nullable = false)
     private ChatRoomEntity chatRoom;
 
-    @Column(name = "chatRorm_name")
+    @Column(name = "chat_room_name")
     private String chatRoomName; // 유저마다 채팅방 이름을 바꿀수 있게..
 
     @Column(name = "pointer")

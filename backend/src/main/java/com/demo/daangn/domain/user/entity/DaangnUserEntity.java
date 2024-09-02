@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 @Table(
     name = "daangn_user",
@@ -38,6 +40,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Slf4j
 public class DaangnUserEntity extends BaseAuditEntity {
 
     @Id
@@ -45,7 +48,7 @@ public class DaangnUserEntity extends BaseAuditEntity {
     private Long id;
 
     @Column(name = "uuid", unique = true, nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    // @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID uuid;
 
     @Column(name = "username", unique = true, nullable = false)
@@ -75,6 +78,18 @@ public class DaangnUserEntity extends BaseAuditEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<NotificationEntity> notifications;
 
+    @PrePersist
+    private void prePersist() {
+        log.debug("prePersist");
+        if (this.uuid == null) {
+            this.uuid = UUID.randomUUID();
+        }
+        log.debug("prePersist uuid: {}", this.uuid);
+        if (this.getIsUsed() == null) {
+            this.setIsUsed(1);
+        }
+        log.debug("prePersist isUsed: {}", this.getIsUsed());
+    }
 
     public void updateProfile(String nickName, String userProfile) {
         this.nickName = nickName;
