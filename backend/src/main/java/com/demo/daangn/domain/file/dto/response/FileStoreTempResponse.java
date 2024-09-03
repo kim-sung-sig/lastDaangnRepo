@@ -17,4 +17,6 @@ public class FileStoreTempResponse {
 
     private List<Long> fileIds;
 
+    private List<String> fileUrls;
+
 }

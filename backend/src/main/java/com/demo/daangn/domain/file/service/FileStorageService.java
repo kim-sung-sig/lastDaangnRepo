@@ -37,8 +37,8 @@ public class FileStorageService {
 
 
     private final String RANDOM_KEY_PREFIX = "V1_";
-
     private final String FILE_REQUEST_PARAM = "file";
+    private final String BASE_URL = "/api/v1/file/upload/";
 
     /**
      * 생성자
@@ -66,7 +66,24 @@ public class FileStorageService {
      * @throws FileNotFoundException
      */
     public Resource loadFileAsResource(String fileName) throws FileNotFoundException {
-        return CustomFileUtil.getFileResource(fileStorageLocation, fileName);
+        return loadFileAsResource(null, fileName);
+    }
+
+    public Resource loadFileAsResource(String dirName, String fileName) throws FileNotFoundException {
+        Path path = (dirName == null || dirName.isEmpty()) ? fileStorageLocation : fileStorageLocation.resolve(dirName);
+        return CustomFileUtil.getFileResource(path, fileName);
+    }
+
+    /**
+     * 임시파일 읽기
+     * @param randomKey
+     * @param fileName
+     * @return
+     * @throws FileNotFoundException
+     */
+    public Resource loadTempFileAsResource(String randomKey, String fileName) throws FileNotFoundException {
+        Path randomKeyTempDir = tempRootLocation.resolve(randomKey);
+        return CustomFileUtil.getFileResource(randomKeyTempDir, fileName);
     }
 
     // insert
@@ -93,18 +110,21 @@ public class FileStorageService {
             }
 
             List<Long> fileIds = new ArrayList<>();
-            List<String> savedFileNames = new ArrayList<>();
+            List<String> fileUrls = new ArrayList<>();
             for (MultipartFile file : files) {
                 validateFile(file);
                 String savedFileName = CustomFileUtil.storeFile(randomTempDir, file);
                 Long fileId = saveRandomKeyInDatabase(randomKey, savedFileName, file); // DB 저장
+                String fileUrl = BASE_URL + randomKey + "/" + savedFileName;
+
                 fileIds.add(fileId);
-                savedFileNames.add(savedFileName);
+                fileUrls.add(fileUrl);
             }
 
             return FileStoreTempResponse.builder()
                     .randomKey(randomKey)
                     .fileIds(fileIds)
+                    .fileUrls(fileUrls)
                     .build();
 
         } catch (Exception e) {

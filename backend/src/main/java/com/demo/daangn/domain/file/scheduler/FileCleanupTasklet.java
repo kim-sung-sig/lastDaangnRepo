@@ -35,11 +35,14 @@ public class FileCleanupTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+        log.info("===============================================");
+        log.info("fileCleanupTasklet started");
+        log.info("===============================================");
         LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
 
         // 1. 1시간 이상 된 isUsed=0인 파일 목록 조회
         List<FileTempEntity> filesToDelete = fileTempRepository.findByIsUsedAndCreateDateBefore(0, oneHourAgo);
-        log.info("Files to delete: " + filesToDelete.size());
+        log.debug("Files to delete: " + filesToDelete.size());
         List<String> randomKeys = filesToDelete.stream()
                 .map(FileTempEntity::getRandomKey)
                 .distinct()

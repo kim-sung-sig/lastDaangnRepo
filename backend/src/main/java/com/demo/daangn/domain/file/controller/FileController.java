@@ -26,6 +26,8 @@ import com.demo.daangn.global.exception.FileStorageException;
 import com.demo.daangn.global.util.common.CommonUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 @Controller
@@ -41,15 +43,18 @@ public class FileController {
     private final FileStorageService fileStorageService;
 
     /**
-     * 파일 읽기 주소
+     * 임시 파일 읽기 주소
      * @param fileName
      * @return
      */
-    @GetMapping("/upload/{fileName:.+}")
-    public ResponseEntity< Resource > viewMedia(@PathVariable("fileName") String fileName) {
-        log.info("fileName => {}", fileName);
+    @GetMapping("/upload/{randomKey}/{fileName:.+}")
+    public ResponseEntity< Resource > viewTempMedia(HttpServletRequest request,
+                                                    @Valid @NotEmpty @PathVariable("randomKey") String randomKey,
+                                                    @Valid @NotEmpty @PathVariable("fileName") String fileName) {
+        log.debug("randomeKey => {}", randomKey);
+        log.debug("fileName => {}", fileName);
         try {
-            Resource resource = fileStorageService.loadFileAsResource(fileName);
+            Resource resource = fileStorageService.loadTempFileAsResource(randomKey, fileName);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
@@ -58,6 +63,39 @@ public class FileController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.debug("여기문제터짐,, {}", fileName);
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 파일 읽기 주소
+     * @param request
+     * @param fileName
+     * @return
+     */
+    @GetMapping("/uploaded/dir/**")
+    public ResponseEntity< Resource > viewMedia2(HttpServletRequest request) {
+        try {
+            // `/uploaded/` 이후의 전체 경로를 가져옴
+            String fullPath = request.getRequestURI().substring("/uploaded/dir/".length());
+            log.debug("fullPath => {}", fullPath);
+
+            // fileName을 제외한 경로 추출
+            String targetDirs = fullPath.substring(0, fullPath.lastIndexOf("/"));
+            String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+            log.debug("targetDirs => {}", targetDirs);
+
+            // 파일 로드
+            Resource resource = fileStorageService.loadFileAsResource(targetDirs, fileName);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+
+        } catch (FileNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            log.debug("여기문제터짐");
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
