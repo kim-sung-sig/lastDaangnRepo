@@ -24,7 +24,7 @@ public class FileCleanupJobScheduler {
     private final Job fileCleanupJob;
 
     @Scheduled(cron = "0 */1 * * * ?") // 테스트용 5분 마다 실행
-    // @Scheduled(cron = "0 0 * * * ?") // 매시간 정각에 실행
+    // @Scheduled(cron = "0 0 */2 * * ?") // 매시간 정각에 실행
     public void runFileCleanupJob() {
         try {
             JobParameters params = new JobParametersBuilder()

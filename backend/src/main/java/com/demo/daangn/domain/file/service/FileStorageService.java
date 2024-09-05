@@ -46,7 +46,11 @@ public class FileStorageService {
      * @param tempDir
      * @throws Exception
      */
-    public FileStorageService(@Value("${custom.fileDirPath}") String uploadDir, @Value("${custom.fileTempDirPath}") String tempDir, FileTempRepository fileTempRepository) throws FileStorageException {
+    public FileStorageService(
+            @Value("${custom.fileDirPath}") String uploadDir,
+            @Value("${custom.fileTempDirPath}") String tempDir,
+            FileTempRepository fileTempRepository) throws FileStorageException {
+
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         this.tempRootLocation = Paths.get(tempDir).toAbsolutePath().normalize();
         this.fileTempRepository = fileTempRepository;
@@ -155,6 +159,7 @@ public class FileStorageService {
                     .fileExt(fileExt)
                     .fileSize(fileSize)
                     .build();
+            fileTempEntity.setIsUsed(0);
 
             return fileTempRepository.save(fileTempEntity).getId();
 
@@ -174,7 +179,7 @@ public class FileStorageService {
      * @throws FileStorageException
      */
     @Transactional
-    public void saveFiles(String randomKey) throws FileStorageException {
+    public void saveFiles(String randomKey, String dirName) throws FileStorageException {
         try {
             // 1. 랜덤키 유효성 검증
             if (randomKey == null || randomKey.isEmpty() || !randomKey.startsWith(RANDOM_KEY_PREFIX)) {
@@ -182,8 +187,10 @@ public class FileStorageService {
             }
 
             // 2. 랜덤키 DB 검증
-            // RandomKeyEntity randomKeyEntity = randomKeyRepository.findByKey(randomKey)
-            //         .orElseThrow(() -> new FileStorageException("Random key not found: " + randomKey));
+            List<FileTempEntity> randomKeyChecker = fileTempRepository.findByRandomKey(randomKey);
+            if(randomKeyChecker == null || randomKeyChecker.isEmpty()) {
+                throw new FileStorageException("Random key not found: " + randomKey);
+            }
 
             // 3. DB 수정 (isUsed = 1)
             // updateRandomKey(randomKey);
@@ -193,7 +200,8 @@ public class FileStorageService {
             if(!Files.exists(randomKeyTempDir) || !Files.isDirectory(randomKeyTempDir)) {
                 throw new FileStorageException("Temporary directory does not exist: " + randomKeyTempDir.toString());
             }
-            moveFiles(randomKeyTempDir, fileStorageLocation);
+            Path targetDir = (dirName == null || dirName.isEmpty()) ? fileStorageLocation : fileStorageLocation.resolve(dirName);
+            moveFiles(randomKeyTempDir, targetDir);
 
         } catch (Exception e) {
             log.error("Failed to save files.", e);
