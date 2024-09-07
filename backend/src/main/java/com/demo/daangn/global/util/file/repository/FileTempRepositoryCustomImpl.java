@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.repository;
+package com.demo.daangn.global.util.file.repository;
 
 import org.springframework.stereotype.Repository;
 

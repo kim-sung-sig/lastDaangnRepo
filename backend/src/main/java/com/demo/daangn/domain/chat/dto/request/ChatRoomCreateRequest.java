@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatRoomCreateRequest {
 
-    private Long userId; // 일단 유저 id만
+    private Long targetUserId; // 일단 유저 id만
 
     //TODO 중고거래 채팅방도 받는다.
 }

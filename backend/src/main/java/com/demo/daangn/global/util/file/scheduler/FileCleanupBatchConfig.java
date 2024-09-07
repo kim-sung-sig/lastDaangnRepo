@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.scheduler;
+package com.demo.daangn.global.util.file.scheduler;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;

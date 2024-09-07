@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.service;
+package com.demo.daangn.global.util.file.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
-import com.demo.daangn.domain.file.dto.response.FileStoreTempResponse;
-import com.demo.daangn.domain.file.entity.FileTempEntity;
-import com.demo.daangn.domain.file.repository.FileTempRepository;
 import com.demo.daangn.global.exception.AuthException;
 import com.demo.daangn.global.exception.FileStorageException;
-import com.demo.daangn.global.util.file.CustomFileUtil;
+import com.demo.daangn.global.util.file.dto.response.FileStoreTempResponse;
+import com.demo.daangn.global.util.file.entity.FileTempEntity;
+import com.demo.daangn.global.util.file.repository.FileTempRepository;
+import com.demo.daangn.global.util.file.util.CustomFileUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

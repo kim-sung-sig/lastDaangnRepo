@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file;
+package com.demo.daangn.global.util.file.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;

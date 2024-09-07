@@ -10,112 +10,79 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.daangn.domain.chat.dto.request.ChatRoomCreateRequest;
-import com.demo.daangn.domain.chat.dto.request.ChatRoomUpdateRequest;
-import com.demo.daangn.domain.chat.dto.response.ChatRoomResponse;
-import com.demo.daangn.domain.chat.service.ChatService;
+import com.demo.daangn.domain.chat.service.ChatRoomService;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.DaangnUserRepository;
-import com.demo.daangn.global.dto.response.PagingResponse;
-import com.demo.daangn.global.dto.response.RsData;
+import com.demo.daangn.global.util.common.CommonUtil;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-@RequiredArgsConstructor
+@Slf4j
 @RestController
-@RequestMapping("/api/v1/users/{userId}/chats")
+@RequestMapping("/api/v1/daangn/chats")
+@RequiredArgsConstructor
 public class ChatController {
 
-    private final ChatService chatService;
-    private final DaangnUserRepository daangnUserRepository;
+    private final ChatRoomService chatRoomService;
 
-    // 1. 채팅방 목록가져오기
+    // 채팅방 목록 조회
     @GetMapping()
-    public ResponseEntity<PagingResponse< ChatRoomResponse >> getChatRooms(HttpSession session,
-        @PathVariable("userId") Long userId
-    ) {
+    public ResponseEntity<?> getChatRoomList(HttpServletRequest request) {
         try {
-            DaangnUserEntity sessionUser = (DaangnUserEntity) session.getAttribute("user");
-            DaangnUserEntity requestUser = daangnUserRepository.findById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 사용자가 없습니다."));
-            if(sessionUser.getId() != requestUser.getId()) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+            DaangnUserEntity user = CommonUtil.getUser(request);
+            Long userId = user.getId();
 
-            return new ResponseEntity<>(chatService.getChatRooms(userId), HttpStatus.OK);
+            //chatRoomService.getChatRoomList(userId);
+            return new ResponseEntity<>("GetAll Results", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // 2. 채팅방 입장하기 & 채팅방 커스텀 정보 가져오기
-    @GetMapping("/{chatRoomId}")
-    public ResponseEntity<RsData< ChatRoomResponse >> getChatRoom(HttpSession session,
-        @PathVariable("userId") Long userId,
-        @PathVariable("chatRoomId") Long chatRoomId
-    ) {
-        try {
-            DaangnUserEntity sessionUser = (DaangnUserEntity) session.getAttribute("user");
-            DaangnUserEntity requestUser = daangnUserRepository.findById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("해당 사용자가 없습니다."));
-            if(sessionUser.getId() != requestUser.getId()) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-            if(!chatService.isAvailableChatRoom(userId, chatRoomId)){
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
 
-            ChatRoomResponse chatRoom = chatService.getChatRoom(userId, chatRoomId);
-            return new ResponseEntity<>(RsData.of("succes", chatRoom), HttpStatus.OK);
+    // 채팅방 입장 여부 확인
+    @GetMapping("/check/{id}")
+    public ResponseEntity<?> checkChatRoom(HttpServletRequest request, @PathVariable Integer id) {
+        try {
+            return new ResponseEntity<>("Check Result", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // 3. 채팅방 생성 요청
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getChatRoom(HttpServletRequest request, @PathVariable Integer id) {
+        try {
+            return new ResponseEntity<>("GetOne Result", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping()
-    public ResponseEntity<?> createChatRoom(HttpSession session,
-        @PathVariable("userId") Long userId,
-        @RequestBody ChatRoomCreateRequest req // TODO : RequestBody 수정
-    ) {
+    public ResponseEntity<?> createChatRoom(HttpServletRequest request) {
         try {
-            chatService.createChatRoom(userId, req);
             return new ResponseEntity<>("Create Result", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-    // 4. 채팅방 커스텀하기
-    @PutMapping("/{chatRoomId}")
-    public ResponseEntity<RsData< Boolean >> updateChatRoom(HttpSession session,
-        @PathVariable("userId") Long userId,
-        @PathVariable("chatRoomId") Long chatRoomId,
-        @RequestBody ChatRoomUpdateRequest req // TODO : RequestBody 수정
-    ) {
+
+    @PutMapping()
+    public ResponseEntity<?> modifiedChatRoom(HttpServletRequest request) {
         try {
-            Boolean result = chatService.updateChatRoom(userId, chatRoomId, req);
-            return new ResponseEntity<>(RsData.of(result), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    // 5. 채팅방 떠나기
-    @DeleteMapping("/{chatRoomId}")
-    public ResponseEntity<RsData< Boolean >> leaveChatRoom(HttpSession session,
-        @PathVariable("userId") Long userId,
-        @PathVariable("chatRoomId") Long chatRoomId
-    ) {
-        try {
-            Boolean result = chatService.leaveChatRoom(userId, chatRoomId);
-            return new ResponseEntity<>(RsData.of(result), HttpStatus.OK);
+            return new ResponseEntity<>("Update Result", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> destroyChatRoom(HttpServletRequest request) {
+        try {
+            return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.scheduler;
+package com.demo.daangn.global.util.file.scheduler;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import com.demo.daangn.domain.file.entity.FileTempEntity;
-import com.demo.daangn.domain.file.repository.FileTempRepository;
-import com.demo.daangn.global.util.file.CustomFileUtil;
+import com.demo.daangn.global.util.file.entity.FileTempEntity;
+import com.demo.daangn.global.util.file.repository.FileTempRepository;
+import com.demo.daangn.global.util.file.util.CustomFileUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,14 +42,18 @@ public class FileCleanupTasklet implements Tasklet {
 
         // 1. 1시간 이상 된 isUsed=0인 파일 목록 조회
         List<FileTempEntity> filesToDelete = fileTempRepository.findByIsUsedAndCreateDateBefore(0, oneHourAgo);
+
         log.debug("Files to delete: " + filesToDelete.size());
         List<String> randomKeys = filesToDelete.stream()
                 .map(FileTempEntity::getRandomKey)
                 .distinct()
                 .toList();
 
+        log.debug("Random keys to delete: " + randomKeys.size());
+
         // 2. 파일 삭제 및 DB 삭제
         for (String randomKey : randomKeys) {
+            log.debug("Processing random key: " + randomKey);
             try {
                 Path randomKeyPath = tempRootLocation.resolve(randomKey).normalize();
                 CustomFileUtil.deleteFiles(randomKeyPath);
@@ -58,6 +62,7 @@ public class FileCleanupTasklet implements Tasklet {
                 log.error("Failed to delete files for random key: " + randomKey, e);
             } catch (DataAccessException e) {
                 log.error("Failed to delete database entry for random key: " + randomKey, e);
+                throw e;
             } catch (Exception e) {
                 log.error("Unexpected error occurred while processing random key: " + randomKey, e);
             }

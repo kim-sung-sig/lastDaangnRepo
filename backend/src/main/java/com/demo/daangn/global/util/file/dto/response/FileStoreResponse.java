@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.dto.response;
+package com.demo.daangn.global.util.file.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

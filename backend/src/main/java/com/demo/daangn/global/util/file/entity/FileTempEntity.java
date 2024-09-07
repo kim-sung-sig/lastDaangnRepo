@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.entity;
+package com.demo.daangn.global.util.file.entity;
 
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Table(
     name = "daangn_temp_file",
     indexes = {
@@ -52,5 +55,13 @@ public class FileTempEntity extends BaseAuditEntity {
 
     @Column(name = "file_size")
     private Long fileSize; // 파일의 크기 (바이트 단위)
+
+    @PrePersist
+    public void prePersist() {
+        if (this.getIsUsed() == null) {
+            this.setIsUsed(0);
+        }
+        log.debug("prePersist isUsed: {}", this.getIsUsed());
+    }
 
 }

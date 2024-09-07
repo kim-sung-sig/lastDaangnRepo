@@ -18,10 +18,10 @@ public interface DaangnUserRepository extends JpaRepository<DaangnUserEntity, Lo
     @Query("SELECT u FROM DaangnUserEntity u WHERE u.username = :username")
     Optional<DaangnUserEntity> findByUsername(@Param("username") String username);
 
-    @Query("SELECT u FROM DaangnUserEntity u LEFT JOIN FETCH u.chatRoomUsers WHERE u.id = :id")
-    Optional<DaangnUserEntity> findByIdWithChatRooms(@Param("id") Long id);
+    // @Query("SELECT u FROM DaangnUserEntity u LEFT JOIN FETCH u.chatRoomUsers WHERE u.id = :id")
+    // Optional<DaangnUserEntity> findByIdWithChatRooms(@Param("id") Long id);
 
-    @Query("SELECT u FROM DaangnUserEntity u LEFT JOIN FETCH u.notifications WHERE u.id = :id")
-    Optional<DaangnUserEntity> findByIdWithNotifications(@Param("id") Long id);
+    // @Query("SELECT u FROM DaangnUserEntity u LEFT JOIN FETCH u.notifications WHERE u.id = :id")
+    // Optional<DaangnUserEntity> findByIdWithNotifications(@Param("id") Long id);
 
 }

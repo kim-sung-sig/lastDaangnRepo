@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.file.scheduler;
+package com.demo.daangn.global.util.file.scheduler;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -23,7 +23,7 @@ public class FileCleanupJobScheduler {
     @Qualifier("fileCleanupJob")
     private final Job fileCleanupJob;
 
-    @Scheduled(cron = "0 */1 * * * ?") // 테스트용 5분 마다 실행
+    @Scheduled(cron = "0 0/5 * * * ?") // 테스트용 5분 마다 실행
     // @Scheduled(cron = "0 0 */2 * * ?") // 매시간 정각에 실행
     public void runFileCleanupJob() {
         try {
