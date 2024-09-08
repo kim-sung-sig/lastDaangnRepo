@@ -32,8 +32,8 @@ public class DaangnUserController {
      * @param signUpRequest
      * @return
      */
-    @PostMapping(value = "/signup")
-    public ResponseEntity<?> signup(@RequestBody SignUpRequest signUpRequest) {
+    @PostMapping(value = "/register")
+    public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody SignUpRequest signUpRequest) {
         log.info("로그인 요청 => {}", signUpRequest);
         try {
             return new ResponseEntity<>("Create Result", HttpStatus.OK);

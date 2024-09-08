@@ -26,4 +26,10 @@ public class CommonUtil {
                 .orElseThrow(() -> new AuthException("사용자 정보가 없습니다."));
     }
 
+    public static Boolean isUserLogin(HttpServletRequest request) {
+        return Optional.ofNullable(request.getSession().getAttribute("user"))
+                .filter(DaangnUserEntity.class::isInstance)
+                .map(DaangnUserEntity.class::cast)
+                .isPresent();
+    }
 }
