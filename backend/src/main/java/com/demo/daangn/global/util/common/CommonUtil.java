@@ -26,6 +26,11 @@ public class CommonUtil {
                 .orElseThrow(() -> new AuthException("사용자 정보가 없습니다."));
     }
 
+    /**
+     * 사용자 로그인 여부 확인
+     * @param request
+     * @return
+     */
     public static Boolean isUserLogin(HttpServletRequest request) {
         return Optional.ofNullable(request.getSession().getAttribute("user"))
                 .filter(DaangnUserEntity.class::isInstance)

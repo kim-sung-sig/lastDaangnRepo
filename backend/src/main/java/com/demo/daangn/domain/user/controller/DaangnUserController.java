@@ -3,14 +3,13 @@ package com.demo.daangn.domain.user.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.daangn.domain.user.dto.request.SignUpRequest;
+import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.service.DaangnUserService;
 import com.demo.daangn.global.util.common.CommonUtil;
@@ -33,13 +32,10 @@ public class DaangnUserController {
      * @return
      */
     @PostMapping(value = "/register")
-    public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody SignUpRequest signUpRequest) {
-        log.info("로그인 요청 => {}", signUpRequest);
-        try {
-            return new ResponseEntity<>("Create Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody DaangnUserSignUpRequest signUpRequest) {
+        log.info("회원가입 요청");
+        daangnUserService.userSignUp(request, signUpRequest);
+        return new ResponseEntity<>("Create Result", HttpStatus.OK);
     }
 
     /**
@@ -50,14 +46,10 @@ public class DaangnUserController {
      */
     @PutMapping(value = "/update")
     public ResponseEntity<?> modified(HttpServletRequest request, @RequestBody Object dto) {
-        try {
-            log.info("회원 정보 수정 요청");
-            DaangnUserEntity user = CommonUtil.getUser(request);
-            Long userId = user.getId();
-            return new ResponseEntity<>("Update Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        log.info("회원 정보 수정 요청");
+        DaangnUserEntity user = CommonUtil.getUser(request);
+        Long userId = user.getId();
+        return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 
     /**
@@ -67,13 +59,11 @@ public class DaangnUserController {
      * @return
      */
     @PutMapping("/profile/update")
-    public ResponseEntity<?> putMethodName(@PathVariable String id, @RequestBody String entity) {
-        try {
-            
-            return new ResponseEntity<>("Update Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> putMethodName(HttpServletRequest request, @RequestBody String entity) {
+        log.info("프로필 수정 요청");
+        DaangnUserEntity user = CommonUtil.getUser(request);
+        Long userId = user.getId();
+        return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 
     /**

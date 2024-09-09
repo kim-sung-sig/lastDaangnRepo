@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignUpRequest {
+public class DaangnUserSignUpRequest {
 
     private String username;
 
     private String password;
 
     private String email;
-    
+
 }

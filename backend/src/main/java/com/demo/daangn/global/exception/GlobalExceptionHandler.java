@@ -13,11 +13,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.demo.daangn.global.dto.response.RsData;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    
+
+    @ExceptionHandler(CustomBusinessException.class)
+    public ResponseEntity<String> handleBusinessException(CustomBusinessException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomSystemException.class)
+    public ResponseEntity<String> handleSystemException(CustomSystemException e) {
+        return new ResponseEntity<>("시스템 에러가 발생했습니다. 잠시 후 다시 시도해주세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RsData< String >> handleException(Exception ex) {
+        log.error("알 수 없는 오류가 발생했습니다. \n {}", ex);
+        return new ResponseEntity<>(RsData.of("알 수 없는 오류가 발생했습니다."), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     /**
      * MethodArgumentNotValidException handler (Validation)
      */
@@ -34,7 +51,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * EntityNotFoundException handler
+     * EntityNotFoundException handler (엔티티 가 없을때 발생!)
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<RsData< String >> handleEntityNotFoundExceptions(EntityNotFoundException ex) {
@@ -50,10 +67,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     *  FileStorageException handler (없는 파일일때)
+     * FileStorageException handler (없는 파일일때)
      */
     @ExceptionHandler(FileStorageException.class)
     public ResponseEntity<RsData< String >> handleFileNotFoundExceptions(FileStorageException ex) {
         return new ResponseEntity<>(RsData.of(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
 }
