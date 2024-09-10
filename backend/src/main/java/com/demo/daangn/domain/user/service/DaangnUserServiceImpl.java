@@ -6,6 +6,7 @@ import com.demo.daangn.domain.user.dto.request.DaangnUserModifiedRequest;
 import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.repository.DaangnUserRepository;
+import com.demo.daangn.domain.user.repository.email.DaangnUserEmailEntityRepository;
 import com.demo.daangn.global.exception.CustomBusinessException;
 import com.demo.daangn.global.exception.CustomSystemException;
 import com.demo.daangn.global.util.common.CommonUtil;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DaangnUserServiceImpl implements DaangnUserService {
     
     private final DaangnUserRepository daangnUserRepository;
+    private final DaangnUserEmailEntityRepository daangnUserEmailEntityRepository;
 
     @Override
     public Integer userSignUp(HttpServletRequest request, DaangnUserSignUpRequest signUpRequest){

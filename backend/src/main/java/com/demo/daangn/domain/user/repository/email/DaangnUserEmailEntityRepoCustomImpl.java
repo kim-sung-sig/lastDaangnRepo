@@ -33,5 +33,19 @@ public class DaangnUserEmailEntityRepoCustomImpl implements DaangnUserEmailEntit
                 .fetch();
     }
 
+    @Override
+    public DaangnUserEmailEntity findSendedUserEmail(String email) {
+        QDaangnUserEmailEntity daangnUserEmailEntity = QDaangnUserEmailEntity.daangnUserEmailEntity;
+
+        return queryFactory
+                .select(daangnUserEmailEntity)
+                .from(daangnUserEmailEntity)
+                .where(
+                    daangnUserEmailEntity.email.eq(email)
+                )
+                .orderBy(daangnUserEmailEntity.id.desc()) // 생성 역순 정렬
+                .fetchFirst(); // 맨 처음 데이터만 가져옴
+    }
+
 
 }

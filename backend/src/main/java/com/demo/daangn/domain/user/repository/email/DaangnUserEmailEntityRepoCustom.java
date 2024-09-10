@@ -9,4 +9,6 @@ public interface DaangnUserEmailEntityRepoCustom {
 
     List<DaangnUserEmailEntity> findDeleteUserEmail(Integer isUsed, LocalDateTime createDate);
 
+    DaangnUserEmailEntity findSendedUserEmail(String email);
+
 }
