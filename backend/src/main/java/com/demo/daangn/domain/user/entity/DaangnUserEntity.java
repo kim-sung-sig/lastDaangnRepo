@@ -69,7 +69,6 @@ public class DaangnUserEntity extends BaseAuditEntity {
 
     @PrePersist
     private void prePersist() {
-        log.debug("prePersist");
         if (this.uuid == null) {
             this.uuid = UUID.randomUUID();
         }

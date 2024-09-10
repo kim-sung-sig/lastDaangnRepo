@@ -15,6 +15,7 @@ import com.demo.daangn.domain.user.service.DaangnUserService;
 import com.demo.daangn.global.util.common.CommonUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,8 +33,12 @@ public class DaangnUserController {
      * @return
      */
     @PostMapping(value = "/register")
-    public ResponseEntity<?> signup(HttpServletRequest request, @RequestBody DaangnUserSignUpRequest signUpRequest) {
+    public ResponseEntity<?> signup(HttpServletRequest request, @Valid @RequestBody DaangnUserSignUpRequest signUpRequest) {
         log.info("회원가입 요청");
+        Boolean isLogin = CommonUtil.isUserLogin(request);
+        if(isLogin) {
+            return new ResponseEntity<>("Already Login", HttpStatus.BAD_REQUEST);
+        }
         daangnUserService.userSignUp(request, signUpRequest);
         return new ResponseEntity<>("Create Result", HttpStatus.OK);
     }
@@ -71,8 +76,8 @@ public class DaangnUserController {
      * @param request
      * @return
      */
-    @DeleteMapping(value = "")
-    public ResponseEntity<?> destroy(HttpServletRequest request) {
+    @DeleteMapping(value = "/withdrawal")
+    public ResponseEntity<?> withdrawal(HttpServletRequest request) {
         try {
             return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
         } catch (Exception e) {
