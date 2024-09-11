@@ -18,7 +18,7 @@ import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
 import com.demo.daangn.domain.event.service.EventPublisherService;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.DaangnUserRepository;
+import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
 import com.demo.daangn.global.config.websocket.WebsocketChatRoomRegistry;
 import com.demo.daangn.global.exception.AuthException;
 
@@ -99,7 +99,7 @@ public class ChatHandler {
                     // 메시지 전송!
                     messagingTemplate.convertAndSend("/sub/chat2/room/" + response.getChatRoomId(), response); // 채팅방에 메시지
 
-                    eventPublisher.publishChatMessageEvent(response); // 챗 알림 이벤트 발행!
+                    eventPublisher.publishEvent(response); // 챗 알림 이벤트 발행!
                     yield true;
                 }
                 case LEAVE -> { // file message( 멀티파트로 받아야되나? )

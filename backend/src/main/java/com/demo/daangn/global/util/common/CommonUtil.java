@@ -1,9 +1,12 @@
 package com.demo.daangn.global.util.common;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.global.exception.AuthException;
+import com.demo.daangn.global.exception.CustomBusinessException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -36,5 +39,14 @@ public class CommonUtil {
                 .filter(DaangnUserEntity.class::isInstance)
                 .map(DaangnUserEntity.class::cast)
                 .isPresent();
+    }
+
+    public static void emailValidation(String email) throws CustomBusinessException {
+        Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+        Matcher matcher = emailPattern.matcher(email);
+
+        if (!matcher.matches()) {
+            throw new CustomBusinessException("유효하지 않은 이메일 형식입니다.");
+        }
     }
 }

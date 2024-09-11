@@ -20,10 +20,12 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDeailsService customUserDeailsService;
+
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDeailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
+
     @Bean
     BCryptPasswordEncoder getBCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();

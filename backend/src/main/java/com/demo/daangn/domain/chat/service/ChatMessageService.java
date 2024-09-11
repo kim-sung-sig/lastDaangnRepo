@@ -14,7 +14,7 @@ import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.DaangnUserRepository;
+import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
 import com.demo.daangn.global.dto.response.PagingResponse;
 
 import jakarta.persistence.EntityNotFoundException;

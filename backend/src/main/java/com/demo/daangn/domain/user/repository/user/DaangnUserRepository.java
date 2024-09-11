@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.user.repository;
+package com.demo.daangn.domain.user.repository.user;
 
 import java.util.Optional;
 

@@ -55,6 +55,9 @@ public class DaangnUserEntity extends BaseAuditEntity {
     @Column(name = "role", nullable = false)
     private String role;
 
+    @Column(name = "email", nullable = false)
+    private String email;
+
     @Column(name = "nick_name", nullable = false)
     private String nickName; // seq
 

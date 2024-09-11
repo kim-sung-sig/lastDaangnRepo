@@ -22,4 +22,7 @@ public class DaangnUserSignUpRequest {
     @NotBlank
     private String nickName;
 
+    @NotBlank
+    private String emailToken;
+
 }

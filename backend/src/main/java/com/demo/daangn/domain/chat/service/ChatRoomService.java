@@ -10,7 +10,7 @@ import com.demo.daangn.domain.chat.exception.ChatRoomServiceException;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.DaangnUserRepository;
+import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,7 @@
 package com.demo.daangn.domain.user.repository.email;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +13,7 @@ public interface DaangnUserEmailEntityRepository extends JpaRepository<DaangnUse
     // 1. 저장
     // save
     // 2. 조회
-
+    Optional<DaangnUserEmailEntity> findByEmailToken(String emailToken);
     // 3. 수정
 
     // 4. 삭제

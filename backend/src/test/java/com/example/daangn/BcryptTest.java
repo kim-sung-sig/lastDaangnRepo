@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.demo.daangn.BackendApplication;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.DaangnUserRepository;
+import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
