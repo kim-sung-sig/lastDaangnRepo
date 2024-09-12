@@ -28,7 +28,7 @@ public class InitData {
                     .role("ROLE_ADMIN")
                     .nickName("테스트계정1")
                     .nickNameSeq(1L)
-                    .nickNameSeqFinal("테스트계정1#1")
+                    .nickNameSeqFinal("테스트계정1 #_1")
                     .build();
             log.debug("user1: {}", user1);
             userRepository.save(user1);
@@ -39,7 +39,7 @@ public class InitData {
                     .role("ROLE_ADMIN")
                     .nickName("테스트계정2")
                     .nickNameSeq(1L)
-                    .nickNameSeqFinal("테스트계정2#1")
+                    .nickNameSeqFinal("테스트계정2 #_1")
                     .build();
             userRepository.save(user2);
         };

@@ -2,13 +2,17 @@ package com.demo.daangn.domain.user.service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.daangn.domain.event.service.EventPublisherService;
 import com.demo.daangn.domain.user.dto.event.UserSignUpEvent;
 import com.demo.daangn.domain.user.dto.request.DaangnUserModifiedRequest;
 import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
+import com.demo.daangn.domain.user.entity.DaangnUserEmailEntity;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.DaangnUserNickNameEntity;
 import com.demo.daangn.domain.user.repository.email.DaangnUserEmailEntityRepository;
+import com.demo.daangn.domain.user.repository.nickname.DaangnUserNickNameRepository;
 import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
 import com.demo.daangn.global.exception.CustomBusinessException;
 import com.demo.daangn.global.exception.CustomSystemException;
@@ -26,10 +30,12 @@ public class DaangnUserServiceImpl implements DaangnUserService {
     
     private final DaangnUserRepository daangnUserRepository;
     private final DaangnUserEmailEntityRepository daangnUserEmailEntityRepository;
+    private final DaangnUserNickNameRepository daangnUserNickNameRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EventPublisherService eventPublisher;
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Integer userSignUp(HttpServletRequest request, DaangnUserSignUpRequest signUpRequest){
         try {
             String username = signUpRequest.getUsername();
@@ -56,7 +62,9 @@ public class DaangnUserServiceImpl implements DaangnUserService {
                     .orElseThrow(() -> new CustomBusinessException("이메일 인증이 필요합니다."));
 
             // 3. 닉네임 seq 계산
-            
+            daangnUserNickNameRepository.save(DaangnUserNickNameEntity.builder().nickName(nickName).build());
+            Long nickNameSeq = daangnUserNickNameRepository.countByNickName(nickName);
+
             // 4. 비밀번호 암호화
             String encrptedPassword = passwordEncoder.encode(password);
 
@@ -66,8 +74,8 @@ public class DaangnUserServiceImpl implements DaangnUserService {
                     .password(encrptedPassword)
                     .email(email)
                     .nickName(nickName)
-                    .nickNameSeq(null)
-                    .nickNameSeqFinal(null)
+                    .nickNameSeq(nickNameSeq)
+                    .nickNameSeqFinal(nickName + "#_" + nickNameSeq)
                     .build();
             daangnUserRepository.save(user);
 
@@ -87,13 +95,42 @@ public class DaangnUserServiceImpl implements DaangnUserService {
         }
     }
 
-    public String userSingUpEmailChecker(HttpServletRequest request, String email){
+    @Transactional(rollbackFor = {Exception.class})
+    public Integer userSingUpEmailSend(HttpServletRequest request, String email){
         try {
             // 1. email regex 체크
+            CommonUtil.emailValidation(email);
 
-            // 2. email DB 체크
+            // 2. email DB 저장
+            DaangnUserEmailEntity userEmailEntity = DaangnUserEmailEntity.builder()
+                    .email(email)
+                    .emailKey(email)
+                    .emailToken(email)
+                    .build();
+            daangnUserEmailEntityRepository.save(userEmailEntity);
+
+            // 3. email 전송
+
+            return 1;
+
+        } catch (CustomBusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("***********************************");
+            log.error("** fail userSingUpEmailSend");
+            log.error("** LOG LINE : {}", e.getStackTrace()[0].getLineNumber());
+            log.error("** LOG MSG : {}", e.getMessage());
+            throw new CustomSystemException("이메일 전송 실패", e);
+        }
+    }
+
+    public String userEmailCheck(HttpServletRequest request, String emailToken){
+        try {
+            
 
             return "success";
+        } catch (CustomBusinessException e) {
+            throw e;
         } catch (Exception e) {
             log.error("fail userSingUpEmailChecker");
             e.printStackTrace();
