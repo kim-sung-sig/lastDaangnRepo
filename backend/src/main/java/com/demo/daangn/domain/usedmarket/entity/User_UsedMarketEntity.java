@@ -43,6 +43,6 @@ public class User_UsedMarketEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_market_id", nullable = false)
-    private UsedMarketEntity usedMarket;
+    private UsedMarket usedMarket;
 
 }

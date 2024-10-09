@@ -1,6 +1,6 @@
 package com.demo.daangn.domain.chat.entity;
 
-import com.demo.daangn.domain.usedmarket.entity.UsedMarketEntity;
+import com.demo.daangn.domain.usedmarket.entity.UsedMarket;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Entity;
@@ -39,7 +39,7 @@ public class ChatRoomUsedMarketEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_market_id", nullable = false)
-    private UsedMarketEntity usedMarket;
+    private UsedMarket usedMarket;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)
