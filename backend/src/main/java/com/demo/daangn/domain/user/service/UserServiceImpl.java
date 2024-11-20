@@ -4,14 +4,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.demo.daangn.domain.email.service.EmailService;
 import com.demo.daangn.domain.event.service.EventPublisherService;
 import com.demo.daangn.domain.user.dto.event.UserSignUpEvent;
 import com.demo.daangn.domain.user.dto.request.DaangnUserModifiedRequest;
 import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
-import com.demo.daangn.domain.user.entity.DaangnUserEmailEntity;
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.domain.user.entity.DaangnUserNickNameEntity;
-import com.demo.daangn.domain.user.repository.email.DaangnUserEmailEntityRepository;
 import com.demo.daangn.domain.user.repository.nickname.DaangnUserNickNameRepository;
 import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
 import com.demo.daangn.global.exception.CustomBusinessException;
@@ -24,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service(value = "daangnUserService")
+@Service(value = "userService")
 @RequiredArgsConstructor
-public class DaangnUserServiceImpl implements DaangnUserService {
-    
+public class UserServiceImpl implements UserService {
+
     private final DaangnUserRepository daangnUserRepository;
-    private final DaangnUserEmailEntityRepository daangnUserEmailEntityRepository;
     private final DaangnUserNickNameRepository daangnUserNickNameRepository;
+    private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EventPublisherService eventPublisher;
 
@@ -42,7 +41,7 @@ public class DaangnUserServiceImpl implements DaangnUserService {
             String password = signUpRequest.getPassword();
             String email = signUpRequest.getEmail();
             String nickName = signUpRequest.getNickName();
-            String emailToken = signUpRequest.getEmailToken();
+            String token = signUpRequest.getToken();
 
             // 1. username 중복 체크
             daangnUserRepository.findByUsername(username).ifPresent(user -> {
@@ -50,16 +49,10 @@ public class DaangnUserServiceImpl implements DaangnUserService {
             });
 
             // 2. 이메일 검증 체크 -> email regex + email DB 체크
-            // email regex 체크
-            CommonUtil.emailValidation(email);
-            // 중복 이메일?
-            // daangnUserRepository.findByEmail(email).ifPresent(user -> {
-            //     throw new CustomBusinessException("이미 존재하는 이메일입니다.");
-            // });
-            // email DB 체크
-            daangnUserEmailEntityRepository.findByEmailToken(emailToken)
-                    .filter(userEmailEntity -> userEmailEntity.getEmail().equals(email) && userEmailEntity.getIsUsed().equals(1))
-                    .orElseThrow(() -> new CustomBusinessException("이메일 인증이 필요합니다."));
+            boolean emailCheck = emailService.verifyEmail(email, token);
+            if (!emailCheck) {
+                throw new CustomBusinessException("이메일 인증에 실패하였습니다. 잠시후 다시 시도해 주세요.");
+            }
 
             // 3. 닉네임 seq 계산
             daangnUserNickNameRepository.save(DaangnUserNickNameEntity.builder().nickName(nickName).build());
@@ -83,7 +76,7 @@ public class DaangnUserServiceImpl implements DaangnUserService {
             eventPublisher.publishEvent(new UserSignUpEvent(user));
 
             return 1;
-        
+
         } catch (EntityNotFoundException | CustomBusinessException e){
             throw e;
         } catch (Exception e) {
@@ -95,63 +88,11 @@ public class DaangnUserServiceImpl implements DaangnUserService {
         }
     }
 
-    @Transactional(rollbackFor = {Exception.class})
-    public Integer userSingUpEmailSend(HttpServletRequest request, String email){
-        try {
-            // 1. email regex 체크
-            CommonUtil.emailValidation(email);
-
-            // 2. email DB 저장
-            DaangnUserEmailEntity userEmailEntity = DaangnUserEmailEntity.builder()
-                    .email(email)
-                    .emailKey(email)
-                    .emailToken(email)
-                    .build();
-            daangnUserEmailEntityRepository.save(userEmailEntity);
-
-            // 3. email 전송
-
-            return 1;
-
-        } catch (CustomBusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("***********************************");
-            log.error("** fail userSingUpEmailSend");
-            log.error("** LOG LINE : {}", e.getStackTrace()[0].getLineNumber());
-            log.error("** LOG MSG : {}", e.getMessage());
-            throw new CustomSystemException("이메일 전송 실패", e);
-        }
-    }
-
-    public String userEmailCheck(HttpServletRequest request, String emailToken){
-        try {
-            
-
-            return "success";
-        } catch (CustomBusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("fail userSingUpEmailChecker");
-            e.printStackTrace();
-            throw new CustomSystemException("이메일 중복 체크 실패", e);
-        }
-    }
-
-    @Override
-    public Integer userUpdateDetails(HttpServletRequest request, DaangnUserModifiedRequest userModifiedRequest){
-        try {
-            
-        } catch (Exception e) {
-
-        }
-        throw new UnsupportedOperationException("Unimplemented method 'userUpdateDetails'");
-    }
-
     /**
      * 탈퇴하기
      */
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Integer userWithdrawal(HttpServletRequest request){
         try {
             Integer result = 0;
@@ -166,6 +107,12 @@ public class DaangnUserServiceImpl implements DaangnUserService {
             e.printStackTrace();
             throw new CustomSystemException("회원탈퇴 실패", e);
         }
+    }
+
+    @Override
+    public Integer userUpdateDetails(HttpServletRequest request, DaangnUserModifiedRequest userModifiedRequest) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'userUpdateDetails'");
     }
 
 }

@@ -1,8 +1,11 @@
 package com.demo.daangn.global.util.common;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.demo.daangn.domain.user.entity.DaangnUserEntity;
 import com.demo.daangn.global.exception.AuthException;
@@ -41,12 +44,23 @@ public class CommonUtil {
                 .isPresent();
     }
 
-    public static void emailValidation(String email) throws CustomBusinessException {
-        Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+    public static boolean emailValidation(String email) throws CustomBusinessException {
+        if(email == null || email.isEmpty()) {
+            return false;
+        }
+        Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
         Matcher matcher = emailPattern.matcher(email);
 
-        if (!matcher.matches()) {
-            throw new CustomBusinessException("유효하지 않은 이메일 형식입니다.");
-        }
+        boolean result = matcher.matches();
+        return result;
+    }
+
+    public static String generateRandomKey() {
+        Random random = new Random();
+        String randomNumber = IntStream.range(0, 6)
+                .map(i -> random.nextInt(10))
+                .mapToObj(String::valueOf)
+                .collect(Collectors.joining());
+        return randomNumber;
     }
 }

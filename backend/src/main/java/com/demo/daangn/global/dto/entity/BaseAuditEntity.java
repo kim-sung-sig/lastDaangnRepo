@@ -23,7 +23,7 @@ public class BaseAuditEntity {
     private Integer isUsed;
 
     @CreatedDate
-    @Column(name = "create_date", updatable = false)
+    @Column(name = "create_date", updatable = false, nullable = false)
     private LocalDateTime createDate;
 
     @LastModifiedDate

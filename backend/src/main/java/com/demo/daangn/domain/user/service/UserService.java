@@ -5,7 +5,7 @@ import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-public interface DaangnUserService {
+public interface UserService {
 
     // 1. 회원가입 하기
     Integer userSignUp(HttpServletRequest request, DaangnUserSignUpRequest signUpRequest);

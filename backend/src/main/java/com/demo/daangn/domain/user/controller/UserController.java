@@ -10,11 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.service.DaangnUserService;
-import com.demo.daangn.global.util.common.CommonUtil;
+import com.demo.daangn.domain.user.service.UserService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/daangn/users")
 @RequiredArgsConstructor
-public class DaangnUserController {
+public class UserController {
 
-    private final DaangnUserService daangnUserService;
+    private final UserService userService;
 
     /**
      * 회원가입
@@ -33,13 +30,7 @@ public class DaangnUserController {
      * @return
      */
     @PostMapping(value = "/register")
-    public ResponseEntity<?> signup(HttpServletRequest request, @Valid @RequestBody DaangnUserSignUpRequest signUpRequest) {
-        log.info("회원가입 요청");
-        Boolean isLogin = CommonUtil.isUserLogin(request);
-        if(isLogin) {
-            return new ResponseEntity<>("Already Login", HttpStatus.BAD_REQUEST);
-        }
-        daangnUserService.userSignUp(request, signUpRequest);
+    public ResponseEntity<?> signup(@Valid @RequestBody DaangnUserSignUpRequest signUpRequest) {
         return new ResponseEntity<>("Create Result", HttpStatus.OK);
     }
 
@@ -50,10 +41,7 @@ public class DaangnUserController {
      * @return
      */
     @PutMapping(value = "/update")
-    public ResponseEntity<?> modified(HttpServletRequest request, @RequestBody Object dto) {
-        log.info("회원 정보 수정 요청");
-        DaangnUserEntity user = CommonUtil.getUser(request);
-        Long userId = user.getId();
+    public ResponseEntity<?> modified(@RequestBody Object dto) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 
@@ -64,10 +52,7 @@ public class DaangnUserController {
      * @return
      */
     @PutMapping("/profile/update")
-    public ResponseEntity<?> putMethodName(HttpServletRequest request, @RequestBody String entity) {
-        log.info("프로필 수정 요청");
-        DaangnUserEntity user = CommonUtil.getUser(request);
-        Long userId = user.getId();
+    public ResponseEntity<?> putMethodName(@RequestBody String entity) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 
@@ -77,12 +62,8 @@ public class DaangnUserController {
      * @return
      */
     @DeleteMapping(value = "/withdrawal")
-    public ResponseEntity<?> withdrawal(HttpServletRequest request) {
-        try {
-            return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> withdrawal() {
+        return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
     }
 
 }

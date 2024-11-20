@@ -25,4 +25,7 @@ public class DaangnUserSignUpRequest {
     @NotBlank
     private String emailToken;
 
+    @NotBlank
+    private String token;
+
 }
