@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file.entity;
+package com.demo.daangn.domain.file.entity;
 
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
@@ -20,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Table(
-    name = "daangn_temp_file",
+    name = "temp_file",
     indexes = {
-        @Index(name = "idx_daangn_temp_file_random_key", columnList = "random_key")})
+        @Index(name = "idx_temp_file_random_key", columnList = "random_key")})
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -43,6 +43,9 @@ public class FileTempEntity extends BaseAuditEntity {
     @Column(name = "random_key", unique = true, nullable = false)
     private String randomKey; // 파일의 랜덤 키
 
+    @Column(name = "file_path", nullable = false)
+    private String filePath; // 파일의 경로
+
     @Column(name = "file_name", nullable = false)
     private String fileName; // 파일의 이름
     @Column(name = "file_origin_name", nullable = false)
@@ -56,10 +59,13 @@ public class FileTempEntity extends BaseAuditEntity {
     @Column(name = "file_size")
     private Long fileSize; // 파일의 크기 (바이트 단위)
 
+    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer isUsed; // 사용 여부 (0: 사용 안함, 1: 사용 중)
+
     @PrePersist
     public void prePersist() {
-        if (this.getIsUsed() == null) {
-            this.setIsUsed(0);
+        if (this.isUsed == null) {
+            this.isUsed = 0;
         }
         log.debug("prePersist isUsed: {}", this.getIsUsed());
     }

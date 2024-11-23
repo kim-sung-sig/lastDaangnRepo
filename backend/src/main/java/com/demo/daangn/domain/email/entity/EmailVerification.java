@@ -3,7 +3,7 @@ package com.demo.daangn.domain.email.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.data.annotation.LastModifiedDate;
+import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Builder
 @Slf4j
-public class EmailVerification {
+public class EmailVerification extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,23 +45,16 @@ public class EmailVerification {
     @Column(name = "is_verified",columnDefinition = "TINYINT(1) DEFAULT 0")
     private Integer isVerified;
 
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
     @Column(name = "expire_date")
     private LocalDateTime expireDate;
-
-    @Column(name = "update_date")
-    @LastModifiedDate
-    private LocalDateTime updateDate;
 
     @PrePersist
     private void prePersist() {
         if (this.emailToken == null) { // 토큰 생성
             this.emailToken = UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
         }
-        if(this.createDate == null) {
-            this.createDate = LocalDateTime.now();
+        if(getCreateDate() == null) {
+            setCreateDate(LocalDateTime.now());
         }
         if(this.isVerified == null) {
             this.isVerified = 0;

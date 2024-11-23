@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DaangnUserSignUpRequest {
+public class UserSignUpRequest {
 
     @NotBlank
     private String username;

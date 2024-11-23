@@ -22,10 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Table(
-    name = "daangn_user_profiles",
+    name = "user_profiles",
     indexes = {
-        @Index(name = "idx_daangn_user_profiles_user_id", columnList = "user_id"),
-        @Index(name = "idx_daangn_user_profiles_file_name", columnList = "file_name")})
+        @Index(name = "idx_user_profiles_user_id", columnList = "user_id")})
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -41,28 +40,18 @@ public class DaangnUserProfile extends BaseAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private DaangnUserEntity user;
+    private User user;
 
     @Column(name = "file_url")
     private String fileUrl;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
-    @Column(name = "file_origin_name", nullable = false)
-    private String fileOriginName;
-
-    @Column(name = "file_type")
-    private String fileType; // 파일의 타입 (예: 이미지, 비디오 등)
-    @Column(name = "file_ext")
-    private String fileExt; // 파일의 확장자 (예: jpg, png 등)
-
-    @Column(name = "file_size")
-    private Long fileSize; // 파일의 크기 (바이트 단위)
+    @Column(name = "is_used", columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer isUsed;
 
     @PrePersist
     public void prePersist() {
-        if (this.getIsUsed() == null) {
-            this.setIsUsed(1);
+        if (this.isUsed == null) {
+            this.isUsed = 1;
         }
     }
 

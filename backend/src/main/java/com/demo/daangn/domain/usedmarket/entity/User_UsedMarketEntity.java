@@ -1,6 +1,6 @@
 package com.demo.daangn.domain.usedmarket.entity;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Entity;
@@ -39,7 +39,7 @@ public class User_UsedMarketEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private DaangnUserEntity user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "used_market_id", nullable = false)

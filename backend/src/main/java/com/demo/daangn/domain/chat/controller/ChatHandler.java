@@ -17,8 +17,8 @@ import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
 import com.demo.daangn.domain.event.service.EventPublisherService;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.domain.user.repository.user.UserRepository;
 import com.demo.daangn.global.config.websocket.WebsocketChatRoomRegistry;
 import com.demo.daangn.global.exception.AuthException;
 
@@ -35,7 +35,7 @@ public class ChatHandler {
     private final SimpMessagingTemplate messagingTemplate;
     private final WebsocketChatRoomRegistry chatRoomRegistry;
     
-    private final DaangnUserRepository userRepository;
+    private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
     private final ChatMessageRepository chatMessageRepository;
@@ -48,7 +48,7 @@ public class ChatHandler {
             log.info("메시지 받았음! msg => {}", messageRequest);
             ChatMessageResponse response = null;
 
-            DaangnUserEntity sender = userRepository.findById(messageRequest.getSender())
+            User sender = userRepository.findById(messageRequest.getSender())
                     .orElseThrow(() -> new EntityNotFoundException("not id"));
 
             ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(messageRequest.getChatRoomId())

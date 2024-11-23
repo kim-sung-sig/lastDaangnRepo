@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.demo.daangn.BackendApplication;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.domain.user.repository.user.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -18,17 +18,17 @@ public class BcryptTest {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
-    private DaangnUserRepository userRepository;
+    private UserRepository userRepository;
 
     @Test
         void bcryptTest(){
-        DaangnUserEntity dbuser = userRepository.findById(1L)
+        User dbuser = userRepository.findById(1L)
                 .orElseThrow(() -> new EntityNotFoundException());
 
         dbuser.updatePassword(bCryptPasswordEncoder.encode("password1!"));
         userRepository.save(dbuser);
 
-        DaangnUserEntity dbuser2 = userRepository.findById(2L)
+        User dbuser2 = userRepository.findById(2L)
                 .orElseThrow(() -> new EntityNotFoundException());
 
         dbuser2.updatePassword(bCryptPasswordEncoder.encode("password1!")); // setter 대신 update 메소드를 사용하여 변경 (이로서 SRP 원칙을 지킬 수 있다.)

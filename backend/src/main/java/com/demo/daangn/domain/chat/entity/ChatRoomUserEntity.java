@@ -1,6 +1,6 @@
 package com.demo.daangn.domain.chat.entity;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
@@ -40,7 +40,7 @@ public class ChatRoomUserEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_Id", nullable = false)
-    private DaangnUserEntity user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_Id", nullable = false)
@@ -51,6 +51,9 @@ public class ChatRoomUserEntity extends BaseAuditEntity {
 
     @Column(name = "pointer")
     private Long pointer; // 삭제시 마지막 커서
+
+    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer isUsed;
 
     public void updateChatRoomName(String chatRoomName) {
         this.chatRoomName = chatRoomName;

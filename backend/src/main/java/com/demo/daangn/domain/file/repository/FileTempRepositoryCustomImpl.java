@@ -1,11 +1,11 @@
-package com.demo.daangn.global.util.file.repository;
+package com.demo.daangn.domain.file.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.demo.daangn.global.util.file.entity.QFileTempEntity;
+import com.demo.daangn.domain.file.entity.QFileTempEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ public class FileTempRepositoryCustomImpl implements FileTempRepositoryCustom {
 
     @Override
     public List<String> findDeleteRandomKeys(Integer isUsed, LocalDateTime createDate) {
-        
         QFileTempEntity fileTempEntity = QFileTempEntity.fileTempEntity;
         
         return queryFactory

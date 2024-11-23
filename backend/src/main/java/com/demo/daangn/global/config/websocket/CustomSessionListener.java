@@ -2,7 +2,7 @@ package com.demo.daangn.global.config.websocket;
 
 import org.springframework.stereotype.Component;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 
 import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.http.HttpSessionEvent;
@@ -28,7 +28,7 @@ public class CustomSessionListener implements HttpSessionListener{
     public void sessionDestroyed(HttpSessionEvent se) {
         log.info("Session Destroyed");
         if(se.getSession().getAttribute("user") != null){
-            Long userId = ( (DaangnUserEntity) se.getSession().getAttribute("user") ).getId();
+            Long userId = ( (User) se.getSession().getAttribute("user") ).getId();
             userRegistry.removeUser(userId);
         }
     }

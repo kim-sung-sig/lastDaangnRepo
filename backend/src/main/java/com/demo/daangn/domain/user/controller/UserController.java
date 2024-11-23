@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
+import com.demo.daangn.domain.user.dto.request.UserSignUpRequest;
 import com.demo.daangn.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
@@ -30,7 +30,7 @@ public class UserController {
      * @return
      */
     @PostMapping(value = "/register")
-    public ResponseEntity<?> signup(@Valid @RequestBody DaangnUserSignUpRequest signUpRequest) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserSignUpRequest signUpRequest) {
         return new ResponseEntity<>("Create Result", HttpStatus.OK);
     }
 

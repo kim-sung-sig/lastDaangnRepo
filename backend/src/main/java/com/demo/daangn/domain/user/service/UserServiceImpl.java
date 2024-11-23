@@ -8,11 +8,11 @@ import com.demo.daangn.domain.email.service.EmailService;
 import com.demo.daangn.domain.event.service.EventPublisherService;
 import com.demo.daangn.domain.user.dto.event.UserSignUpEvent;
 import com.demo.daangn.domain.user.dto.request.DaangnUserModifiedRequest;
-import com.demo.daangn.domain.user.dto.request.DaangnUserSignUpRequest;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.entity.DaangnUserNickNameEntity;
-import com.demo.daangn.domain.user.repository.nickname.DaangnUserNickNameRepository;
-import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
+import com.demo.daangn.domain.user.dto.request.UserSignUpRequest;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.domain.user.entity.UserNickName;
+import com.demo.daangn.domain.user.repository.nickname.UserNickNameRepository;
+import com.demo.daangn.domain.user.repository.user.UserRepository;
 import com.demo.daangn.global.exception.CustomBusinessException;
 import com.demo.daangn.global.exception.CustomSystemException;
 import com.demo.daangn.global.util.common.CommonUtil;
@@ -27,15 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final DaangnUserRepository daangnUserRepository;
-    private final DaangnUserNickNameRepository daangnUserNickNameRepository;
+    private final UserRepository userRepository;
+    private final UserNickNameRepository userNickNameRepository;
     private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final EventPublisherService eventPublisher;
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Integer userSignUp(HttpServletRequest request, DaangnUserSignUpRequest signUpRequest){
+    public Integer userSignUp(HttpServletRequest request, UserSignUpRequest signUpRequest){
         try {
             String username = signUpRequest.getUsername();
             String password = signUpRequest.getPassword();
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
             String token = signUpRequest.getToken();
 
             // 1. username 중복 체크
-            daangnUserRepository.findByUsername(username).ifPresent(user -> {
+            userRepository.findByUsername(username).ifPresent(user -> {
                 throw new CustomBusinessException("이미 존재하는 아이디입니다.");
             });
 
@@ -55,14 +55,14 @@ public class UserServiceImpl implements UserService {
             }
 
             // 3. 닉네임 seq 계산
-            daangnUserNickNameRepository.save(DaangnUserNickNameEntity.builder().nickName(nickName).build());
-            Long nickNameSeq = daangnUserNickNameRepository.countByNickName(nickName);
+            userNickNameRepository.save(UserNickName.builder().nickName(nickName).build());
+            Long nickNameSeq = userNickNameRepository.countByNickName(nickName);
 
             // 4. 비밀번호 암호화
             String encrptedPassword = passwordEncoder.encode(password);
 
             // 5. 회원가입
-            DaangnUserEntity user = DaangnUserEntity.builder()
+            User user = User.builder()
                     .username(username)
                     .password(encrptedPassword)
                     .email(email)
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
                     .nickNameSeq(nickNameSeq)
                     .nickNameSeqFinal(nickName + "#_" + nickNameSeq)
                     .build();
-            daangnUserRepository.save(user);
+            userRepository.save(user);
 
             // 6. 회원가입했음을 이벤트로 알림
             eventPublisher.publishEvent(new UserSignUpEvent(user));
@@ -96,9 +96,9 @@ public class UserServiceImpl implements UserService {
     public Integer userWithdrawal(HttpServletRequest request){
         try {
             Integer result = 0;
-            DaangnUserEntity user = CommonUtil.getUser(request); // 이미 컨트롤러에서 한번 꺼내봄 ㄱㅊㄱㅊ
-            user.setIsUsed(0);
-            daangnUserRepository.save(user);
+            User user = CommonUtil.getUser(request); // 이미 컨트롤러에서 한번 꺼내봄 ㄱㅊㄱㅊ
+            user.deleteUser();
+            userRepository.save(user);
             result = 1;
             return result;
 

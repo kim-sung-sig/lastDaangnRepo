@@ -9,8 +9,8 @@ import com.demo.daangn.domain.chat.entity.ChatRoomUserEntity;
 import com.demo.daangn.domain.chat.exception.ChatRoomServiceException;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.domain.user.repository.user.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,13 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
-    private final DaangnUserRepository userRepository;
+    private final UserRepository userRepository;
 
     // 0. 채팅방 입장 가능한지 확인하기
     public Boolean isAvailableChatRoom(Long userId, Long chatRoomId) throws ChatRoomServiceException{
         try {
             // 1. 유저 조회
-            DaangnUserEntity user = userRepository.findById(userId)
+            User user = userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
 
             // 2. 채팅방 조회
@@ -62,7 +62,7 @@ public class ChatRoomService {
     public ChatRoomResponse getChatRoom(Long userId, Long chatRoomId) throws ChatRoomServiceException {
         try {
             // 1. 유저 조회
-            DaangnUserEntity user = userRepository.findById(userId)
+            User user = userRepository.findById(userId)
                     .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
 
             // 2. 채팅방 조회

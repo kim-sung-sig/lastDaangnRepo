@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +18,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Table(
-    name = "daangn_user_nick_name",
+    name = "user_nick_name",
     indexes = {
         @Index(name = "idx_daangn_user_nick_name", columnList = "nick_name")})
 @Entity
@@ -30,19 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Builder
 @Slf4j
-public class DaangnUserNickNameEntity extends BaseAuditEntity {
+public class UserNickName extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nick_name", nullable = false)
+    @Column(name = "nick_name", nullable = false, updatable = false)
     private String nickName;
 
-    @PrePersist
-    public void prePersist() {
-        if(this.getIsUsed() == null){
-            this.setIsUsed(1);
-        }
-    }
 }

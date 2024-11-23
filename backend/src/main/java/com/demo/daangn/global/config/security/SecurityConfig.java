@@ -19,7 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     @Autowired
-    private CustomUserDeailsService customUserDeailsService;
+    private CustomUserDetailsService customUserDeailsService;
 
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {

@@ -13,8 +13,8 @@ import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 import com.demo.daangn.domain.chat.repository.ChatMessageRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomRepository;
 import com.demo.daangn.domain.chat.repository.ChatRoomUserRepository;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.domain.user.repository.user.UserRepository;
 import com.demo.daangn.global.dto.response.PagingResponse;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -26,7 +26,7 @@ public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final DaangnUserRepository userRepository;
+    private final UserRepository userRepository;
     private final ChatRoomUserRepository chatRoomUserRepository;
     
     // 1. 쳇 메시지 얻기
@@ -37,9 +37,9 @@ public class ChatMessageService {
         }
         ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 채팅방입니다."));
-        DaangnUserEntity userEntity = userRepository.findById(usedId)
+        User user = userRepository.findById(usedId)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        chatRoomUserRepository.findByUserAndChatRoom(userEntity, chatRoomEntity)
+        chatRoomUserRepository.findByUserAndChatRoom(user, chatRoomEntity)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "채팅방에 참여하지 않은 유저입니다."));
         // end of validation
         
@@ -71,6 +71,7 @@ public class ChatMessageService {
     public Boolean updateChatMessage() {
         return null;
     }
+
     // 4. 쳇 메시지 삭제하기
     public Boolean deleteChatMessage(Long chatMessageId) throws Exception {
         ChatMessageEntity chatMessageEntity = chatMessageRepository.findById(chatMessageId)
@@ -78,7 +79,7 @@ public class ChatMessageService {
         if(chatMessageEntity.getIsUsed().equals(0)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 삭제된 메시지입니다.");
         }
-        chatMessageEntity.setIsUsed(0);
+        chatMessageEntity.delete();
         chatMessageRepository.save(chatMessageEntity);
         return true;
     }

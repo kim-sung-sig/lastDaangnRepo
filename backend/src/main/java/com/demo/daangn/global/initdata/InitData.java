@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
-import com.demo.daangn.domain.user.repository.user.DaangnUserRepository;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.domain.user.repository.user.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,29 +19,41 @@ public class InitData {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Bean
-    CommandLineRunner init(DaangnUserRepository userRepository) {
+    CommandLineRunner init(UserRepository userRepository) {
         return args -> {
             // 유저
-            DaangnUserEntity user1 = DaangnUserEntity.builder()
-                    .username("test1")
-                    .password(bCryptPasswordEncoder.encode("password1!"))
-                    .role("ROLE_ADMIN")
-                    .nickName("테스트계정1")
-                    .nickNameSeq(1L)
-                    .nickNameSeqFinal("테스트계정1 #_1")
-                    .build();
-            log.debug("user1: {}", user1);
-            userRepository.save(user1);
-
-            DaangnUserEntity user2 = DaangnUserEntity.builder()
-                    .username("test2")
-                    .password(bCryptPasswordEncoder.encode("password1!"))
-                    .role("ROLE_ADMIN")
-                    .nickName("테스트계정2")
-                    .nickNameSeq(1L)
-                    .nickNameSeqFinal("테스트계정2 #_1")
-                    .build();
-            userRepository.save(user2);
+            userRepository.findByUsername("test1").ifPresentOrElse(
+                    user -> log.debug("user1: {}", user),
+                    () -> {
+                        User user1 = User.builder()
+                                .username("test1")
+                                .password(bCryptPasswordEncoder.encode("password1!"))
+                                .role("ROLE_ADMIN")
+                                .email("test")
+                                .nickName("테스트계정1")
+                                .nickNameSeq(1L)
+                                .nickNameSeqFinal("테스트계정1 #_1")
+                                .build();
+                        log.debug("user1: {}", user1);
+                        userRepository.save(user1);
+                    }
+            );
+            
+            userRepository.findByUsername("test2").ifPresentOrElse(
+                    user -> log.debug("user2: {}", user),
+                    () -> {
+                        User user2 = User.builder()
+                                .username("test2")
+                                .password(bCryptPasswordEncoder.encode("password1!"))
+                                .role("ROLE_ADMIN")
+                                .email("test")
+                                .nickName("테스트계정2")
+                                .nickNameSeq(1L)
+                                .nickNameSeqFinal("테스트계정2 #_1")
+                                .build();
+                        userRepository.save(user2);
+                    }
+            );
         };
     }
 

@@ -10,7 +10,7 @@ import com.demo.daangn.domain.chat.entity.ChatMessageEntity;
 import com.demo.daangn.domain.chat.entity.QChatMessageEntity;
 import com.demo.daangn.domain.chat.entity.QChatRoomEntity;
 import com.demo.daangn.domain.chat.entity.QChatRoomUserEntity;
-import com.demo.daangn.domain.user.entity.QDaangnUserEntity;
+import com.demo.daangn.domain.user.entity.QUser;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class ChatMessageRepositoryCustomImpl implements ChatMessageRepositoryCus
         QChatMessageEntity chatMessage = QChatMessageEntity.chatMessageEntity;
         QChatRoomEntity chatRoom = QChatRoomEntity.chatRoomEntity;
         QChatRoomUserEntity chatRoomUser = QChatRoomUserEntity.chatRoomUserEntity;
-        QDaangnUserEntity user = QDaangnUserEntity.daangnUserEntity;
+        QUser user = QUser.user;
 
         return queryFactory
                 .select(chatMessage)
@@ -55,7 +55,7 @@ public class ChatMessageRepositoryCustomImpl implements ChatMessageRepositoryCus
         QChatMessageEntity chatMessage = QChatMessageEntity.chatMessageEntity;
         QChatRoomEntity chatRoom = QChatRoomEntity.chatRoomEntity;
         QChatRoomUserEntity chatRoomUser = QChatRoomUserEntity.chatRoomUserEntity;
-        QDaangnUserEntity user = QDaangnUserEntity.daangnUserEntity;
+        QUser user = QUser.user;
 
         return queryFactory
                 .select(chatMessage.count())

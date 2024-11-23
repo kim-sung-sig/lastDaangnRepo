@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file.scheduler;
+package com.demo.daangn.domain.file.scheduler;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
-import com.demo.daangn.global.util.file.repository.FileTempRepository;
-import com.demo.daangn.global.util.file.util.CustomFileUtil;
+import com.demo.daangn.domain.file.repository.FileTempRepository;
+import com.demo.daangn.global.util.file.CustomFileUtil;
 
 import lombok.extern.slf4j.Slf4j;
 

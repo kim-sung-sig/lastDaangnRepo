@@ -1,8 +1,9 @@
 package com.demo.daangn.domain.chat.entity;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,12 +43,19 @@ public class ChatMessageEntity extends BaseAuditEntity {
 
     @ManyToOne
     @JoinColumn(name = "sender", nullable = false)
-    private DaangnUserEntity sender;
+    private User sender;
 
     private Integer types;
 
     private String content; // 파일저장시 여기에 파일 경로.. // 일정일시 여기에 YYYY-MM-DD HH:mm:ss
 
     private Integer readed;
+
+    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Integer isUsed;
+
+    public void delete() {
+        this.isUsed = 0;
+    }
 
 }

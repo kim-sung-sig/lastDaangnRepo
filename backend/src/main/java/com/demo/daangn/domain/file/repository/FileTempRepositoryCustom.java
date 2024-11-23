@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file.repository;
+package com.demo.daangn.domain.file.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;

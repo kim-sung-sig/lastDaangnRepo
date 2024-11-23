@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.daangn.domain.chat.service.ChatRoomService;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.util.common.CommonUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,7 +30,7 @@ public class ChatController {
     @GetMapping()
     public ResponseEntity<?> getChatRoomList(HttpServletRequest request) {
         try {
-            DaangnUserEntity user = CommonUtil.getUser(request);
+            User user = CommonUtil.getUser(request);
             Long userId = user.getId();
 
             //chatRoomService.getChatRoomList(userId);

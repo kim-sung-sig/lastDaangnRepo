@@ -1,15 +1,15 @@
 package com.demo.daangn.domain.user.dto.event;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 
 import lombok.Getter;
 
 @Getter
 public class UserSignUpEvent {
 
-    private DaangnUserEntity signUpUser;
+    private User signUpUser;
 
-    public UserSignUpEvent (DaangnUserEntity signUpUser) {
+    public UserSignUpEvent (User signUpUser) {
         this.signUpUser = signUpUser;
     }
 

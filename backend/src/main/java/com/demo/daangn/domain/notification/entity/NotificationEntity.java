@@ -1,6 +1,6 @@
 package com.demo.daangn.domain.notification.entity;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
@@ -39,7 +39,7 @@ public class NotificationEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY) // 패치 필요 없음..
     @JoinColumn(name = "user_id")
-    private DaangnUserEntity user;
+    private User user;
 
     @Column(name = "content")
     private String content;

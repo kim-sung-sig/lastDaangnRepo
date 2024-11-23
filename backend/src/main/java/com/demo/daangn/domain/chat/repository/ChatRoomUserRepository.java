@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import com.demo.daangn.domain.chat.entity.ChatRoomEntity;
 import com.demo.daangn.domain.chat.entity.ChatRoomUserEntity;
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 
 @Repository
 public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUserEntity, Long> {
 
-    Optional<ChatRoomUserEntity> findByUserAndChatRoom(DaangnUserEntity user, ChatRoomEntity chatRoom);
+    Optional<ChatRoomUserEntity> findByUserAndChatRoom(User user, ChatRoomEntity chatRoom);
 
     @Query("select cu.user.id from ChatRoomUserEntity cu where cu.chatRoom = :chatRoomEntity")
     List<Long> findUserIdByChatRoom(@Param("chatRoomEntity") ChatRoomEntity chatRoomEntity);
@@ -24,6 +24,6 @@ public interface ChatRoomUserRepository extends JpaRepository<ChatRoomUserEntity
     List<ChatRoomUserEntity> findByChatRoom(@Param("chatRoomEntity") ChatRoomEntity chatRoomEntity);
 
     @Query("select cu.chatRoom.id from ChatRoomUserEntity cu where cu.user = :user")
-    List<Long> findByUser(@Param("user") DaangnUserEntity user);
+    List<Long> findByUser(@Param("user") User user);
 
 }

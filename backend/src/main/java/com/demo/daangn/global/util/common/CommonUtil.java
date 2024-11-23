@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.exception.AuthException;
 import com.demo.daangn.global.exception.CustomBusinessException;
 
@@ -25,10 +25,10 @@ public class CommonUtil {
      * @throws AuthException
      * @return
      */
-    public static DaangnUserEntity getUser(HttpServletRequest request) throws AuthException {
+    public static User getUser(HttpServletRequest request) throws AuthException {
         return Optional.ofNullable(request.getSession().getAttribute("user"))
-                .filter(DaangnUserEntity.class::isInstance)
-                .map(DaangnUserEntity.class::cast)
+                .filter(User.class::isInstance)
+                .map(User.class::cast)
                 .orElseThrow(() -> new AuthException("사용자 정보가 없습니다."));
     }
 
@@ -39,17 +39,40 @@ public class CommonUtil {
      */
     public static Boolean isUserLogin(HttpServletRequest request) {
         return Optional.ofNullable(request.getSession().getAttribute("user"))
-                .filter(DaangnUserEntity.class::isInstance)
-                .map(DaangnUserEntity.class::cast)
+                .filter(User.class::isInstance)
+                .map(User.class::cast)
                 .isPresent();
     }
 
+    /**
+     * 이메일 유효성 검사
+     * @param email
+     * @return
+     * @throws CustomBusinessException
+     */
     public static boolean emailValidation(String email) throws CustomBusinessException {
         if(email == null || email.isEmpty()) {
             return false;
         }
         Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
         Matcher matcher = emailPattern.matcher(email);
+
+        boolean result = matcher.matches();
+        return result;
+    }
+
+    /**
+     * 전화번호 유효성 검사
+     * @param phone
+     * @return
+     * @throws CustomBusinessException
+     */
+    public static boolean phoneValidation(String phone) throws CustomBusinessException {
+        if(phone == null || phone.isEmpty()) {
+            return false;
+        }
+        Pattern phonePattern = Pattern.compile("^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$");
+        Matcher matcher = phonePattern.matcher(phone);
 
         boolean result = matcher.matches();
         return result;
@@ -63,4 +86,5 @@ public class CommonUtil {
                 .collect(Collectors.joining());
         return randomNumber;
     }
+
 }

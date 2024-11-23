@@ -1,4 +1,4 @@
-package com.demo.daangn.global.util.file.controller;
+package com.demo.daangn.domain.file.controller;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartRequest;
 
+import com.demo.daangn.domain.file.dto.response.FileStoreTempResponse;
+import com.demo.daangn.domain.file.service.FileStorageService;
 import com.demo.daangn.global.dto.response.RsData;
 import com.demo.daangn.global.exception.AuthException;
 import com.demo.daangn.global.exception.FileStorageException;
 import com.demo.daangn.global.util.common.CommonUtil;
-import com.demo.daangn.global.util.file.dto.response.FileStoreTempResponse;
-import com.demo.daangn.global.util.file.service.FileStorageService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

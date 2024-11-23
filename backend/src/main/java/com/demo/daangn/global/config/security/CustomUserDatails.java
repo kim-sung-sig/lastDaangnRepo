@@ -7,33 +7,33 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.demo.daangn.domain.user.entity.DaangnUserEntity;
+import com.demo.daangn.domain.user.entity.User;
 
 import lombok.Data;
 
 @Data
 public class CustomUserDatails implements UserDetails {
 
-    private DaangnUserEntity userEntity;
+    private User user;
 
-    public CustomUserDatails(DaangnUserEntity userEntity){
-        this.userEntity = userEntity;
+    public CustomUserDatails(User user){
+        this.user = user;
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getUsername();
+        return user.getUsername();
     }
 
     @Override
     public String getPassword() {
-        return userEntity.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(userEntity.getRole()));
+        authorities.add(new SimpleGrantedAuthority(user.getRole()));
         return authorities;
     }
 

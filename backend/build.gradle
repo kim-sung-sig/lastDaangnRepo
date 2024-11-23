@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.2.2'
+	id 'org.springframework.boot' version '3.4.0'
 	id 'io.spring.dependency-management' version '1.1.5'
 }
 
@@ -36,7 +36,10 @@ dependencies {
 	// security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	// oauth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
 	// thymeleaf
@@ -46,11 +49,14 @@ dependencies {
 	// WebSocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
-	// DB
-	// runtimeOnly 'com.h2database:h2'
+	// mysql
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	// redis session
+	// implementation 'org.springframework.session:spring-session-data-redis'
+
 	// kafka
 	// implementation 'org.springframework.boot:spring-boot-starter-data-kafka'
 

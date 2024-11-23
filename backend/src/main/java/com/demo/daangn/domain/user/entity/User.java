@@ -21,13 +21,13 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Table(
-    name = "daangn_user",
+    name = "user",
     indexes = {
-        @Index(name = "idx_daangn_user_username", columnList = "username"),
-        @Index(name = "idx_daangn_user_uuid", columnList = "uuid"),
-        @Index(name = "idx_daangn_user_nick_name", columnList = "nick_name"),
-        @Index(name = "idx_daangn_user_nick_name_seq", columnList = "nick_name_seq"),
-        @Index(name = "idx_daangn_user_nick_name_seq_final", columnList = "nick_name_seq_final")})
+        @Index(name = "idx_user_username", columnList = "username"),
+        @Index(name = "idx_user_uuid", columnList = "uuid"),
+        @Index(name = "idx_user_nick_name", columnList = "nick_name"),
+        @Index(name = "idx_user_nick_name_seq", columnList = "nick_name_seq"),
+        @Index(name = "idx_user_nick_name_seq_final", columnList = "nick_name_seq_final")})
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -36,14 +36,13 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Builder
 @Slf4j
-public class DaangnUserEntity extends BaseAuditEntity {
+public class User extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "uuid", unique = true, nullable = false, updatable = false)
-    // @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID uuid;
 
     @Column(name = "username", unique = true, nullable = false)
@@ -70,14 +69,17 @@ public class DaangnUserEntity extends BaseAuditEntity {
     @Column(name = "user_profile")
     private String userProfile;
 
+    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) default 1")
+    private Integer isUsed;
+
     @PrePersist
     private void prePersist() {
         if (this.uuid == null) {
             this.uuid = UUID.randomUUID();
         }
         log.debug("prePersist uuid: {}", this.uuid);
-        if (this.getIsUsed() == null) {
-            this.setIsUsed(1);
+        if (this.isUsed == null) {
+            this.isUsed = 1;
         }
         log.debug("prePersist isUsed: {}", this.getIsUsed());
     }
@@ -93,6 +95,10 @@ public class DaangnUserEntity extends BaseAuditEntity {
 
     public void updateNickName(String nickName) {
         this.nickName = nickName;
+    }
+
+    public void deleteUser() {
+        this.isUsed = 0;
     }
 
 }
