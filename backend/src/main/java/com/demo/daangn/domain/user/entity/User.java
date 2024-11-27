@@ -1,5 +1,6 @@
 package com.demo.daangn.domain.user.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
@@ -36,7 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @Builder
 @Slf4j
-public class User extends BaseAuditEntity {
+public class User extends BaseAuditEntity implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
