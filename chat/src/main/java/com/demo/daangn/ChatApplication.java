@@ -1,4 +1,4 @@
-package com.demo.chat;
+package com.demo.daangn;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
