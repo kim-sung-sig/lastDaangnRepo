@@ -47,6 +47,11 @@ public class PageController {
         }
     }
 
+    @GetMapping("/test/test/chatConnect")
+    public String chatConnect(){
+        return "pages/test/chatRedisConnectionTest";
+    }
+
     @GetMapping("/{path:[^\\.]*}")
     public String redirect() {
         return "forward:/";

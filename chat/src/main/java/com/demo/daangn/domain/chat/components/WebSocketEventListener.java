@@ -1,4 +1,4 @@
-package com.demo.daangn.global.config.websocket;
+package com.demo.daangn.domain.chat.components;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -46,7 +46,7 @@ public class WebSocketEventListener {
                 chatRoomRegistry.getRoomUsers(roomId).remove(userId);
             }
         }
-        log.info("roomUserMap -> {}", chatRoomRegistry.getcheck());
+        // log.info("roomUserMap -> {}", chatRoomRegistry.getcheck());
     }
 
 }
