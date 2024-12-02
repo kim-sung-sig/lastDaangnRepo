@@ -10,13 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** 소캣 생성 소멸 감지 리스너 */
-@Component
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
     private final WebsocketChatRoomRegistry chatRoomRegistry;
 
+    // 웹소캣이 연결되었을 때 감지
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         log.info("WebSocket connection opened");
