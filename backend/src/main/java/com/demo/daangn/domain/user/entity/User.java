@@ -13,8 +13,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +28,8 @@ import lombok.extern.slf4j.Slf4j;
         @Index(name = "idx_user_nick_name_seq", columnList = "nick_name_seq"),
         @Index(name = "idx_user_nick_name_seq_final", columnList = "nick_name_seq_final")})
 @Entity
+@Data
 @EqualsAndHashCode(callSuper = false)
-@Getter
 @ToString(callSuper = true)
 @SuperBuilder
 @Slf4j
@@ -79,24 +79,12 @@ public class User extends BaseAuditEntity implements Serializable {
         if (this.uuid == null) {
             this.uuid = UUID.randomUUID();
         }
-        log.debug("prePersist uuid: {}", this.uuid);
         if (this.isUsed == null) {
             this.isUsed = true;
         }
-        log.debug("prePersist isUsed: {}", this.isUsed);
-    }
-
-    public void updateProfile(String nickName, String userProfile) {
-        this.nickName = nickName;
-        this.userProfile = userProfile;
-    }
-
-    public void updatePassword(String password) {
-        this.password = password;
-    }
-
-    public void updateNickName(String nickName) {
-        this.nickName = nickName;
+        if (this.pwdFailCount == null) {
+            this.pwdFailCount = 0;
+        }
     }
 
     public void deleteUser() {

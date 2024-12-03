@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.user.dto.request;
+package com.demo.daangn.domain.user.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

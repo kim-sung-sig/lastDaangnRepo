@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.user.dto.request;
+package com.demo.daangn.domain.user.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserSignUpRequest {
+public class SignUpRequest {
 
     @NotBlank
     private String username;

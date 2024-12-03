@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.daangn.domain.email.service.EmailService;
-import com.demo.daangn.domain.user.dto.request.VerifyCodeRequest;
+import com.demo.daangn.domain.user.request.VerifyCodeRequest;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

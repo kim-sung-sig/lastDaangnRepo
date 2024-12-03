@@ -1,4 +1,4 @@
-package com.demo.daangn.domain.user.dto.event;
+package com.demo.daangn.domain.user.event;
 
 import com.demo.daangn.domain.user.entity.User;
 

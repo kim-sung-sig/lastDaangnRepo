@@ -6,18 +6,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.daangn.domain.email.service.EmailService;
 import com.demo.daangn.domain.event.service.EventPublisherService;
-import com.demo.daangn.domain.user.dto.request.DaangnUserModifiedRequest;
-import com.demo.daangn.domain.user.dto.request.UserSignUpRequest;
 import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.domain.user.entity.UserNickName;
+import com.demo.daangn.domain.user.event.UserSignUpEvent;
 import com.demo.daangn.domain.user.repository.nickname.UserNickNameRepository;
 import com.demo.daangn.domain.user.repository.user.UserRepository;
+import com.demo.daangn.domain.user.request.DaangnUserModifiedRequest;
+import com.demo.daangn.domain.user.request.SignUpRequest;
 import com.demo.daangn.global.exception.CustomBusinessException;
 import com.demo.daangn.global.exception.CustomSystemException;
 import com.demo.daangn.global.util.common.CommonUtil;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Integer userSignUp(HttpServletRequest request, UserSignUpRequest signUpRequest){
+    public Integer userSignUp(SignUpRequest signUpRequest){
         try {
             String username = signUpRequest.getUsername();
             String password = signUpRequest.getPassword();
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
             // 6. 회원가입했음을 이벤트로 알림
-            // eventPublisher.publishEvent(new UserSignUpEvent(user));
+            eventPublisher.publishEvent(new UserSignUpEvent(user));
 
             return 1;
 
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Integer userUpdateDetails(HttpServletRequest request, DaangnUserModifiedRequest userModifiedRequest) {
+    public Integer updateUserDetails(DaangnUserModifiedRequest userModifiedRequest) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'userUpdateDetails'");
     }

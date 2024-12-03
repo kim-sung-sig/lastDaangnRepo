@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.demo.daangn.domain.user.dto.request.UserSignUpRequest;
+import com.demo.daangn.domain.user.request.SignUpRequest;
 import com.demo.daangn.domain.user.service.UserService;
 
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/daangn/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -29,19 +29,51 @@ public class UserController {
      * @param signUpRequest
      * @return
      */
-    @PostMapping(value = "/register")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserSignUpRequest signUpRequest) {
+    @PostMapping(value = "/signup")
+    public ResponseEntity<String> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
         return new ResponseEntity<>("Create Result", HttpStatus.OK);
     }
 
     /**
-     * 회원 정보 수정 (정보 수정, 비밀번호 변경)
+     * 회원 탈퇴
+     * @param request
+     * @return
+     */
+    @DeleteMapping(value = "/withdrawal")
+    public ResponseEntity<String> withdrawal() {
+        return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 정보 수정 (정보 수정, 비밀번호 제외)
      * @param id
      * @param dto
      * @return
      */
-    @PutMapping(value = "/update")
+    @PutMapping(value = "/{userUuid}")
     public ResponseEntity<?> modified(@RequestBody Object dto) {
+        return new ResponseEntity<>("Update Result", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 정보 수정 (비밀번호 변경)
+     * @param id
+     * @param dto
+     * @return
+     */
+    @PutMapping(value = "/{userUuid}/password")
+    public ResponseEntity<?> updatePassword(@RequestBody Object dto) {
+        return new ResponseEntity<>("Update Result", HttpStatus.OK);
+    }
+
+    /**
+     * 회원 정보 수정 (비밀번호 fail count 초기화)
+     * @param id
+     * @param dto
+     * @return
+     */
+    @PutMapping(value = "/{userUuid}/password/init")
+    public ResponseEntity<?> updatePwdFailCnt(@RequestBody Object dto) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 
@@ -51,19 +83,9 @@ public class UserController {
      * @param entity
      * @return
      */
-    @PutMapping("/profile/update")
+    @PostMapping("/{userUuid}/profile")
     public ResponseEntity<?> putMethodName(@RequestBody String entity) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
-    }
-
-    /**
-     * 회원 탈퇴
-     * @param request
-     * @return
-     */
-    @DeleteMapping(value = "/withdrawal")
-    public ResponseEntity<?> withdrawal() {
-        return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
     }
 
 }
