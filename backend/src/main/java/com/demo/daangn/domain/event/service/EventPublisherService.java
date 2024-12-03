@@ -3,7 +3,7 @@ package com.demo.daangn.domain.event.service;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
+import com.demo.daangn.domain.chat2.dto.response.ChatMessageResponse;
 import com.demo.daangn.domain.event.event.ChatMessageEvent;
 import com.demo.daangn.domain.event.repository.EventPublisherRepository;
 import com.demo.daangn.domain.user.dto.event.UserSignUpEvent;

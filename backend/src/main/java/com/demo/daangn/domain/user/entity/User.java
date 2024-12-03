@@ -13,16 +13,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Table(
-    name = "user",
+    name = "dn_user",
     indexes = {
         @Index(name = "idx_user_username", columnList = "username"),
         @Index(name = "idx_user_uuid", columnList = "uuid"),
@@ -33,9 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @ToString(callSuper = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@SuperBuilder
 @Slf4j
 public class User extends BaseAuditEntity implements Serializable {
 
@@ -72,8 +68,11 @@ public class User extends BaseAuditEntity implements Serializable {
     @Column(name = "user_profile")
     private String userProfile;
 
-    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) default 1")
-    private Integer isUsed;
+    @Column(name = "is_used", nullable = false)
+    private Boolean isUsed;
+
+    @Column(name = "pwd_fail_count", nullable = false)
+    private Integer pwdFailCount;
 
     @PrePersist
     private void prePersist() {
@@ -82,9 +81,9 @@ public class User extends BaseAuditEntity implements Serializable {
         }
         log.debug("prePersist uuid: {}", this.uuid);
         if (this.isUsed == null) {
-            this.isUsed = 1;
+            this.isUsed = true;
         }
-        log.debug("prePersist isUsed: {}", this.getIsUsed());
+        log.debug("prePersist isUsed: {}", this.isUsed);
     }
 
     public void updateProfile(String nickName, String userProfile) {
@@ -101,7 +100,7 @@ public class User extends BaseAuditEntity implements Serializable {
     }
 
     public void deleteUser() {
-        this.isUsed = 0;
+        this.isUsed = false;
     }
 
 }

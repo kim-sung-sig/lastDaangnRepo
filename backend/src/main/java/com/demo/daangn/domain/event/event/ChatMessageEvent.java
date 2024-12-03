@@ -1,6 +1,6 @@
 package com.demo.daangn.domain.event.event;
 
-import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
+import com.demo.daangn.domain.chat2.dto.response.ChatMessageResponse;
 
 import lombok.Getter;
 

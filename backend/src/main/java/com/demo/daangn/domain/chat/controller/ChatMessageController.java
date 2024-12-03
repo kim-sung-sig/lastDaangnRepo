@@ -1,66 +1,56 @@
 package com.demo.daangn.domain.chat.controller;
 
+import java.util.UUID;
+
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.demo.daangn.domain.chat.dto.request.ScrollRequest;
-import com.demo.daangn.domain.chat.dto.response.ChatMessageResponse;
-import com.demo.daangn.domain.chat.service.ChatMessageService;
-import com.demo.daangn.global.dto.response.PagingResponse;
-
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * 채팅 메시지 컨트롤러
- */
+
+@Slf4j
 @RestController
-@RequestMapping("/api/v1/users/{userId}/chats/{chatRoomId}/messages/") // TODO : URL 수정
+@RequestMapping("/api/v1/chat")
 @RequiredArgsConstructor
 public class ChatMessageController {
-    
-    private final ChatMessageService chatMessageService;
 
-    // 6. 채팅 메시지 가져오기
-    @GetMapping("")
-    public ResponseEntity<PagingResponse< ChatMessageResponse >> getChatMessages(
-        @PathVariable("userId") Long userId,
-        @PathVariable("chatRoomId") Long chatRoomId,
-        @Valid @ModelAttribute ScrollRequest sc
-    ) {
-        try {
-            PagingResponse<ChatMessageResponse> res = chatMessageService.getChatMessages(chatRoomId, userId, sc.getLastItemId(), sc.getPageSize());
-            return new ResponseEntity<>(res, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    // 7. 채팅 메시지 저장하기 노필요 핸들러가 받아줌
+    private final RabbitTemplate rabbitTemplate;
 
-    // 8. 채팅 메시지 수정하기
-    @PutMapping("/{messageId}")
-    public ResponseEntity<?> update() {
+
+    @PostMapping(value = "/{chatRoomUuid}/message", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> sendMessage(@PathVariable UUID chatRoomUuid, @RequestBody Object message) {
+        String methodName = "sendMessage";
         try {
-            return new ResponseEntity<>("Update Result", HttpStatus.OK);
+            log.debug("[{}] chatRoomUuid => {}, message => {}", methodName, chatRoomUuid, message);
+            rabbitTemplate.convertAndSend("daangn.chat.direct.exchange", "daangn.chat.routingKey", message);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("[{}] chatRoomUuid => {}, message => {}", methodName, chatRoomUuid, message, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    // 9. 채팅 메시지 삭제하기
-    @DeleteMapping("/{messageId}")
-    public ResponseEntity<?> deleteChatMessage() {
+    @PostMapping(value = "/{chatRoomUuid}/message/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> sendMessageWithFile(@PathVariable UUID chatRoomUuid, @RequestPart("message") Object message, @RequestPart("file") MultipartFile[] file) {
+        String methodName = "sendMessageWithFile";
         try {
-            return new ResponseEntity<>("Delete Result", HttpStatus.OK);
+            log.debug("[{}] chatRoomUuid => {}, message => {}, file => {}", methodName, chatRoomUuid, message, file);
+            rabbitTemplate.convertAndSend("daangn.chat.direct.exchange", "daangn.chat.routingKey", message);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("[{}] chatRoomUuid => {}, message => {}, file => {}", methodName, chatRoomUuid, message, file, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
 }

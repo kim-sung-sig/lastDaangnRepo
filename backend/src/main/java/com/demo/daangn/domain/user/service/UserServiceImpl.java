@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.daangn.domain.email.service.EmailService;
 import com.demo.daangn.domain.event.service.EventPublisherService;
-import com.demo.daangn.domain.user.dto.event.UserSignUpEvent;
 import com.demo.daangn.domain.user.dto.request.DaangnUserModifiedRequest;
 import com.demo.daangn.domain.user.dto.request.UserSignUpRequest;
 import com.demo.daangn.domain.user.entity.User;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
 
             // 6. 회원가입했음을 이벤트로 알림
-            eventPublisher.publishEvent(new UserSignUpEvent(user));
+            // eventPublisher.publishEvent(new UserSignUpEvent(user));
 
             return 1;
 
@@ -93,20 +92,14 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public Integer userWithdrawal(HttpServletRequest request){
-        try {
-            Integer result = 0;
-            User user = CommonUtil.getUser(request); // 이미 컨트롤러에서 한번 꺼내봄 ㄱㅊㄱㅊ
-            user.deleteUser();
-            userRepository.save(user);
-            result = 1;
-            return result;
-
-        } catch (Exception e) {
-            log.error("fail userWithdrawal");
-            e.printStackTrace();
-            throw new CustomSystemException("회원탈퇴 실패", e);
-        }
+    public Integer userWithdrawal(){
+        Integer result = 0;
+        User user = CommonUtil.getLoginUser()
+                .orElseThrow(() -> new CustomSystemException("로그인 정보가 없습니다."));
+        user.deleteUser();
+        userRepository.save(user);
+        result = 1;
+        return result;
     }
 
     @Override

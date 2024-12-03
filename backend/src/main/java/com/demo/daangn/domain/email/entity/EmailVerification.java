@@ -12,13 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+import lombok.experimental.SuperBuilder;
 
 @Table(
     name = "email_verification")
@@ -26,10 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @ToString(callSuper = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Slf4j
+@SuperBuilder
 public class EmailVerification extends BaseAuditEntity {
 
     @Id
@@ -42,8 +36,8 @@ public class EmailVerification extends BaseAuditEntity {
 
     private String emailKey;
 
-    @Column(name = "is_verified",columnDefinition = "TINYINT(1) DEFAULT 0")
-    private Integer isVerified;
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified;
 
     @Column(name = "expire_date")
     private LocalDateTime expireDate;
@@ -53,12 +47,8 @@ public class EmailVerification extends BaseAuditEntity {
         if (this.emailToken == null) { // 토큰 생성
             this.emailToken = UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
         }
-        if(getCreateDate() == null) {
-            setCreateDate(LocalDateTime.now());
-        }
         if(this.isVerified == null) {
-            this.isVerified = 0;
+            this.isVerified = false;
         }
-        log.debug("prePersist emailToken: {}", this.emailToken);
     }
 }

@@ -1,9 +1,8 @@
-package com.demo.daangn.domain.notification.entity;
+package com.demo.daangn.domain.usedmarket.entity;
 
 import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,28 +18,27 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "notifications",
+    name = "user__used_market",
     indexes = {
-        @Index(name = "idx_notifications_user_id", columnList = "user_id")})
+        @Index(name = "idx_user__used_market_user_id", columnList = "user_id"),
+        @Index(name = "idx_user__used_market_used_market_id", columnList = "used_market_id")})
 @Entity
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @SuperBuilder
-public class NotificationEntity extends BaseAuditEntity {
+public class UserUsedMarketEntity extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // 패치 필요 없음..
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "content")
-    private String content;
-
-    @Column(name = "is_readed")
-    private Integer isReaded;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "used_market_id", nullable = false)
+    private UsedMarket usedMarket;
 
 }

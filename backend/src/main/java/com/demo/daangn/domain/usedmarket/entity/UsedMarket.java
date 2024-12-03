@@ -7,21 +7,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Table(name = "daangn_used_market")
 @Entity
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@SuperBuilder
 public class UsedMarket extends BaseAuditEntity {
 
     @Id

@@ -7,11 +7,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.demo.daangn.domain.user.entity.User;
-import com.demo.daangn.global.exception.AuthException;
-import com.demo.daangn.global.exception.CustomBusinessException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import jakarta.servlet.http.HttpServletRequest;
+import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.global.config.security.CustomUserDatails;
+import com.demo.daangn.global.exception.CustomBusinessException;
 
 /*
  * 자주 사용될 공통 메소드를 정의하는 클래스
@@ -19,29 +20,22 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CommonUtil {
 
     /**
-     * 사용자 정보 가져오기
-     * 세션올 올라간 유저 정보를 찾아온다.
-     * @param request
-     * @throws AuthException
+     * 현재 로그인한 유저 조회
      * @return
      */
-    public static User getUser(HttpServletRequest request) throws AuthException {
-        return Optional.ofNullable(request.getSession().getAttribute("user"))
-                .filter(User.class::isInstance)
-                .map(User.class::cast)
-                .orElseThrow(() -> new AuthException("사용자 정보가 없습니다."));
+    public static Optional<User> getLoginUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null && authentication.getPrincipal() instanceof CustomUserDatails) {
+            CustomUserDatails userDatails = (CustomUserDatails) authentication.getPrincipal();
+            User loginUser = userDatails.getUser();
+            return Optional.of(loginUser);
+        }
+        return Optional.empty();
     }
 
-    /**
-     * 사용자 로그인 여부 확인
-     * @param request
-     * @return
-     */
-    public static Boolean isUserLogin(HttpServletRequest request) {
-        return Optional.ofNullable(request.getSession().getAttribute("user"))
-                .filter(User.class::isInstance)
-                .map(User.class::cast)
-                .isPresent();
+    public static Optional<Long> getLoginUserSeq() {
+        return getLoginUser()
+                .map(User::getId);
     }
 
     /**

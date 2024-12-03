@@ -1,17 +1,15 @@
 package com.example.daangn.chat;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.demo.daangn.BackendApplication;
-import com.demo.daangn.domain.chat.service.ChatRoomService;
 
 @SpringBootTest(classes = BackendApplication.class)
 public class ChatRoomTest {
 
-    @Autowired
-    private ChatRoomService chatRoomService;
+    // @Autowired
+    // private ChatRoomService chatRoomService;
 
     // @Test
     // public void createChatRoomTest() {
