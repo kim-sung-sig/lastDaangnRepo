@@ -18,7 +18,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "user__used_market",
+    name = "user__dn_used_market",
     indexes = {
         @Index(name = "idx_user__used_market_user_id", columnList = "user_id"),
         @Index(name = "idx_user__used_market_used_market_id", columnList = "used_market_id")})

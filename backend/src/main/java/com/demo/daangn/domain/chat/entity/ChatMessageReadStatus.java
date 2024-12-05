@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-@Table(name = "chat_message_read_status")
+@Table(name = "dn_chat_message_read_status")
 @Entity
 @Getter
 @SuperBuilder

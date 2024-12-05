@@ -16,7 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table
+@Table(name = "dn_chat_message")
 @Entity
 @Getter
 @AllArgsConstructor
@@ -41,9 +40,9 @@ public class ChatMessage {
 
     // private Set<File> file; // 추후 FileEntity로 변경
 
-    @OneToOne(mappedBy = "chatMessage", fetch = FetchType.LAZY)
+    // @OneToOne(mappedBy = "chatMessage", fetch = FetchType.LAZY)
     @Column(name = "reference_message_id")
-    private ChatMessage references; // 답변, 참조 등
+    private UUID references; // 답변, 참조 등
 
     @Column(name = "message_uuid", nullable = false, unique = true, updatable = false)
     private UUID messageUuid;

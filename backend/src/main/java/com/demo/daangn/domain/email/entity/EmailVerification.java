@@ -18,7 +18,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "email_verification")
+    name = "dn_email_verification")
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter

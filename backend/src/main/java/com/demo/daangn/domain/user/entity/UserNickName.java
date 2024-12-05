@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Table(
-    name = "user_nick_name",
+    name = "dn_user_nick_name",
     indexes = {
         @Index(name = "idx_user_nick_name", columnList = "nick_name")})
 @Entity
@@ -33,5 +34,13 @@ public class UserNickName extends BaseAuditEntity {
 
     @Column(name = "nick_name", nullable = false, updatable = false)
     private String nickName;
+
+    @Column(name = "num", nullable = false)
+    private Long num;
+
+    @PrePersist
+    public void prePersist() {
+        this.num = 1L;
+    }
 
 }

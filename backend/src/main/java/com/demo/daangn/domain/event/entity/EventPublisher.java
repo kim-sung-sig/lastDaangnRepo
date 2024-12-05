@@ -16,7 +16,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "event_publisher",
+    name = "dn_event_publisher",
     indexes = {
         @Index(name = "idx_event_publisher_published", columnList = "published")})
 @Entity

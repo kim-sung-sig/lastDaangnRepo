@@ -16,7 +16,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "temp_file",
+    name = "dn_temp_file",
     indexes = {
         @Index(name = "idx_temp_file_random_key", columnList = "random_key")})
 @Entity

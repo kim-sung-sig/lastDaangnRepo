@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Table(name = "daangn_used_market")
+@Table(name = "dn_used_market")
 @Entity
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)

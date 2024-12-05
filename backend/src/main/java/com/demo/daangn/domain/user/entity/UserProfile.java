@@ -1,6 +1,6 @@
 package com.demo.daangn.domain.user.entity;
 
-import com.demo.daangn.global.dto.entity.BaseAuditEntity;
+import com.demo.daangn.global.dto.entity.BaseFileEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @ToString(callSuper = true)
 @SuperBuilder
-public class UserProfile extends BaseAuditEntity {
+public class UserProfile extends BaseFileEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,16 +38,13 @@ public class UserProfile extends BaseAuditEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "file_url")
-    private String fileUrl;
-
-    @Column(name = "is_used", columnDefinition = "TINYINT(1) DEFAULT 1")
-    private Integer isUsed;
+    @Column(name = "is_used")
+    private Boolean isUsed;
 
     @PrePersist
     public void prePersist() {
         if (this.isUsed == null) {
-            this.isUsed = 1;
+            this.isUsed = true;
         }
     }
 

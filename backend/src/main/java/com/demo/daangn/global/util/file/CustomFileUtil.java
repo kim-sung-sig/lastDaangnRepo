@@ -221,4 +221,18 @@ public class CustomFileUtil {
 
         return fileName.substring(lastDotIndex + 1).toLowerCase();
     }
+
+    // 확장자를 제거한 파일명 반환
+    public static String getFileNameWithoutExtension(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
+
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return fileName;
+        }
+
+        return fileName.substring(0, lastDotIndex);
+    }
 }

@@ -20,7 +20,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "user_chat_room_mapping")
+@Table(name = "user__dn_chat_room")
 @Entity
 @Getter
 @AllArgsConstructor

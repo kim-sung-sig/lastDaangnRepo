@@ -19,7 +19,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "notifications",
+    name = "dn_notifications",
     indexes = {
         @Index(name = "idx_notifications_user_id", columnList = "user_id")})
 @Entity
