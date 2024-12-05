@@ -108,4 +108,14 @@ public class UserServiceImpl implements UserService {
         throw new UnsupportedOperationException("Unimplemented method 'userUpdateDetails'");
     }
 
+    @Override
+    public String updateUserProfile(String randomKey) {
+        throw new UnsupportedOperationException("Unimplemented method 'updateUserProfile'");
+    }
+
+    @Override
+    public String deleteUserProfile() {
+        throw new UnsupportedOperationException("Unimplemented method 'deleteUserProfile'");
+    }
+
 }

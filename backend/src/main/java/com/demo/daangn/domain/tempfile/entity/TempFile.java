@@ -1,5 +1,7 @@
 package com.demo.daangn.domain.tempfile.entity;
 
+import java.util.UUID;
+
 import com.demo.daangn.global.dto.entity.BaseFileEntity;
 
 import jakarta.persistence.Column;
@@ -24,7 +26,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @ToString(callSuper = true)
 @SuperBuilder
-public class FileTempEntity extends BaseFileEntity {
+public class TempFile extends BaseFileEntity {
+
     /*
      * 임시파일용 데이터베이스 테이블
      */
@@ -33,17 +36,13 @@ public class FileTempEntity extends BaseFileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 파일의 고유 ID
 
-    @Column(name = "random_key", unique = true, nullable = false)
-    private String randomKey; // 파일의 랜덤 키
-
-    @Column(name = "is_used", nullable = false)
-    private Boolean isUsed; // 사용 여부 (0: 사용 안함, 1: 사용 중)
+    @Column(name = "temp_file_uuid", unique = true, nullable = false)
+    private UUID tempFileUuid; // 파일의 UUID
 
     @PrePersist
     public void prePersist() {
-        if (this.isUsed == null) {
-            this.isUsed = false;
+        if(this.tempFileUuid == null) {
+            this.tempFileUuid = UUID.randomUUID();
         }
     }
-
 }

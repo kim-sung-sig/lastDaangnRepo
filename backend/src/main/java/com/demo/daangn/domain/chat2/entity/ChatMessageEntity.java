@@ -1,18 +1,6 @@
 package com.demo.daangn.domain.chat2.entity;
 
-import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 
 // @Table(
 //     name = "daangn_chat_message",
@@ -20,35 +8,35 @@ import lombok.experimental.SuperBuilder;
 //         @Index(name = "idx_daangn_chat_message_room_id", columnList = "roomId"),
 //         @Index(name = "idx_daangn_chat_message_sender", columnList = "sender")})
 // @Entity
-@EqualsAndHashCode(callSuper = false)
-@Getter
-@ToString(callSuper = true)
-@SuperBuilder
+// @EqualsAndHashCode(callSuper = false)
+// @Getter
+// @ToString(callSuper = true)
+// @SuperBuilder
 public class ChatMessageEntity extends BaseAuditEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // @Id
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "roomId", nullable = false)
-    private ChatRoomEntity room;
+    // @ManyToOne
+    // @JoinColumn(name = "roomId", nullable = false)
+    // private ChatRoomEntity room;
 
-    @ManyToOne
-    @JoinColumn(name = "sender", nullable = false)
-    private User sender;
+    // @ManyToOne
+    // @JoinColumn(name = "sender", nullable = false)
+    // private User sender;
 
-    private Integer types;
+    // private Integer types;
 
-    private String content; // 파일저장시 여기에 파일 경로.. // 일정일시 여기에 YYYY-MM-DD HH:mm:ss
+    // private String content; // 파일저장시 여기에 파일 경로.. // 일정일시 여기에 YYYY-MM-DD HH:mm:ss
 
-    private Integer readed;
+    // private Integer readed;
 
-    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    private Integer isUsed;
+    // @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    // private Integer isUsed;
 
-    public void delete() {
-        this.isUsed = 0;
-    }
+    // public void delete() {
+    //     this.isUsed = 0;
+    // }
 
 }

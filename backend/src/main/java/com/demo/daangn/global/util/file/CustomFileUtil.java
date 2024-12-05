@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -219,7 +220,7 @@ public class CustomFileUtil {
             return "";
         }
 
-        return fileName.substring(lastDotIndex + 1).toLowerCase();
+        return fileName.substring(lastDotIndex).toLowerCase();
     }
 
     // 확장자를 제거한 파일명 반환
@@ -234,5 +235,29 @@ public class CustomFileUtil {
         }
 
         return fileName.substring(0, lastDotIndex);
+    }
+
+    // 파일명 유효성 검사
+    public static boolean validateFileName(String filName) {
+        if(filName == null || filName.isEmpty() || filName.contains("..")) {
+            return false;
+        }
+        return true;
+    }
+
+    // 파일 확장자 유효성 검사
+    public static boolean validateFileExtension(String fileName, Collection<String> allowedExtensions) {
+        String fileExtension = getFileExtension(fileName);
+        return allowedExtensions.contains(fileExtension);
+    }
+
+    public static boolean validateFileSize(MultipartFile file, long maxSize) {
+        return 0 < file.getSize() && file.getSize() <= maxSize;
+    }
+
+    public static boolean validateFile(MultipartFile file, Collection<String> allowedExtensions, long maxSize) {
+        return validateFileName(file.getOriginalFilename())
+                && validateFileExtension(file.getOriginalFilename(), allowedExtensions)
+                && validateFileSize(file, maxSize);
     }
 }

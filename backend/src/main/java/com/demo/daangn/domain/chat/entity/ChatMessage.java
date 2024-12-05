@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.demo.daangn.domain.chat.enums.ChatMessageType;
+import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,17 +20,17 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Table(name = "dn_chat_message")
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ChatMessage {
+@SuperBuilder
+public class ChatMessage extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

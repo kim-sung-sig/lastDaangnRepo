@@ -21,8 +21,10 @@ public interface UserService {
     // 6. 비밀번호 fail count 초기화 하기 >> 인증 후 비밀번호 변경
 
     // 7. 프로필 사진 변경하기
+    String updateUserProfile(String randomKey);
 
-    // 8. 프로필 사진 수정하기
+    // 8. 프로필 사진 삭제하기
+    String deleteUserProfile();
 
     // 9. 회원 정보 조회하기(유저용)
 

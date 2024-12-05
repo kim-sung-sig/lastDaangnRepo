@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FileStoreTempResponse {
 
-    private String randomKey;
-
-    private List<Long> fileIds;
-
-    private List<String> fileUrls;
+    private List<FileStoreRs> files;
 
 }

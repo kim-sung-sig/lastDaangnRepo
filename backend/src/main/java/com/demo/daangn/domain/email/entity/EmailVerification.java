@@ -14,6 +14,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -21,6 +22,7 @@ import lombok.experimental.SuperBuilder;
     name = "dn_email_verification")
 @Entity
 @EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
 @Getter
 @ToString(callSuper = true)
 @SuperBuilder

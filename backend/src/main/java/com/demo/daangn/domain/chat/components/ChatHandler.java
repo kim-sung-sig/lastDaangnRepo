@@ -1,19 +1,13 @@
 package com.demo.daangn.domain.chat.components;
 
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@Controller
-@RequiredArgsConstructor
+// @Slf4j
+// @Controller
+// @RequiredArgsConstructor
 public class ChatHandler {
     
     // @Autowired
-    private final SimpMessagingTemplate messagingTemplate;
-    private final WebsocketChatRoomRegistry chatRoomRegistry;
+    // private final SimpMessagingTemplate messagingTemplate;
+    // private final WebsocketChatRoomRegistry chatRoomRegistry;
     
     // private final UserRepository userRepository;
     // private final ChatRoomRepository chatRoomRepository;
