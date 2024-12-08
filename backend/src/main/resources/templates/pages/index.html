@@ -115,7 +115,7 @@
             { path: '/test1', component: Test1 },
             { path: '/test2', component: Test2 },
             { path: '/test3', component: Test3 },
-            { path: '/test4', component: Test4 }
+            { path: '/test4', component: () => import('/components/Test.js') }
         ];
 
         const router = createRouter({

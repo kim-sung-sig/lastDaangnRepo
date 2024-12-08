@@ -2,14 +2,13 @@
 <html xmlns:th=http://www.thymeleaf.org xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head>
-	<title>당근마켓-로그인</title>
-	<meta charset="utf-8">
+	<title>당근마켓 - 로그인</title>
+	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<th:block th:insert="~{component/default/defaultCss.html}"></th:block>
 	<th:block th:insert="~{component/default/defaultScript.html}"></th:block>
-	<!-- Vue.js CDN -->
-	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<!-- <script src="/js/login/login.js"></script> -->
 </head>
 
 <body>
@@ -18,47 +17,132 @@
 		<form @submit.prevent="login">
 			<div>
 				<label for="username">Username:</label>
-				<input class="uk-input" v-model="username" id="username" ref="usernameInput" placeholder="Username" />
+				<input
+					class="uk-input"
+					v-model="username"
+					id="username"
+					ref="usernameInput"
+					placeholder="Username"
+				/>
 				<span v-if="usernameError">{{ usernameError }}</span>
 			</div>
 			<div>
 				<label for="password">Password:</label>
-				<input class="uk-input" v-model="password" id="password" type="password" ref="passwordInput" placeholder="Password" autocomplete="false"/>
+				<input
+					class="uk-input"
+					v-model="password"
+					id="password"
+					type="password"
+					ref="passwordInput"
+					placeholder="Password"
+					autocomplete="off"
+				/>
 				<span v-if="passwordError">{{ passwordError }}</span>
+			</div>
+			<div v-if="failCnt">
+				<label for="checker">Checker:</label>
+				<input
+					class="uk-input"
+					v-model="checker"
+					id="checker"
+					type="text"
+					ref="checkerInput"
+					disabled
+				/>
+				<input
+					class="uk-input"
+					v-model="checkerVal"
+					id="checkerVal"
+					type="text"
+					ref="checkerValInput"
+					placeholder="Checker"
+				/>
+				<span v-if="checkerError">{{ checkerError }}</span>
 			</div>
 			<button class="uk-button" type="submit">Login</button>
 		</form>
 	</div>
 
+
 	<script>
-		new Vue({
-			el: '#app',
-			data: {
-				username: '',
-				password: '',
-				usernameError: '',
-				passwordError: ''
+		const { createApp } = Vue;
+	</script>
+
+	<script>
+		const app = createApp({
+			data() {
+				return {
+					username: '',
+					password: '',
+					usernameError: '',
+					passwordError: '',
+					failCnt : false,
+					isLocked : false,
+					checker : '',
+					checkerVal : '',
+					checkerError : '',
+				}
 			},
 			methods: {
-				async login() {
+				login() {
 					try {
 						const loginValidCheker = this.loginValidation(this.username, this.password);
+						this.doLogin();
+					} catch (error) {/* nothing to do */}
+				},
 
+				async doLogin() {
+					try {
 						const formData = new FormData();
 						formData.append('username', this.username);
 						formData.append('password', this.password);
 
-						const response = await axios.post('/login', formData);
-
+						const response = await axios.post('/login', formData,);
+						console.log(response.status);
+						console.log(response.data);
+						// debugger;
 						if(response.data?.success === true){
-							location.href = '/';
+							const redirectUrl = response.data?.redirectUrl;
+							if(redirectUrl){
+								location.href = redirectUrl;
+							} else {
+								location.href = '/';
+							}
 						} else {
 							alert('로그인 실패');
 							this.clearForm();
 						}
 
 					} catch (e) {
-						console.error(e.message);
+						const response = e.response;
+						const msg = response.data?.message;
+						console.log(msg);
+						if ("USERNAME_NOT_FOUND" === msg) {
+							alert('존재하지 않는 사용자입니다.');
+							this.clearForm();
+						}
+						if (msg.startsWith("PASSWORD_NOT_MATCH")) {
+							const message = '비밀번호가 일치하지 않습니다.';
+
+							alert(message);
+							const count = msg.split(':')[1];
+							if(count >= 5) {
+								this.failCnt = true;
+								this.checker = 'checker';
+								this.checkerVal = '';
+							}
+							this.password = '';
+							this.$refs.passwordInput.focus();
+							this.passwordError = message;
+						}
+						if ("LOCKED" === msg) {
+							alert('계정이 잠겼습니다. 계정 잠금을 해제해주세요.');
+							// locked 페이지로 변경
+						}
+						if ("INTERNAL_SERVER_ERROR" === msg) {
+							alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+							location.reload();
+						}
 					}
 				},
 
@@ -86,21 +170,33 @@
 					} else {
 						this.passwordError = '';
 					}
+					if(this.failCnt) {
+						if(this.checkerVal !== this.checker) {
+							alert('checker를 입력해주세요.');
+							this.checkerError = 'checker를 입력해주세요.';
+							this.checkerVal = '';
+							this.$refs.checkerInput.focus();
+							throw new Error('checker를 입력해주세요.');
+						} else {
+							this.checkerError = '';
+						}
+					}
 				},
 
 				clearForm() {
-                    this.username = '';
-                    this.password = '';
-                    this.$refs.usernameInput.focus();
-                }
+					this.username = '';
+					this.password = '';
+					this.$refs.usernameInput.focus();
+				}
 			},
 
 			mounted() {
 				// 자동으로 사용자 이름 입력 필드에 포커스 설정
 				this.$refs.usernameInput.focus();
 			}
-		});
+		})
+		
+		app.mount('#app');
 	</script>
 </body>
-
 </html>

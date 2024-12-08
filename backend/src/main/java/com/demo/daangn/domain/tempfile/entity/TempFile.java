@@ -1,7 +1,5 @@
 package com.demo.daangn.domain.tempfile.entity;
 
-import java.util.UUID;
-
 import com.demo.daangn.global.dto.entity.BaseFileEntity;
 
 import jakarta.persistence.Column;
@@ -10,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,12 +34,6 @@ public class TempFile extends BaseFileEntity {
     private Long id; // 파일의 고유 ID
 
     @Column(name = "temp_file_uuid", unique = true, nullable = false)
-    private UUID tempFileUuid; // 파일의 UUID
+    private String tempFileUuid; // 파일의 UUID
 
-    @PrePersist
-    public void prePersist() {
-        if(this.tempFileUuid == null) {
-            this.tempFileUuid = UUID.randomUUID();
-        }
-    }
 }

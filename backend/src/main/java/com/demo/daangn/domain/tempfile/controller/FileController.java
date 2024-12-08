@@ -62,6 +62,28 @@ public class FileController {
         }
     }
 
+    // 1. 파일 임시저장
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<RsData< FileStoreTempResponse >> uploadFile(HttpServletRequest request, MultipartRequest multipartRequest) {
+        try {
+            // 임시 파일 저장 및 randomKey 생성
+            FileStoreTempResponse fileStoreTempResponse = fileStorageService.saveTempFile(multipartRequest);
+
+            // randomKey 반환
+            return new ResponseEntity<>(RsData.of("ok", fileStoreTempResponse), HttpStatus.OK);
+
+        } catch (AuthException e) {
+            // 인증 실패 시 401 응답
+            return new ResponseEntity<>(RsData.of("Unauthorized"), HttpStatus.UNAUTHORIZED);
+        } catch (FileStorageException e) {
+            // 파일 저장 실패 시 500 응답
+            return new ResponseEntity<>(RsData.of("File storage failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            // 기타 예외 발생 시 500 응답
+            return new ResponseEntity<>(RsData.of("An unexpected error occurred: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * 파일 읽기 주소
      * @param request
@@ -179,27 +201,5 @@ public class FileController {
     //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     //     }
     // }
-
-    // 1. 파일 임시저장
-    @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<RsData< FileStoreTempResponse >> uploadFile(HttpServletRequest request, MultipartRequest multipartRequest) {
-        try {
-            // 임시 파일 저장 및 randomKey 생성
-            FileStoreTempResponse fileStoreTempResponse = fileStorageService.saveTempFile(multipartRequest);
-
-            // randomKey 반환
-            return new ResponseEntity<>(RsData.of("ok", fileStoreTempResponse), HttpStatus.OK);
-
-        } catch (AuthException e) {
-            // 인증 실패 시 401 응답
-            return new ResponseEntity<>(RsData.of("Unauthorized"), HttpStatus.UNAUTHORIZED);
-        } catch (FileStorageException e) {
-            // 파일 저장 실패 시 500 응답
-            return new ResponseEntity<>(RsData.of("File storage failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            // 기타 예외 발생 시 500 응답
-            return new ResponseEntity<>(RsData.of("An unexpected error occurred: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
 }

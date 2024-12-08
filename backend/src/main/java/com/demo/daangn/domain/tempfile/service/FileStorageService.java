@@ -43,17 +43,17 @@ public class FileStorageService {
         this.tempFileRepository = tempFileRepository;
         this.tempRootLocation = Paths.get(tempDir).toAbsolutePath().normalize();
         try {
-            CustomFileUtil.createDirectoryIfNotExists(this.tempRootLocation);
+            Files.createDirectories(this.tempRootLocation);
         } catch (IOException ex) {
             throw new FileStorageException("Could not create the directory where the uploaded files will be stored.", ex);
         }
     }
 
-    private final String RANDOM_KEY_PREFIX = "V1_";
     private final String FILE_REQUEST_PARAM = "file";
-    private final String BASE_URL = "/api/v1/file/upload/";
+    private final String RANDOM_KEY_PREFIX = "V1_";
+    private final String BASE_URL = "/api/v1/file/upload/temp";
     private final Set<String> ALLOWED_FILE_EXTENSIONS = Set.of(".jpg", ".jpeg", ".png", ".gif", ".webp");
-    private final long MAX_FILE_SIZE = 10485760; // 10MB
+    private final long MAX_FILE_SIZE = 1024 * 1024 * 10; // 10MB
 
 
     // select
@@ -66,7 +66,11 @@ public class FileStorageService {
      */
     public Resource loadTempFileAsResource(String randomKey, String fileName) throws FileNotFoundException {
         Path randomKeyTempDir = tempRootLocation.resolve(randomKey);
-        return CustomFileUtil.getFileResource(randomKeyTempDir, fileName);
+        Resource resource = CustomFileUtil.getFileResource(randomKeyTempDir, fileName)
+                .orElseThrow(() -> new FileNotFoundException("File not found: " + fileName));
+
+
+        return null;
     }
 
     // insert
@@ -87,10 +91,8 @@ public class FileStorageService {
         }
 
         // 파일 유효성 검증
-        for(MultipartFile file : files) {
-            if(CustomFileUtil.validateFile(file, ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE)) {
-                throw new CustomBusinessException("Invalid file: " + file.getOriginalFilename());
-            }
+        if(files.stream().anyMatch(file -> !CustomFileUtil.validateFile(file, ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE))) {
+            throw new CustomBusinessException("Invalid file.");
         }
 
         // 로직 시작
@@ -107,11 +109,11 @@ public class FileStorageService {
                 String savedFileName = CustomFileUtil.storeFile(randomTempDir, file);
 
                 // 3. DB 저장
-                TempFile tempEntity = saveRandomKeyInDatabase(randomUuid, randomTempDir.resolve(savedFileName), file); // DB 저장
+                TempFile tempEntity = saveRandomKeyInDatabase(randomKey, randomTempDir.resolve(savedFileName), file); // DB 저장
 
                 // 리턴용 URL 생성
-                String fileUrl = BASE_URL + randomKey + "/" + savedFileName;
-                fileStoreRs.add(new FileStoreRs(tempEntity.getTempFileUuid().toString(), fileUrl));
+                Path previewPath = Paths.get(BASE_URL, randomKey, savedFileName);
+                fileStoreRs.add(new FileStoreRs(previewPath, tempEntity));
             }
 
             return FileStoreTempResponse.builder()
@@ -124,17 +126,17 @@ public class FileStorageService {
         }
     }
 
-    private TempFile saveRandomKeyInDatabase(UUID uuid, Path savedFilePath, MultipartFile file) throws FileStorageException {
+    private TempFile saveRandomKeyInDatabase(String randomKey, Path savedFilePath, MultipartFile file) throws FileStorageException {
         try {
             TempFile fileTempEntity = TempFile.builder()
-                    .tempFileUuid(uuid)
+                    .tempFileUuid(randomKey)
                     .filePath(savedFilePath.toAbsolutePath().toString())
                     .fileOriginName(file.getOriginalFilename())
                     .fileExt(CustomFileUtil.getFileExtension(file.getOriginalFilename()))
                     .fileType(file.getContentType()) // .jpg, .png, .gif, .webp
                     .fileSize(file.getSize())
                     .build();
-
+            log.debug("임시저장 파일 > fileTempEntity: {}", fileTempEntity);
             return tempFileRepository.save(fileTempEntity);
 
         } catch (Exception e) {
@@ -142,6 +144,10 @@ public class FileStorageService {
             throw new FileStorageException("Failed to save random key in database.", e);
         }
     }
+
+
+
+
 
     /**
      * 파일 실제 저장

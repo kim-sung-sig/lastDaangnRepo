@@ -26,10 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info(" : " + username + "으로 호출");
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Unimplemented method 'loadUserByUsername'"));
-        if(user.getIsUsed().equals(0)){ // 탈퇴한 회원 처리
-            throw new UsernameNotFoundException("탈퇴한 회원입니다.");
-        }
-        
+
         log.info("user => {}", user);
         return new CustomUserDatails(user);
     }

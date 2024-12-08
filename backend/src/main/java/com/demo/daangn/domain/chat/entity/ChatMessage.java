@@ -1,6 +1,5 @@
 package com.demo.daangn.domain.chat.entity;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -58,9 +57,6 @@ public class ChatMessage extends BaseAuditEntity {
     @Column(name = "big_content", columnDefinition = "TEXT")
     private String bigContent;
 
-    @Column(name = "create_date")
-    private LocalDateTime createdDate;
-
     @Column(name = "is_sent", nullable = false)
     private Boolean isSent;
 
@@ -71,9 +67,6 @@ public class ChatMessage extends BaseAuditEntity {
     public void prePersist() {
         if(this.messageUuid == null) {
             this.messageUuid = UUID.randomUUID();
-        }
-        if(this.createdDate == null) {
-            this.createdDate = LocalDateTime.now();
         }
         if(this.isDeleted == null) {
             this.isDeleted = false;

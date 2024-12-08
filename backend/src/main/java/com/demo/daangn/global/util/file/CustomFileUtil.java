@@ -1,7 +1,6 @@
 package com.demo.daangn.global.util.file;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,17 +31,17 @@ public class CustomFileUtil {
      * @return
      * @throws IOException
      */
-    public static Resource getFileResource(Path filePath, String fileName) throws FileNotFoundException {
+    public static Optional<Resource> getFileResource(Path filePath, String fileName) {
         try {
             Path file = filePath.resolve(fileName).normalize();
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() && resource.isReadable()) {
-                return resource;
+                return Optional.ofNullable(resource);
             } else {
-                throw new FileNotFoundException("File not found or not readable: " + fileName);
+                return Optional.empty();
             }
         } catch (Exception e) {
-            throw new FileNotFoundException("File not found or not readable: " + fileName);
+            return Optional.empty();
         }
     }
 

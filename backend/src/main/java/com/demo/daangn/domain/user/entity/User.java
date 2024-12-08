@@ -1,6 +1,7 @@
 package com.demo.daangn.domain.user.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
@@ -71,10 +72,16 @@ public class User extends BaseAuditEntity implements Serializable {
     private String userProfile;
 
     @Column(name = "is_used", nullable = false)
-    private Boolean isUsed;
+    private Integer isUsed;                     // 0 : 탈퇴, 1 : 사용, 2 : 잠김
+
+    @Column(name = "pwd_unlock_code")
+    private String pwdUnlockCode;
 
     @Column(name = "pwd_fail_count", nullable = false)
     private Integer pwdFailCount;
+
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
 
     @PrePersist
     private void prePersist() {
@@ -82,7 +89,7 @@ public class User extends BaseAuditEntity implements Serializable {
             this.uuid = UUID.randomUUID();
         }
         if (this.isUsed == null) {
-            this.isUsed = true;
+            this.isUsed = 1;
         }
         if (this.pwdFailCount == null) {
             this.pwdFailCount = 0;
@@ -90,7 +97,7 @@ public class User extends BaseAuditEntity implements Serializable {
     }
 
     public void deleteUser() {
-        this.isUsed = false;
+        this.isUsed = 0;
     }
 
 }

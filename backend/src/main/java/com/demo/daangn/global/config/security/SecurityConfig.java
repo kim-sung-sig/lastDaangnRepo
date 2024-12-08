@@ -1,12 +1,14 @@
 package com.demo.daangn.global.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,6 +25,12 @@ public class SecurityConfig {
     private CustomUserDetailsService customUserDeailsService;
 
     @Autowired
+    private CustomLoginSuccessHandler customLoginSuccessHandler;
+
+    @Autowired
+    private CustomLoginFailureHandler customLoginFailureHandler;
+
+    @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDeailsService).passwordEncoder(new BCryptPasswordEncoder());
     }
@@ -30,6 +38,12 @@ public class SecurityConfig {
     @Bean
     BCryptPasswordEncoder getBCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     @Bean
@@ -43,7 +57,8 @@ public class SecurityConfig {
                 .loginPage("/login").permitAll()
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .successHandler(new CustomLoginSuccessHandler());
+                .successHandler(customLoginSuccessHandler)
+                .failureHandler(customLoginFailureHandler);
         });
         http.logout((logout) -> {
             logout
@@ -53,17 +68,17 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorize) -> {
             authorize
-                // main
-                .requestMatchers("/img/**", "/js/**", "/css/**", "/api/upload/file/**").permitAll()
                 // user
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/check/**").permitAll() // 중복확인
                 .requestMatchers(HttpMethod.GET, "/api/user/status").permitAll() // 로그인 상태 확인
+
                 // usedBoard
                 .requestMatchers("/test1", "/test2", "/test3", "/test2/**").permitAll()
 
                 // swagger
                 .requestMatchers("/h2-console", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
                 // admin
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated();

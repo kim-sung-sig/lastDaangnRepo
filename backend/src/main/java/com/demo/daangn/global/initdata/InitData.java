@@ -1,12 +1,9 @@
 package com.demo.daangn.global.initdata;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.demo.daangn.domain.user.entity.User;
@@ -24,8 +21,8 @@ public class InitData {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    // @Autowired
+    // private RedisTemplate<String, Object> redisTemplate;
 
     @Bean
     CommandLineRunner init() {
@@ -63,8 +60,6 @@ public class InitData {
                         userRepository.save(user2);
                     }
             );
-
-            redisTemplate.opsForValue().set("test", "test", 60, TimeUnit.SECONDS);
         };
     }
 
