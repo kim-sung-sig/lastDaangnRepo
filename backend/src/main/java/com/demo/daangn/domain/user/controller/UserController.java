@@ -3,6 +3,7 @@ package com.demo.daangn.domain.user.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +52,7 @@ public class UserController {
      * @return
      */
     @PutMapping(value = "/{userUuid}")
-    public ResponseEntity<?> modified(@RequestBody Object dto) {
+    public ResponseEntity<?> modified(@PathVariable String userUuid, @RequestBody Object dto) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 
@@ -72,7 +73,7 @@ public class UserController {
      * @param dto
      * @return
      */
-    @PutMapping(value = "/{userUuid}/password/init")
+    @PutMapping(value = "/{userUuid}/password/unlock")
     public ResponseEntity<?> updatePwdFailCnt(@RequestBody Object dto) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
@@ -84,7 +85,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/{userUuid}/profile")
-    public ResponseEntity<?> putMethodName(@RequestBody String entity) {
+    public ResponseEntity<?> putMethodName(@PathVariable("userUuid") String userUuid, @RequestBody String fileId) {
         return new ResponseEntity<>("Update Result", HttpStatus.OK);
     }
 

@@ -1,7 +1,9 @@
 package com.demo.daangn.global.util.common;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -36,6 +38,35 @@ public class CommonUtil {
     public static Optional<Long> getLoginUserSeq() {
         return getLoginUser()
                 .map(User::getId);
+    }
+
+    public static Optional<UUID> getLoginUserUuid() {
+        return getLoginUser()
+                .map(User::getUuid);
+    }
+
+    public static boolean isNotBlank(String... strs) {
+        for (String str : strs) {
+            if (str == null || str.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isNotBlank(String str) {
+        return str != null && !str.isEmpty();
+    }
+
+    public static boolean isNotBlank(Collection<?> collection) {
+        return collection != null && !collection.isEmpty();
+    }
+
+    public static boolean isNotBlank(Object obj) {
+        if (obj == null) return false;
+        if (obj instanceof String) return isNotBlank((String) obj);
+        if (obj instanceof Collection) return isNotBlank((Collection<?>) obj);
+        return true;
     }
 
     /**

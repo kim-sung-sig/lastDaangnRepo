@@ -68,8 +68,6 @@ public class FileStorageService {
         Path randomKeyTempDir = tempRootLocation.resolve(randomKey);
         Resource resource = CustomFileUtil.getFileResource(randomKeyTempDir, fileName)
                 .orElseThrow(() -> new FileNotFoundException("File not found: " + fileName));
-
-
         return null;
     }
 
@@ -144,10 +142,6 @@ public class FileStorageService {
             throw new FileStorageException("Failed to save random key in database.", e);
         }
     }
-
-
-
-
 
     /**
      * 파일 실제 저장
