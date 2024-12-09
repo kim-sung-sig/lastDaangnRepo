@@ -8,67 +8,87 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<th:block th:insert="~{component/default/defaultCss.html}"></th:block>
 	<th:block th:insert="~{component/default/defaultScript.html}"></th:block>
+	<link rel="stylesheet" href="/css/login/login.css">
 	<!-- <script src="/js/login/login.js"></script> -->
 </head>
 
 <body>
-	<div id="app">
-		<h2>Login</h2>
-		<form @submit.prevent="login">
-			<div>
-				<label for="username">Username:</label>
-				<input
-					class="uk-input"
-					v-model="username"
-					id="username"
-					ref="usernameInput"
-					placeholder="Username"
-				/>
-				<span v-if="usernameError">{{ usernameError }}</span>
-			</div>
-			<div>
-				<label for="password">Password:</label>
-				<input
-					class="uk-input"
-					v-model="password"
-					id="password"
-					type="password"
-					ref="passwordInput"
-					placeholder="Password"
-					autocomplete="off"
-				/>
-				<span v-if="passwordError">{{ passwordError }}</span>
-			</div>
-			<div v-if="failCnt">
-				<label for="checker">Checker:</label>
-				<input
-					class="uk-input"
-					v-model="checker"
-					id="checker"
-					type="text"
-					ref="checkerInput"
-					disabled
-				/>
-				<input
-					class="uk-input"
-					v-model="checkerVal"
-					id="checkerVal"
-					type="text"
-					ref="checkerValInput"
-					placeholder="Checker"
-				/>
-				<span v-if="checkerError">{{ checkerError }}</span>
-			</div>
-			<button class="uk-button" type="submit">Login</button>
-		</form>
-	</div>
+	<div id="wrap">
+		<div id="app">
+			<form @submit.prevent="login" id="login-form">
 
+				<!-- username input -->
+				<div class="input-component">
+					<div class="input-container">
+						<input
+							class="uk-input"
+							v-model="username"
+							id="username"
+							ref="usernameInput"
+							placeholder=""
+						/>
+						<label for="username">Username</label>
+						<span v-if="usernameError" class="error-message">{{ usernameError }}</span>
+						<!-- <span class="error-message">에러테스트</span> -->
+					</div>
+				</div>
+
+				<!-- password input -->
+				<div class="input-component">
+					<div class="input-container">
+						<input
+							class="uk-input"
+							v-model="password"
+							id="password"
+							type="password"
+							ref="passwordInput"
+							placeholder=""
+						/>
+						<label for="password">Password</label>
+						<span v-if="passwordError" class="error-message">{{ passwordError }}</span>
+						<!-- <span class="error-message">에러테스트</span> -->
+					</div>
+				</div>
+
+				<!-- checker input-->
+				<div v-if="failCnt" id="failBox">
+					<div class="input-component">
+						<div class="input-container">
+							<input
+								class="uk-input"
+								v-model="checker"
+								id="checker"
+								type="text"
+								ref="checkerInput"
+								value="checker"
+								disabled
+							/>
+							<span class="message">인증 번호</span>
+						</div>
+					</div>
+					<div class="input-component">
+						<div class="input-container">
+							<input
+								class="uk-input"
+								v-model="checkerVal"
+								id="checkerVal"
+								type="text"
+								ref="checkerValInput"
+								placeholder=""
+							/>
+							<label for="checkerVal">인증 번호 입력</label>
+							<span v-if="checkerError" class="error-message">{{ checkerError }}</span>
+							<!-- <span class="error-message">에러테스트</span> -->
+						</div>
+					</div>
+				</div>
+				<button id="login-btn" class="uk-button" type="submit">Login</button>
+			</form>
+		</div>
+	</div>
 
 	<script>
 		const { createApp } = Vue;
-	</script>
-
-	<script>
 		const app = createApp({
 			data() {
 				return {
@@ -85,10 +105,8 @@
 			},
 			methods: {
 				login() {
-					try {
-						const loginValidCheker = this.loginValidation(this.username, this.password);
-						this.doLogin();
-					} catch (error) {/* nothing to do */}
+					const loginValidCheker = this.loginValidation();
+					if(loginValidCheker) this.doLogin();
 				},
 
 				async doLogin() {
@@ -151,22 +169,22 @@
 				 * @param {string} username 사용자 이름
 				 * @param {string} password 비밀번호
 				 */
-				loginValidation(username, password) {
-					if (username.trim().length === 0) {
+				loginValidation() {
+					if (this.username.trim().length === 0) {
 						alert('아이디를 입력해주세요.');
 						this.usernameError = '아이디를 입력해주세요.';
 						this.username = '';
 						this.$refs.usernameInput.focus();
-						throw new Error('아이디를 입력해주세요.');
+						return false;
 					} else {
 						this.usernameError = '';
 					}
-					if (password.trim().length === 0) {
+					if (this.password.trim().length === 0) {
 						alert('비밀번호를 입력해주세요.');
 						this.passwordError = '비밀번호를 입력해주세요.';
 						this.password = '';
 						this.$refs.passwordInput.focus();
-						throw new Error('비밀번호를 입력해주세요.');
+						return false;
 					} else {
 						this.passwordError = '';
 					}
@@ -176,11 +194,12 @@
 							this.checkerError = 'checker를 입력해주세요.';
 							this.checkerVal = '';
 							this.$refs.checkerInput.focus();
-							throw new Error('checker를 입력해주세요.');
+							return false;
 						} else {
 							this.checkerError = '';
 						}
 					}
+					return true;
 				},
 
 				clearForm() {
@@ -195,7 +214,7 @@
 				this.$refs.usernameInput.focus();
 			}
 		})
-		
+
 		app.mount('#app');
 	</script>
 </body>
