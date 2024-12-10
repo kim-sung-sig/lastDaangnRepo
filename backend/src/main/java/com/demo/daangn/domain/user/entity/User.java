@@ -5,11 +5,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
+import com.demo.daangn.global.enums.IsUsedEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
@@ -41,11 +42,8 @@ public class User extends BaseAuditEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "uuid", unique = true, nullable = false, updatable = false)
-    private UUID uuid;
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
@@ -72,7 +70,8 @@ public class User extends BaseAuditEntity implements Serializable {
     private String userProfile;
 
     @Column(name = "is_used", nullable = false)
-    private Integer isUsed;                     // 0 : 탈퇴, 1 : 사용, 2 : 잠김
+    @Enumerated(EnumType.STRING)
+    private IsUsedEnum isUsed;                     // 0 : 탈퇴, 1 : 사용, 2 : 잠김
 
     @Column(name = "pwd_unlock_code")
     private String pwdUnlockCode;
@@ -85,11 +84,11 @@ public class User extends BaseAuditEntity implements Serializable {
 
     @PrePersist
     private void prePersist() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID();
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
         }
         if (this.isUsed == null) {
-            this.isUsed = 1;
+            this.isUsed = IsUsedEnum.ENABLED;
         }
         if (this.pwdFailCount == null) {
             this.pwdFailCount = 0;
@@ -97,7 +96,7 @@ public class User extends BaseAuditEntity implements Serializable {
     }
 
     public void deleteUser() {
-        this.isUsed = 0;
+        this.isUsed = IsUsedEnum.DISABLED;
     }
 
 }

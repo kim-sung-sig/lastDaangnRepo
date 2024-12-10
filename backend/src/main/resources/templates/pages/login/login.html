@@ -4,7 +4,6 @@
 <head>
 	<title>당근마켓 - 로그인</title>
 	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<th:block th:insert="~{component/default/defaultCss.html}"></th:block>
 	<th:block th:insert="~{component/default/defaultScript.html}"></th:block>
@@ -15,6 +14,11 @@
 <body>
 	<div id="wrap">
 		<div id="app">
+			<div id="login-logo">
+				<div id="imgaa">
+					LOGO
+				</div>
+			</div>
 			<form @submit.prevent="login" id="login-form">
 
 				<!-- username input -->
@@ -82,8 +86,16 @@
 						</div>
 					</div>
 				</div>
+
 				<button id="login-btn" class="uk-button" type="submit">Login</button>
 			</form>
+			<div id="find-wrap">
+				<ul>
+					<li><a>비밀번호 찾기</a></li>
+					<li><a>아이디 찾기</a></li>
+					<li><a>회원가입</a></li>
+				</ul>
+			</div>
 		</div>
 	</div>
 

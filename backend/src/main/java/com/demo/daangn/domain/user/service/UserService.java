@@ -108,33 +108,7 @@ public class UserService {
     // 3.4 비빌번호 찾기 >> 인증 후 비밀번호 변경
     // 3.5 비밀번호 fail count 초기화 하기 >> 인증 후 비밀번호 변경
 
-    // 4. 유저 프로필
-    // 4.1 프로필 사진 변경하기
-    public String updateUserProfile(String userUuid, String fileId) {
-        throw new UnsupportedOperationException("Unimplemented method 'updateUserProfile'");
-    }
-
-    // 4.1.1 프로필 사진 변경하기(my)
-    public String updateUserProfile(String fileId) {
-        String userUuid = CommonUtil.getLoginUserUuid().toString();
-        return updateUserProfile(userUuid, fileId);
-    }
-
-    // 4.2 프로필 사진 조회하기
-
-    // 4.3 프로필 사진 목록 조회하기
-
-    // 4.4 프로필 사진 상세 조회하기(다운로드목적?)
-
-    // 4.5 프로필 사진 다운로드하기
-
-    // 4.6 프로필 사진 삭제하기
-    public String deleteUserProfile() {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteUserProfile'");
-    }
-
-    // 4.6.1 프로필 사진 삭제하기(my)
-
+    
 
     // 5. 회원 탈퇴하기
     @Transactional(rollbackFor = {Exception.class})

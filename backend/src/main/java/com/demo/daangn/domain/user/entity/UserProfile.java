@@ -1,9 +1,14 @@
 package com.demo.daangn.domain.user.entity;
 
+import java.util.UUID;
+
 import com.demo.daangn.global.dto.entity.BaseFileEntity;
+import com.demo.daangn.global.enums.IsUsedEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,19 +37,23 @@ public class UserProfile extends BaseFileEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "is_used")
-    private Boolean isUsed;
+    @Enumerated(EnumType.STRING)
+    private IsUsedEnum isUsed;
 
     @PrePersist
     public void prePersist() {
+        if(this.id == null) {
+            this.id = UUID.randomUUID();
+        }
         if (this.isUsed == null) {
-            this.isUsed = true;
+            this.isUsed = IsUsedEnum.ENABLED;
         }
     }
 

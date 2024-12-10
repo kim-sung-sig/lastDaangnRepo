@@ -1,5 +1,7 @@
 package com.demo.daangn.domain.event.entity;
 
+import java.util.UUID;
+
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
@@ -28,7 +30,7 @@ public class EventPublisher extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Column(name = "published", nullable = false)
     private Boolean published;
@@ -37,7 +39,8 @@ public class EventPublisher extends BaseAuditEntity {
     private String content;
 
     @PrePersist
-    public void prePersist() {
+    private void prePersist() {
+        if(this.id == null) this.id = UUID.randomUUID();
         if(this.published == null) this.published = false;
     }
 

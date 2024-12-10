@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.domain.user.repository.user.UserRepository;
+import com.demo.daangn.global.enums.IsUsedEnum;
 import com.demo.daangn.global.util.common.CommonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -70,10 +71,10 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
             return "USERNAME_NOT_FOUND";
         }
         User user = userOp.get();
-        if(user.getIsUsed() == 0) {
+        if(user.getIsUsed().equals(IsUsedEnum.DISABLED)) {
             return "DISABLED";
         }
-        if (user.getIsUsed() == 2) {
+        if (user.getIsUsed().equals(IsUsedEnum.LOCKED)) {
             return "LOCKED";
         }
 
@@ -92,7 +93,7 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
 
     private void userLockProcess(User user) {
         user.setPwdUnlockCode(CommonUtil.generateRandomKey());
-        user.setIsUsed(2);
+        user.setIsUsed(IsUsedEnum.LOCKED);
         userRepository.save(user);
         log.debug("username : {} 계정 잠김 처리", user.getUsername());
     }

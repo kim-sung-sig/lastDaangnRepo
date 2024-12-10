@@ -22,13 +22,13 @@ public class BcryptTest {
 
     @Test
         void bcryptTest(){
-        User dbuser = userRepository.findById(1L)
+        User dbuser = userRepository.findByUsername("test1")
                 .orElseThrow(() -> new EntityNotFoundException());
 
         dbuser.setPassword(bCryptPasswordEncoder.encode("password1!"));
         userRepository.save(dbuser);
 
-        User dbuser2 = userRepository.findById(2L)
+        User dbuser2 = userRepository.findByUsername("test2")
                 .orElseThrow(() -> new EntityNotFoundException());
 
         dbuser2.setPassword(bCryptPasswordEncoder.encode("password1!")); // setter 대신 update 메소드를 사용하여 변경 (이로서 SRP 원칙을 지킬 수 있다.)

@@ -4,11 +4,13 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+import com.demo.daangn.global.enums.IsUsedEnum;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -27,15 +29,11 @@ import lombok.NoArgsConstructor;
 public class ChatRoom {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
-    private Long id;
+    private UUID id;
 
     @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY)
     private Set<UserChatRoom> chatRoomUsers;
-
-    @Column(name = "chat_room_uuid")
-    private UUID chatRoomUuid;
 
     @Column(name = "create_date")
     private LocalDateTime createDate;
@@ -43,19 +41,20 @@ public class ChatRoom {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Column(name = "is_used")
+    @Enumerated(EnumType.STRING)
+    private IsUsedEnum isUsed;
 
     @PrePersist
-    public void prePersist() {
-        if(this.chatRoomUuid == null) {
-            this.chatRoomUuid = UUID.randomUUID();
+    private void prePersist() {
+        if(this.id == null) {
+            this.id = UUID.randomUUID();
         }
         if(this.createDate == null) {
             this.createDate = LocalDateTime.now();
         }
-        if(this.isDeleted == null) {
-            this.isDeleted = false;
+        if(this.isUsed == null) {
+            this.isUsed = IsUsedEnum.ENABLED;
         }
     }
 }

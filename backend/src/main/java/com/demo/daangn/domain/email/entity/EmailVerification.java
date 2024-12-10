@@ -7,8 +7,6 @@ import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -29,8 +27,8 @@ import lombok.experimental.SuperBuilder;
 public class EmailVerification extends BaseAuditEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", updatable = false)
+    private UUID id;
 
     private String email;
 
@@ -46,6 +44,9 @@ public class EmailVerification extends BaseAuditEntity {
 
     @PrePersist
     private void prePersist() {
+        if(this.id == null) {
+            this.id = UUID.randomUUID();
+        }
         if (this.emailToken == null) { // 토큰 생성
             this.emailToken = UUID.randomUUID().toString() + "_" + System.currentTimeMillis();
         }

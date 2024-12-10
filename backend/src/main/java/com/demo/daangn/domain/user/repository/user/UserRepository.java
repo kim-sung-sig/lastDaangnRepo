@@ -1,6 +1,7 @@
 package com.demo.daangn.domain.user.repository.user;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,16 +9,10 @@ import org.springframework.stereotype.Repository;
 import com.demo.daangn.domain.user.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
-    Optional<User> findById(Long id);
+    Optional<User> findById(UUID id);
 
     Optional<User> findByUsername(String username);
-
-    // @Query("SELECT u FROM DaangnUserEntity u LEFT JOIN FETCH u.chatRoomUsers WHERE u.id = :id")
-    // Optional<DaangnUserEntity> findByIdWithChatRooms(@Param("id") Long id);
-
-    // @Query("SELECT u FROM DaangnUserEntity u LEFT JOIN FETCH u.notifications WHERE u.id = :id")
-    // Optional<DaangnUserEntity> findByIdWithNotifications(@Param("id") Long id);
 
 }

@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -40,16 +41,16 @@ public class FileCleanupTasklet implements Tasklet {
         // 1. 1시간 이상 된 isUsed=0인 파일 목록 조회
         LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
         List<TempFile> tempFiles = tempFileRepository.findByCreateDateBefore(oneHourAgo);
-        List<String> uuids = tempFiles.stream().map(TempFile::getTempFileUuid).toList();
+        List<UUID> uuids = tempFiles.stream().map(TempFile::getId).toList();
 
         log.debug("delete file size = " + uuids.size());
 
         // 2. 파일 삭제
-        List<String> deletedUuids = new ArrayList<>();
-        for (String uuid : uuids) {
+        List<UUID> deletedUuids = new ArrayList<>();
+        for (UUID uuid : uuids) {
             try {
                 log.debug("Processing uuid: " + uuid);
-                Path deleteFilePath = tempRootLocation.resolve(uuid).normalize();
+                Path deleteFilePath = tempRootLocation.resolve(uuid.toString()).normalize();
                 CustomFileUtil.deleteFiles(deleteFilePath);
                 deletedUuids.add(uuid);
             } catch (Exception e) {
@@ -62,8 +63,8 @@ public class FileCleanupTasklet implements Tasklet {
         int batchSize = 1000;
         for (int i = 0; i < deletedUuids.size(); i += batchSize) {
             int toIndex = Math.min(i + batchSize, deletedUuids.size());
-            List<String> subList = deletedUuids.subList(i, toIndex);
-            tempFileRepository.deleteByTempFileUuidIn(subList);
+            List<UUID> subList = deletedUuids.subList(i, toIndex);
+            tempFileRepository.deleteByIdIn(subList);
         }
 
 

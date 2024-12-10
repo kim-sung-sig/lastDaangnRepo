@@ -1,5 +1,7 @@
 package com.demo.daangn.domain.chat.components;
 
+import java.util.UUID;
+
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -35,8 +37,8 @@ public class WebSocketEventListener {
         String sessionId = headerAccessor.getSessionId();
         log.info("Web socket connection closed, sessionId: {}", sessionId);
 
-        Long roomId = (Long) headerAccessor.getSessionAttributes().get("roomId");
-        Long userId = (Long) headerAccessor.getSessionAttributes().get("userId");
+        UUID roomId = UUID.fromString(headerAccessor.getSessionAttributes().get("roomId").toString());
+        UUID userId = UUID.fromString(headerAccessor.getSessionAttributes().get("userId").toString());
         
         if(userId != null && roomId != null){
             chatRoomRegistry.removeUserFromRoom(roomId, userId);

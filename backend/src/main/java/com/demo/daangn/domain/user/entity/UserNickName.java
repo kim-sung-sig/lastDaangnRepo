@@ -1,5 +1,7 @@
 package com.demo.daangn.domain.user.entity;
 
+import java.util.UUID;
+
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
@@ -30,7 +32,7 @@ public class UserNickName extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Column(name = "nick_name", nullable = false, updatable = false)
     private String nickName;
@@ -40,7 +42,12 @@ public class UserNickName extends BaseAuditEntity {
 
     @PrePersist
     public void prePersist() {
-        this.num = 1L;
+        if(this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+        if(this.num == null) {
+            this.num = 1L;
+        }
     }
 
 }

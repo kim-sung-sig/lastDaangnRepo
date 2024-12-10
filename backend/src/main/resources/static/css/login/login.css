@@ -2,10 +2,23 @@
 #wrap {
     width: 450px;
     margin: 0 auto;
-    padding-top: 200px;
+    padding-top: 160px;
 }
 
-#app {
+#login-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#imgaa {
+    width: 200px;
+    margin-bottom: 30px;
+    font-size: 24px;
+    text-align: center;
+}
+
+#login-form {
     width: 450px;
     padding: 40px 24px 24px 24px;
     border-radius: 10px;
@@ -90,4 +103,33 @@
     gap : 10px;
     margin-top: 30px;
     margin-bottom: 16px;
+}
+
+#find-wrap {
+    margin: 0 auto;
+    text-align: center;
+    padding: 24px 0px;
+}
+
+#find-wrap ul {
+    display: flex;
+    justify-content: center;
+}
+#find-wrap li{
+    position: relative;
+}
+
+#find-wrap li:not(:first-child){
+    padding-left: 26px;
+}
+
+#find-wrap li:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 12px;
+    width: 1px;
+    height: 12px;
+    border-radius: .5px;
+    background-color: #ccc;
 }

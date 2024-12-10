@@ -4,7 +4,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.demo.daangn.domain.chat.enums.ChatMessageType;
+import com.demo.daangn.domain.user.entity.User;
 import com.demo.daangn.global.dto.entity.BaseAuditEntity;
+import com.demo.daangn.global.enums.IsUsedEnum;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,9 +14,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -32,8 +34,16 @@ import lombok.experimental.SuperBuilder;
 public class ChatMessage extends BaseAuditEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id", updatable = false)
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
 
     @OneToMany(mappedBy = "chatMessage", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChatMessageReadStatus> readStatuses;
@@ -41,11 +51,9 @@ public class ChatMessage extends BaseAuditEntity {
     // private Set<File> file; // 추후 FileEntity로 변경
 
     // @OneToOne(mappedBy = "chatMessage", fetch = FetchType.LAZY)
-    @Column(name = "reference_message_id")
-    private UUID references; // 답변, 참조 등
-
-    @Column(name = "message_uuid", nullable = false, unique = true, updatable = false)
-    private UUID messageUuid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_message_id", nullable = true)
+    private ChatMessage references; // 답변, 참조 등
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
@@ -60,16 +68,17 @@ public class ChatMessage extends BaseAuditEntity {
     @Column(name = "is_sent", nullable = false)
     private Boolean isSent;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Column(name = "is_used")
+    @Enumerated(EnumType.STRING)
+    private IsUsedEnum isUsed;
 
     @PrePersist
-    public void prePersist() {
-        if(this.messageUuid == null) {
-            this.messageUuid = UUID.randomUUID();
+    private void prePersist() {
+        if(this.id == null) {
+            this.id = UUID.randomUUID();
         }
-        if(this.isDeleted == null) {
-            this.isDeleted = false;
+        if(this.isUsed == null) {
+            this.isUsed = IsUsedEnum.ENABLED;
         }
         if(this.isSent == null) {
             this.isSent = false;

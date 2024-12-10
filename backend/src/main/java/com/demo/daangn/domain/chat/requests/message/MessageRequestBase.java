@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class MessageRequestBase {
 
-    private UUID chatRoomUuid;
+    private UUID chatRoomId;
 
     private ChatMessageType type;
 

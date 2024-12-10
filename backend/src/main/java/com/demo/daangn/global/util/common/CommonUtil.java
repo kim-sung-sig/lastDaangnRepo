@@ -35,14 +35,9 @@ public class CommonUtil {
         return Optional.empty();
     }
 
-    public static Optional<Long> getLoginUserSeq() {
-        return getLoginUser()
-                .map(User::getId);
-    }
-
     public static Optional<UUID> getLoginUserUuid() {
         return getLoginUser()
-                .map(User::getUuid);
+                .map(User::getId);
     }
 
     public static boolean isNotBlank(String... strs) {

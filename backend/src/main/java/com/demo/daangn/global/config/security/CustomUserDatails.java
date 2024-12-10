@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.global.enums.IsUsedEnum;
 
 import lombok.Data;
 
@@ -51,7 +52,7 @@ public class CustomUserDatails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        boolean isLocked = user.getIsUsed() == 2;
+        boolean isLocked = user.getIsUsed().equals(IsUsedEnum.LOCKED);
         if(isLocked) { // 계정 잠김
             return false;
         }
@@ -72,7 +73,7 @@ public class CustomUserDatails implements UserDetails {
 
     @Override
     public boolean isEnabled() { // 계정 만료 또는 삭제
-        return user.getIsUsed() != 0; // 0: 삭제, 1: 사용, 2: 잠김
+        return !user.getIsUsed().equals(IsUsedEnum.DISABLED); // 0: 삭제, 1: 사용, 2: 잠김
     }
 
 }

@@ -18,7 +18,7 @@ public class FileStoreRs {
 
 
     public FileStoreRs(Path previewPath, TempFile tempFile) {
-        this.fileId = tempFile.getTempFileUuid().toString();
+        this.fileId = tempFile.getId().toString();
         this.previewPath = previewPath.toAbsolutePath().toString();
         this.fileName = tempFile.getFileName();
         this.fileSize = tempFile.getFileSize();

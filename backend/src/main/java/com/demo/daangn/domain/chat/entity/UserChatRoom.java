@@ -1,11 +1,15 @@
 package com.demo.daangn.domain.chat.entity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.demo.daangn.domain.user.entity.User;
+import com.demo.daangn.global.enums.IsUsedEnum;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,7 +34,7 @@ public class UserChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -43,11 +47,9 @@ public class UserChatRoom {
     @Column(name = "chat_room_name")
     private String chatRoomName;
 
-    @Column(name = "pointer")
-    private Long pointer;
-
-    @Column(name = "is_used", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    private Boolean isUsed;
+    @Column(name = "is_used", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private IsUsedEnum isUsed;
 
     @Column(name = "create_date")
     private LocalDateTime createDate;
@@ -55,10 +57,19 @@ public class UserChatRoom {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
+    @Column(name = "pointer")
+    private LocalDateTime pointer;
+
     @PrePersist
-    public void prePersist() {
+    private void prePersist() {
+        if(this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+        if(this.pointer == null) {
+            this.pointer = LocalDateTime.now();
+        }
         if(this.isUsed == null) {
-            this.isUsed = true;
+            this.isUsed = IsUsedEnum.ENABLED;
         }
         if(this.createDate == null) {
             this.createDate = LocalDateTime.now();
@@ -66,18 +77,18 @@ public class UserChatRoom {
     }
 
     @PreUpdate
-    public void preUpdate() {
+    private void preUpdate() {
         this.updateDate = LocalDateTime.now();
     }
 
     public void recreate() {
-        this.isUsed = true;
+        this.isUsed = IsUsedEnum.ENABLED;
         this.chatRoomName = null;
     }
 
-    public void delete(Long pointer) {
-        this.pointer = pointer;
-        this.isUsed = false;
+    public void delete() {
+        this.pointer = LocalDateTime.now();
+        this.isUsed = IsUsedEnum.DISABLED;
     }
 
 }

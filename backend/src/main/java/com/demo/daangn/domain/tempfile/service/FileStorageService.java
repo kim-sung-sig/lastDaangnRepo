@@ -107,7 +107,7 @@ public class FileStorageService {
                 String savedFileName = CustomFileUtil.storeFile(randomTempDir, file);
 
                 // 3. DB 저장
-                TempFile tempEntity = saveRandomKeyInDatabase(randomKey, randomTempDir.resolve(savedFileName), file); // DB 저장
+                TempFile tempEntity = saveRandomKeyInDatabase(randomUuid, randomTempDir.resolve(savedFileName), file); // DB 저장
 
                 // 리턴용 URL 생성
                 Path previewPath = Paths.get(BASE_URL, randomKey, savedFileName);
@@ -124,10 +124,10 @@ public class FileStorageService {
         }
     }
 
-    private TempFile saveRandomKeyInDatabase(String randomKey, Path savedFilePath, MultipartFile file) throws FileStorageException {
+    private TempFile saveRandomKeyInDatabase(UUID randomKey, Path savedFilePath, MultipartFile file) throws FileStorageException {
         try {
             TempFile fileTempEntity = TempFile.builder()
-                    .tempFileUuid(randomKey)
+                    .id(randomKey)
                     .filePath(savedFilePath.toAbsolutePath().toString())
                     .fileOriginName(file.getOriginalFilename())
                     .fileExt(CustomFileUtil.getFileExtension(file.getOriginalFilename()))
