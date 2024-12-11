@@ -21,6 +21,10 @@ import com.demo.daangn.global.exception.CustomBusinessException;
  */
 public class CommonUtil {
 
+    public static UUID inputToUUID(String input) throws IllegalArgumentException {
+        return UUID.fromString(input);
+    }
+
     /**
      * 현재 로그인한 유저 조회
      * @return
@@ -35,7 +39,7 @@ public class CommonUtil {
         return Optional.empty();
     }
 
-    public static Optional<UUID> getLoginUserUuid() {
+    public static Optional<UUID> getLoginUserId() {
         return getLoginUser()
                 .map(User::getId);
     }

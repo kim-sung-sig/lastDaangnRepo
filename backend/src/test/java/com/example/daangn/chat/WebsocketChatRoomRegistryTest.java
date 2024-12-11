@@ -47,4 +47,17 @@ public class WebsocketChatRoomRegistryTest {
 
     }
 
+    public static void main(String[] args) {
+        UUID uuid = UUID.randomUUID();
+
+        System.out.println(uuid);
+
+        String uuidStr = uuid.toString();
+        System.out.println(uuidStr);
+
+        UUID uuid2 = UUID.fromString(uuidStr);
+        System.out.println(uuid2);
+
+        System.out.println(uuid.equals(uuid2));
+    }
 }

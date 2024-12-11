@@ -8,7 +8,8 @@
 		</encoder>
 		-->
 		<encoder>
-			<pattern>[%-5level][%d{yy-MM-dd(E) HH:mm:ss}] %logger{36}%n       %msg%n</pattern>
+			<!-- <pattern>[%-5level][%d{yy-MM-dd(E) HH:mm:ss}] %logger{36}%n       %msg%n</pattern> -->
+			<pattern>[%-5level][%d{HH:mm:ss}] %logger{20} - %msg%n</pattern>
 		</encoder>
 	</appender>
 	<!-- 

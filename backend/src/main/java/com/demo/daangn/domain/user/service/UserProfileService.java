@@ -1,5 +1,8 @@
 package com.demo.daangn.domain.user.service;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import com.demo.daangn.domain.user.repository.profile.UserProfileRepository;
@@ -28,13 +31,14 @@ public class UserProfileService {
 
     // 4.1.1 프로필 사진 변경하기(my)
     public String updateUserProfile(String fileId) {
-        String userUuid = CommonUtil.getLoginUserUuid().toString();
+        String userUuid = CommonUtil.getLoginUserId().toString();
         return updateUserProfile(userUuid, fileId);
     }
 
     // 4.2 프로필 사진 조회하기
-
-    // 4.3 프로필 사진 목록 조회하기
+    public List<?> getUserProfileList(UUID userId) {
+        throw new UnsupportedOperationException("Unimplemented method 'getUserProfileList'");
+    }
 
     // 4.4 프로필 사진 상세 조회하기(다운로드목적?)
 
