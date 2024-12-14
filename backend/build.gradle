@@ -97,6 +97,10 @@ dependencies {
 	implementation 'com.sksamuel.scrimage:scrimage-core:4.3.0'
 	implementation 'com.sksamuel.scrimage:scrimage-webp:4.3.0'
 
+	// CODEC BASE62
+	implementation 'org.unbroken-dome.base62:base62:1.1.0'
+
+
 
 }
 

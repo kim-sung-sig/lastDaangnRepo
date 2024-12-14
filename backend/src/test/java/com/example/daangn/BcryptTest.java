@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.demo.daangn.BackendApplication;
-import com.demo.daangn.domain.user.entity.User;
-import com.demo.daangn.domain.user.repository.user.UserRepository;
+import com.demo.daangn.app.dao.user.user.UserRepository;
+import com.demo.daangn.app.domain.user.User;
 
 import jakarta.persistence.EntityNotFoundException;
 

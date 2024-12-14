@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.demo.daangn.BackendApplication;
-import com.demo.daangn.domain.chat.components.WebsocketChatRoomRegistry;
+import com.demo.daangn.app.service.chat.room.component.WebsocketChatRoomRegistry;
 
 import lombok.extern.slf4j.Slf4j;
 
