@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.demo.daangn.app.common.dto.entity.BaseFileEntity;
 import com.demo.daangn.app.common.enums.IsUsedEnum;
+import com.demo.daangn.app.domain.temp.file.TempFile;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,6 +56,27 @@ public class UserProfile extends BaseFileEntity {
         if (this.isUsed == null) {
             this.isUsed = IsUsedEnum.ENABLED;
         }
+    }
+
+    public void ENABLED() {
+        this.isUsed = IsUsedEnum.ENABLED;
+    }
+
+    public void DISABLED() {
+        this.isUsed = IsUsedEnum.DISABLED;
+    }
+
+    public UserProfile(String savedPath, User user, TempFile tempFile) {
+        super();
+        this.filePath = savedPath;
+
+        this.user = user;
+
+        this.fileName = tempFile.getFileName();
+        this.fileOriginName = tempFile.getFileOriginName();
+        this.fileType = tempFile.getFileType();
+        this.fileExt = tempFile.getFileExt();
+        this.fileSize = tempFile.getFileSize();
     }
 
 }

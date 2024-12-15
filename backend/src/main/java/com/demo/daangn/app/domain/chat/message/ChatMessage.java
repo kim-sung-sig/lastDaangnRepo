@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -51,8 +52,7 @@ public class ChatMessage extends BaseAuditEntity {
 
     // private Set<File> file; // 추후 FileEntity로 변경
 
-    // @OneToOne(mappedBy = "chatMessage", fetch = FetchType.LAZY)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "reference_message_id", nullable = true)
     private ChatMessage references; // 답변, 참조 등
 

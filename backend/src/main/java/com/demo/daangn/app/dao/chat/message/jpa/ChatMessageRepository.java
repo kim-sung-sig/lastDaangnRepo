@@ -1,4 +1,4 @@
-package com.demo.daangn.app.dao.chat;
+package com.demo.daangn.app.dao.chat.message.jpa;
 
 import java.util.UUID;
 

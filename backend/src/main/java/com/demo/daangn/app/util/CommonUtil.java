@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.demo.daangn.app.common.exception.AuthException;
 import com.demo.daangn.app.common.exception.CustomBusinessException;
 import com.demo.daangn.app.config.security.dto.CustomUserDatails;
 import com.demo.daangn.app.domain.user.User;
@@ -20,6 +21,30 @@ import com.demo.daangn.app.domain.user.User;
  * 자주 사용될 공통 메소드를 정의하는 클래스
  */
 public class CommonUtil {
+
+    /**
+     * 로그인한 유저 체크
+     * @return
+     * @throws AuthException if not logged in
+     */
+    public static User authCheck() throws AuthException {
+        return getLoginUser()
+                .orElseThrow(() -> new AuthException("로그인이 필요한 서비스입니다."));
+    }
+
+    /**
+     * 로그인한 유저와 userId가 일치하는지 체크
+     * @param userId
+     * @return
+     * @throws AuthException if not logged in or userId does not match
+     */
+    public static User authCheck(UUID userId) throws AuthException {
+        User loggedUser = authCheck();
+        if (!loggedUser.getId().equals(userId)) {
+            throw new AuthException("권한이 없습니다.");
+        }
+        return loggedUser;
+    }
 
     public static UUID inputToUUID(String input) throws IllegalArgumentException {
         return UUID.fromString(input);

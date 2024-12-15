@@ -3,6 +3,7 @@ package com.demo.daangn.app.common.dto.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -12,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @MappedSuperclass
 @ToString(callSuper = true)
 @SuperBuilder
+@NoArgsConstructor
 public class BaseFileEntity extends BaseAuditEntity {
 
     @Column(name = "file_path", nullable = false)
