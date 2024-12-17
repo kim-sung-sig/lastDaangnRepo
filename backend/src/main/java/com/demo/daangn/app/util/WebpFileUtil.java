@@ -36,6 +36,14 @@ public class WebpFileUtil {
             Path sizeDirectory = filePath.resolve(sizeFolder); // 사이즈 별 디렉토리 생성 경로
             Files.createDirectories(sizeDirectory); // 디렉토리가 없으면 생성
             destinationPath = sizeDirectory.resolve(fileNameWithoutExtension + ".webp");
+
+            double aspectRatio = (double) image.width / image.height;
+            if (aspectRatio > 1) {
+                height = (int) (width / aspectRatio);
+            } else {
+                width = (int) (height * aspectRatio);
+            }
+
             image = image.scaleTo(width, height);
         }
 

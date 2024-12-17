@@ -130,6 +130,7 @@ public class FileStorageService {
                     .id(randomKey)
                     .filePath(savedFilePath.toAbsolutePath().toString())
                     .fileOriginName(file.getOriginalFilename())
+                    .fileName(file.getOriginalFilename())
                     .fileExt(CustomFileUtil.getFileExtension(file.getOriginalFilename()))
                     .fileType(file.getContentType()) // .jpg, .png, .gif, .webp
                     .fileSize(file.getSize())

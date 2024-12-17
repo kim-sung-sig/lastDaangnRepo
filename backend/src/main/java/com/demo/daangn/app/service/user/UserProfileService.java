@@ -1,9 +1,9 @@
 package com.demo.daangn.app.service.user;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,8 +20,8 @@ import com.demo.daangn.app.domain.user.User;
 import com.demo.daangn.app.domain.user.UserProfile;
 import com.demo.daangn.app.service.user.response.UserProfileResponse;
 import com.demo.daangn.app.util.CommonUtil;
+import com.demo.daangn.app.util.WebpFileUtil;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,32 +37,30 @@ public class UserProfileService {
 
     /* --- 상수 및 변수 --- */
     @Value("${custom.fileDirPath}")
-    private String saveDir;
+    private String SAVE_DIR;
     private final String PROFILE_PATH = "profile";
-    private Path userProfileLocation;
 
     /* --- 로그 --- */
-
-    @PostConstruct
-    public void init() {
-        this.userProfileLocation = Paths.get(saveDir, PROFILE_PATH).toAbsolutePath().normalize();
-
-        // 디버깅용 로그 추가
-        log.debug("Initialized user profile location: {}", this.userProfileLocation);
-
-        try {
-            Files.createDirectories(this.userProfileLocation);
-        } catch (IOException ex) {
-            log.error("Could not create the directory where the uploaded files will be stored.", ex);
-            throw new IllegalStateException("Failed to initialize file storage directory.", ex);
-        }
-    }
 
     // 1. 프로필 사진 등록하기(등록시 이전 사진 업데이트 처리)
     public UserProfileResponse upsertUserProfile(UUID userId, UUID fileId) throws Exception {
 
+        // String userId2 = "0dab1e38-c9ae-497f-8f4a-888008d7db0b";
+        // String fileId2 = "fa5614f0-b3f2-4986-bba6-8b4c30fdba45";
+
+        // userId = UUID.fromString(userId2);
+        // fileId = UUID.fromString(fileId2);
+
         // 로그인한 유저와 프로필 사진의 유저가 일치하는지 확인
-        User loginUser = CommonUtil.authCheck(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
+
+        User loginUser = CommonUtil.getLoginUser()
+                .orElseThrow(() -> new CustomBusinessException("로그인이 필요합니다."));
+
+        if(!user.getId().equals(loginUser.getId())) {
+            throw new CustomBusinessException("사용자가 일치하지 않습니다.");
+        }
 
         TempFile tempFile = tempFileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomBusinessException("파일이 존재하지 않습니다."));
@@ -83,7 +81,22 @@ public class UserProfileService {
         });
 
         // 2. 새로운 프로필 사진을 등록
-        UserProfile userProfile = new UserProfile(null, loginUser, tempFile);
+        UUID userProfileId = UUID.randomUUID();
+        Path userProfileLocation = Paths.get(SAVE_DIR + "user", userId.toString(), PROFILE_PATH, userProfileId.toString());
+        log.debug("userProfileLocation: {}", userProfileLocation.toAbsolutePath().toString());
+
+        Path savedPath = Paths.get(userProfileLocation.toString(), tempFile.getFileName()).normalize();
+        log.debug("savedPath: {}", savedPath.toAbsolutePath().toString());
+
+        UserProfile userProfile = new UserProfile(userProfileId, savedPath.toString(), loginUser, tempFile);
+        userProfileRepository.save(userProfile);
+
+        Files.createDirectories(userProfileLocation);
+        Files.copy(Paths.get(tempFile.getFilePath()), savedPath, StandardCopyOption.REPLACE_EXISTING);
+
+        // 2.1 webp 파일로 변환
+        // TODO 변환 작업이 오래걸릴수 있으므로 백그라운드로 처리하고 조회시 변환된 파일이 없는지 있는지 확인하여야함
+        WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150);
 
         return null;
     }

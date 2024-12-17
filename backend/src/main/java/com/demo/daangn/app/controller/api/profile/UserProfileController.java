@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +13,7 @@ import com.demo.daangn.app.util.CommonUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 
 
 @Slf4j
@@ -27,6 +29,17 @@ public class UserProfileController {
         userProfileService.getUserProfileList(CommonUtil.inputToUUID(userId));
         return null;
     }
+
+    @PostMapping("/profiles/test")
+    public String postMethodName() {
+        try {
+            userProfileService.upsertUserProfile(null, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "test";
+    }
+    
 
     @GetMapping("/profiles")
     public List<?> getUserProfileList() {

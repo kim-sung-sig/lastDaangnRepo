@@ -10,8 +10,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
@@ -20,6 +18,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @ToString(callSuper = true)
 @SuperBuilder
+@NoArgsConstructor
 public class UserProfile extends BaseFileEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
     @ManyToOne
@@ -66,8 +65,9 @@ public class UserProfile extends BaseFileEntity {
         this.isUsed = IsUsedEnum.DISABLED;
     }
 
-    public UserProfile(String savedPath, User user, TempFile tempFile) {
+    public UserProfile(UUID id, String savedPath, User user, TempFile tempFile) {
         super();
+        this.id = id;
         this.filePath = savedPath;
 
         this.user = user;

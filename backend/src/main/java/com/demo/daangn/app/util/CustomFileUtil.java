@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -65,7 +64,7 @@ public class CustomFileUtil {
                 .orElseThrow(() -> new IOException("Failed to store file with invalid name"));
 
         // Generate a unique file name and define the target location
-        String saveFileName = UUID.randomUUID().toString() + fileName;
+        String saveFileName = fileName;
         Path targetLocation = targetPath.resolve(saveFileName).normalize();
 
         // Copy the file to the target location
