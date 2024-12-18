@@ -1,5 +1,6 @@
 package com.demo.daangn.app.domain.user;
 
+import java.nio.file.Path;
 import java.util.UUID;
 
 import com.demo.daangn.app.common.dto.entity.BaseFileEntity;
@@ -65,15 +66,14 @@ public class UserProfile extends BaseFileEntity {
         this.isUsed = IsUsedEnum.DISABLED;
     }
 
-    public UserProfile(UUID id, String savedPath, User user, TempFile tempFile) {
+    public UserProfile(UUID id, Path savedfilePath, User user, TempFile tempFile) {
         super();
         this.id = id;
-        this.filePath = savedPath;
-
         this.user = user;
 
+        this.filePath = savedfilePath.toString();
         this.fileName = tempFile.getFileName();
-        this.fileOriginName = tempFile.getFileOriginName();
+        this.fileFullPath = savedfilePath.resolve(tempFile.getFileName()).toString();
         this.fileType = tempFile.getFileType();
         this.fileExt = tempFile.getFileExt();
         this.fileSize = tempFile.getFileSize();

@@ -22,8 +22,8 @@ public class BaseFileEntity extends BaseAuditEntity {
     @Column(name = "file_name", nullable = false)
     protected String fileName;
 
-    @Column(name = "file_origin_name", nullable = false)
-    protected String fileOriginName;
+    @Column(name = "file_full_path", nullable = false)
+    protected String fileFullPath;
 
     @Column(name = "file_type", nullable = false)
     protected String fileType;

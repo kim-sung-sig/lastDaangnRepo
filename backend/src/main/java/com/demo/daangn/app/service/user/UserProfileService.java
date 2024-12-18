@@ -89,18 +89,15 @@ public class UserProfileService {
             // 2. 새로운 프로필 사진을 등록
             UUID userProfileId = UUID.randomUUID();
             Path userProfileLocation = Paths.get(SAVE_DIR + "user", userId.toString(), PROFILE_PATH, userProfileId.toString());
-            log.debug("userProfileLocation: {}", userProfileLocation.toAbsolutePath().toString());
-
-            Path savedPath = Paths.get(userProfileLocation.toString(), tempFile.getFileName()).normalize();
-            log.debug("savedPath: {}", savedPath.toAbsolutePath().toString());
+            log.debug("userProfileLocation: {}", userProfileLocation.toString());
 
             // 2.1. DB에 저장
-            UserProfile userProfile = new UserProfile(userProfileId, savedPath.toString(), loginUser, tempFile);
+            UserProfile userProfile = new UserProfile(userProfileId, userProfileLocation, loginUser, tempFile);
             userProfileRepository.save(userProfile);
 
             // 2.2. 파일 이동
             Files.createDirectories(userProfileLocation);
-            Files.copy(Paths.get(tempFile.getFilePath()), savedPath, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get(tempFile.getFilePath()), Paths.get(userProfileLocation.toString(), tempFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 
             // 2.3 webp 파일로 변환
             WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150); // TODO 변환 작업이 오래걸릴수 있으므로 백그라운드로 처리하고 조회시 변환된 파일이 없는지 있는지 확인하여야함
@@ -126,7 +123,7 @@ public class UserProfileService {
     // 3. 프로필 사진 상세 조회하기(이미지로드)
     public ResponseEntity<Resource> getUserProfile(UUID userId, UUID profileId, Integer width, Integer height, boolean isDownload) {
         // 1. 프로필 사진 찾기
-        UserProfile userProfile = userProfileRepository.findByUserIdAndIdAndIsUsed(userId, profileId, IsUsedEnum.ENABLED)
+        UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
                 .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
         
         // 2. 파일 경로 찾기
