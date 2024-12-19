@@ -60,6 +60,8 @@ public class InitData {
                         userRepository.save(user2);
                     }
             );
+
+            userRepository.findAll().forEach(System.out::println);
         };
     }
 

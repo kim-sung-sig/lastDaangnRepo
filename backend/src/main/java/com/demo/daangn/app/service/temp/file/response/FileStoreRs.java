@@ -19,7 +19,7 @@ public class FileStoreRs {
 
     public FileStoreRs(Path previewPath, TempFile tempFile) {
         this.fileId = tempFile.getId().toString();
-        this.previewPath = previewPath.toAbsolutePath().toString();
+        this.previewPath = previewPath.toString().replaceAll("\\\\", "/");
         this.fileName = tempFile.getFileName();
         this.fileSize = tempFile.getFileSize();
         this.fileExt = tempFile.getFileExt();

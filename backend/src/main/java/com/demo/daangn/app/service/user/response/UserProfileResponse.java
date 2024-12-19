@@ -44,7 +44,7 @@ public class UserProfileResponse {
         response.setFileDownloadUrl(fileDownloadUrl);
         response.setFileExtension(userProfile.getFileExt());
         response.setFileSize(userProfile.getFileSize());
-        response.setCreatedAt(userProfile.getCreateDate());
+        response.setCreatedAt(userProfile.getCreatedAt());
         return response;
     }
 

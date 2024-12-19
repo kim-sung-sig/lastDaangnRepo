@@ -18,22 +18,22 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class BaseAuditEntity {
 
-    @Column(name = "create_date", updatable = false, nullable = false)
-    protected LocalDateTime createDate;
+    @Column(name = "create_at", updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    protected LocalDateTime createdAt;
 
-    @Column(name = "modified_date")
-    protected LocalDateTime modifiedDate;
+    @Column(name = "updated_at")
+    protected LocalDateTime updatedAt;
 
     @PrePersist
     public void onCreate() {
-        if (this.createDate == null) {
-            this.createDate = LocalDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
         }
     }
 
     @PreUpdate
     public void onUpdate() {
-        this.modifiedDate = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

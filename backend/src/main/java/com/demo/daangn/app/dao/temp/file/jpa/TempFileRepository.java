@@ -19,6 +19,6 @@ public interface TempFileRepository extends JpaRepository<TempFile, UUID>{
 
     List<TempFile> findByIdIn(List<UUID> ids);
 
-    List<TempFile> findByCreateDateBefore(LocalDateTime createDate);
+    List<TempFile> findByCreatedAtBefore(LocalDateTime date);
 
 }

@@ -66,7 +66,7 @@ public class CustomUserDatails implements UserDetails {
 
         // 최초 로그인
         // 계정 생성일과 현재 날짜를 비교하여 90일 이내인지 확인
-        LocalDateTime createdAt = user.getCreateDate();
+        LocalDateTime createdAt = user.getCreatedAt();
         LocalDateTime now = LocalDateTime.now();
         return createdAt.plusDays(90).isAfter(now);
     }

@@ -16,11 +16,19 @@ public class UuidUtil {
     }
 
     public static void main(String[] args) {
-        UUID uuid = UUID.randomUUID();
-        System.out.println("Original UUID: " + uuid);
+        String[] uuidArr = {
+            "51a8de11-414b-4d64-b25f-82fe73870428",
+            "656a5af1-60de-4f79-b949-b8cf019fdf92"
+        };
 
-        String base62 = encrypt(uuid);
-        System.out.println("Encoded UUID: " + base62);
-        System.out.println("Decoded UUID: " + decrypt(base62));
+        for(String uuidStr : uuidArr) {
+            UUID uuid = UUID.fromString(uuidStr);
+            System.out.println("Original UUID: " + uuid);
+
+            String base62 = encrypt(uuid);
+            System.out.println("Encoded UUID: " + base62);
+            System.out.println("Decoded UUID: " + decrypt(base62));
+            System.out.println();
+        }
     }
 }

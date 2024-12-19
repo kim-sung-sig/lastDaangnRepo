@@ -11,6 +11,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
@@ -26,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
     name = "dn_user",
     indexes = {
         @Index(name = "idx_user_username", columnList = "username"),
-        @Index(name = "idx_user_uuid", columnList = "uuid"),
         @Index(name = "idx_user_nick_name", columnList = "nick_name"),
         @Index(name = "idx_user_nick_name_seq", columnList = "nick_name_seq"),
         @Index(name = "idx_user_nick_name_seq_final", columnList = "nick_name_seq_final")})
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"password"})
 @SuperBuilder
 @Slf4j
 public class User extends BaseAuditEntity implements Serializable {
@@ -42,6 +43,7 @@ public class User extends BaseAuditEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -84,9 +86,9 @@ public class User extends BaseAuditEntity implements Serializable {
 
     @PrePersist
     private void prePersist() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
+        // if (this.id == null) {
+        //     this.id = UUID.randomUUID();
+        // }
         if (this.isUsed == null) {
             this.isUsed = IsUsedEnum.ENABLED;
         }

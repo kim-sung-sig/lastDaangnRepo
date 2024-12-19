@@ -1,6 +1,8 @@
 package com.demo.daangn.app.service.user;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +28,6 @@ import com.demo.daangn.app.domain.user.User;
 import com.demo.daangn.app.domain.user.UserProfile;
 import com.demo.daangn.app.service.user.response.UserProfileResponse;
 import com.demo.daangn.app.util.CommonUtil;
-import com.demo.daangn.app.util.WebpFileUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,12 +52,6 @@ public class UserProfileService {
     // 1. 프로필 사진 등록하기(등록시 이전 사진 업데이트 처리)
     @Transactional(rollbackFor = Exception.class)
     public UserProfileResponse upsertUserProfile(UUID userId, UUID fileId) {
-        // 테스트용 코드
-        // String userId2 = "0dab1e38-c9ae-497f-8f4a-888008d7db0b";
-        // String fileId2 = "fa5614f0-b3f2-4986-bba6-8b4c30fdba45";
-
-        // userId = UUID.fromString(userId2);
-        // fileId = UUID.fromString(fileId2);
         try {
             // 사용자 확인
             User targetUser = userRepository.findById(userId).orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
@@ -97,10 +94,10 @@ public class UserProfileService {
 
             // 2.2. 파일 이동
             Files.createDirectories(userProfileLocation);
-            Files.copy(Paths.get(tempFile.getFilePath()), Paths.get(userProfileLocation.toString(), tempFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get(tempFile.getFileFullPath()), Paths.get(userProfileLocation.toString(), tempFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
 
             // 2.3 webp 파일로 변환
-            WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150); // TODO 변환 작업이 오래걸릴수 있으므로 백그라운드로 처리하고 조회시 변환된 파일이 없는지 있는지 확인하여야함
+            // WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150); // TODO 변환 작업이 오래걸릴수 있으므로 백그라운드로 처리하고 조회시 변환된 파일이 없는지 있는지 확인하여야함
             UserProfileResponse response = UserProfileResponse.of(userProfile);
             return response;
 
@@ -122,18 +119,46 @@ public class UserProfileService {
 
     // 3. 프로필 사진 상세 조회하기(이미지로드)
     public ResponseEntity<Resource> getUserProfile(UUID userId, UUID profileId, Integer width, Integer height, boolean isDownload) {
-        // 1. 프로필 사진 찾기
-        UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
-                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
-        
-        // 2. 파일 경로 찾기
-        // 2.1 사이즈로 파일 경로 찾기
-        Path path = Paths.get(userProfile.getFilePath());
-        if(!Files.exists(path)) {
-            throw new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다.");
-        }
+        try {
+            // 1. 프로필 사진 찾기
+            UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
+                    .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+            
+            // 2. 파일 경로 찾기
+            // 2.1 사이즈로 파일 경로 찾기
+            Path filePathWithFileName = Paths.get(userProfile.getFileFullPath());
+            if(!Files.exists(filePathWithFileName)) {
+                throw new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다.");
+            }
 
-        return null;
+            // 3. 파일 리소스 로드
+            Resource resource = new UrlResource(filePathWithFileName.toUri());
+            if (!resource.exists()) {
+                throw new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다.");
+            }
+
+            // 4. 응답 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            String encodedFileName = URLEncoder.encode(userProfile.getFileName(), StandardCharsets.UTF_8);
+            if (isDownload) {
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
+            } else {
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFileName + "\"");
+            }
+            headers.add(HttpHeaders.CONTENT_TYPE, userProfile.getFileType());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+        } catch (CustomBusinessException e) {
+            throw e;
+        } catch (IOException e) {
+            log.error("파일 작업 중 오류 발생", e);
+            throw new CustomBusinessException("파일 작업 중 오류가 발생했습니다.");
+        } catch (Exception e) {
+            log.error("Exception", e);
+            throw new CustomBusinessException("프로필 사진을 찾을 수 없습니다.");
+        }
 
     }
 

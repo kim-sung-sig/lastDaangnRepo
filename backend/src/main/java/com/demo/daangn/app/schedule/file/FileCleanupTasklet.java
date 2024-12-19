@@ -40,7 +40,7 @@ public class FileCleanupTasklet implements Tasklet {
 
         // 1. 1시간 이상 된 isUsed=0인 파일 목록 조회
         LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
-        List<TempFile> tempFiles = tempFileRepository.findByCreateDateBefore(oneHourAgo);
+        List<TempFile> tempFiles = tempFileRepository.findByCreatedAtBefore(oneHourAgo);
         List<UUID> uuids = tempFiles.stream().map(TempFile::getId).toList();
 
         log.debug("delete file size = " + uuids.size());
