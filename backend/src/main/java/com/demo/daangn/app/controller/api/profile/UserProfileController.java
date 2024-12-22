@@ -1,5 +1,6 @@
 package com.demo.daangn.app.controller.api.profile;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.core.io.Resource;
@@ -41,7 +42,7 @@ public class UserProfileController {
     }
 
     @PostMapping("/{userId}/profiles")
-    public UserProfileResponse upsertUserProfile(@PathVariable("userId") String userId, @RequestBody String fileId) {
+    public UserProfileResponse upsertUserProfile(@PathVariable("userId") String userId, @RequestBody String fileId) throws IOException {
         return userProfileService.upsertUserProfile(UuidUtil.decrypt(userId), UuidUtil.decrypt(fileId));
     }
     

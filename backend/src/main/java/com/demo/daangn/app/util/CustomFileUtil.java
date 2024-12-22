@@ -1,11 +1,12 @@
 package com.demo.daangn.app.util;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -14,194 +15,163 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.demo.daangn.app.common.exception.FileStorageException;
+import com.demo.daangn.app.common.exception.file.CustomFileNotFoundException;
+
 public class CustomFileUtil {
 
-    // create directory if not exists
-    public static void createDirectoryIfNotExists(Path directory) throws IOException {
-        if (!Files.exists(directory)) {
+    private static final CopyOption[] DEFAULT_COPY_OPTIONS = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING };
+    private static final long DEFAULT_MAX_SIZE = 10485760; // 10MB
+
+    public static void createDirectories(Path directory) throws FileStorageException {
+        try {
+            checkPath(directory);
             Files.createDirectories(directory);
+        } catch (CustomFileNotFoundException e) {
+            throw new FileStorageException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to create directory : " + directory, e);
         }
     }
 
-    /**
-     * 파일 읽기
-     * @param filePath
-     * @param fileName
-     * @return
-     * @throws IOException
-     */
-    public static Optional<Resource> getFileResource(Path filePath, String fileName) {
+    private static void checkPath(Path path) {
+        if (path == null) {
+            throw new CustomFileNotFoundException("Path must not be null");
+        }
+        if(!Files.exists(path)) {
+            throw new CustomFileNotFoundException("path not found: " + path);
+        }
+    }
+
+    public static void copy(Path source, Path target) {
+        copy(source, target, DEFAULT_COPY_OPTIONS);
+    }
+
+    private static void copy(Path source, Path target, CopyOption... options) {
         try {
-            Path file = filePath.resolve(fileName).normalize();
+            checkPath(source);
+            createDirectories(target.getParent());
+            checkPath(target.getParent());
+            Files.copy(source, target, options);
+        } catch (CustomFileNotFoundException e) {
+            throw new FileStorageException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to copy file from " + source + " to " + target, e);
+        }
+    }
+
+    public static void move(Path source, Path target) {
+        move(source, target, DEFAULT_COPY_OPTIONS);
+    }
+
+    private static void move(Path source, Path target, CopyOption... options) {
+        try {
+            checkPath(source);
+            createDirectories(target.getParent());
+            checkPath(target.getParent());
+            Files.move(source, target, options);
+        } catch (CustomFileNotFoundException e) {
+            throw new FileStorageException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to move file from " + source + " to " + target, e);
+        }
+    }
+
+    public static void delete(Path path) {
+        try {
+            checkPath(path);
+            if (Files.isDirectory(path)) {
+                try (DirectoryStream<Path> entries = Files.newDirectoryStream(path)) {
+                    for (Path entry : entries) {
+                        delete(entry);
+                    }
+                }
+            }
+            Files.delete(path);
+        } catch (CustomFileNotFoundException e) {
+            throw new FileStorageException(e.getMessage(), e);
+        } catch (DirectoryNotEmptyException e) {
+            throw new FileStorageException("Directory is not empty: " + path, e);
+        } catch (IOException | SecurityException e) {
+            throw new FileStorageException("Failed to delete file or directory: " + path, e);
+        }
+    }
+
+    public static void walkDirectory(Path directory) {
+        try {
+            checkPath(directory);
+            Files.walk(directory).forEach(System.out::println);
+        } catch (CustomFileNotFoundException e) {
+            throw new FileStorageException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to walk through directory: " + directory, e);
+        }
+    }
+
+    public static String save(Path targetPath, MultipartFile file) {
+        // 1. 파일 저장 경로 확인 및 디렉토리 생성
+        if (targetPath == null) {
+            throw new FileStorageException("Target path must not be null.");
+        }
+
+        // 2. 파일 유효성 검사
+        if (file == null || file.isEmpty() || !validateFileName(file.getOriginalFilename())) {
+            throw new FileStorageException("Failed to store empty or invalid file.");
+        }
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        if (!validateFileExtension(fileName, List.of(".jpg", ".jpeg", ".png", ".gif", ".webp"))) {
+            throw new FileStorageException("Failed to store file with invalid extension");
+        }
+        if (fileName.isEmpty()) {
+            throw new FileStorageException("Failed to store file with invalid name");
+        }
+        if (!validateFileSize(file, DEFAULT_MAX_SIZE)) {
+            throw new FileStorageException("Failed to store file with invalid size");
+        }
+
+        // 3. 파일 저장
+        createDirectories(targetPath); // 디렉토리가 없으면 생성
+        if (!Files.isDirectory(targetPath)) {
+            throw new FileStorageException("Target path is not a directory: " + targetPath);
+        }
+        try {
+            String saveFileName = getFileNameWithoutExtension(fileName) + "_" + System.currentTimeMillis() + getFileExtension(fileName);
+            Path targetLocation = targetPath.resolve(saveFileName).normalize();
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return saveFileName;
+        } catch (IOException e) {
+            throw new FileStorageException("Failed to store file", e);
+        }
+    }
+
+    public static List<String> saveAll(Path targetPath, Collection<MultipartFile> files) {
+        if(files == null || files.isEmpty()) {
+            throw new FileStorageException("Failed to store empty files.");
+        }
+        return files.stream().map(file -> save(targetPath, file)).toList();
+    }
+
+    public static Optional<Resource> getFileResource(Path file) {
+        try {
+            if(file == null || !Files.exists(file)) {
+                return Optional.empty();
+            }
+
+            if(Files.isDirectory(file)) {
+                return Optional.empty();
+            }
+
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() && resource.isReadable()) {
                 return Optional.ofNullable(resource);
             } else {
                 return Optional.empty();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             return Optional.empty();
         }
     }
-
-    /**
-     * Save a single file
-     * @param targetPath : 저장할 경로
-     * @param file : 저장할 파일
-     * @return
-     * @throws IOException
-     */
-    public static String storeFile(Path targetPath, MultipartFile file) throws IOException {
-        // Validate and clean the file
-        MultipartFile validFile = Optional.ofNullable(file)
-                .filter(f -> !f.isEmpty() && f.getSize() > 0 && f.getOriginalFilename() != null)
-                .orElseThrow(() -> new IOException("Failed to store empty file"));
-
-        // Clean the filename using StringUtils
-        String fileName = Optional.ofNullable(validFile.getOriginalFilename())
-                .map(StringUtils::cleanPath)
-                .filter(f -> f.length() > 0)
-                .orElseThrow(() -> new IOException("Failed to store file with invalid name"));
-
-        // Generate a unique file name and define the target location
-        String saveFileName = fileName;
-        Path targetLocation = targetPath.resolve(saveFileName).normalize();
-
-        // Copy the file to the target location
-        try {
-            Files.copy(validFile.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IOException("Failed to store file: " + fileName, e);
-        }
-
-        return saveFileName;
-    }
-
-    /**
-     * Save multiple files
-     * @param filePath
-     * @param files
-     * @throws IOException
-     */
-    public static List<String> storeFiles(Path filePath, List<MultipartFile> files) throws IOException {
-        List<String> savedFileNames = new ArrayList<>();
-        for (MultipartFile file : files) {
-            String saveFileName = storeFile(filePath, file);
-            savedFileNames.add(saveFileName);
-        }
-        return savedFileNames;
-    }
-
-    /**
-     * Move a single file
-     * @param sourceDirPath
-     * @param fileName
-     * @param targetDirPath
-     * @throws IOException
-     */
-    public static void moveFile(Path sourceDirPath, String fileName, Path targetDirPath) throws IOException {
-        Path source = sourceDirPath.resolve(fileName).normalize();
-        Path targetDir = targetDirPath.normalize();
-        Path target = targetDirPath.resolve(fileName).normalize();
-
-        createDirectoryIfNotExists(targetDir);
-
-        Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-    }
-
-    /**
-     * Move multiple files
-     * @param sourceDirPath
-     * @param targetDirPath
-     * @throws IOException
-     */
-    public static void moveFiles(Path sourceDirPath, Path targetDirPath) throws IOException {
-        // targetDir가 존재하지 않으면 생성
-        createDirectoryIfNotExists(targetDirPath);
-
-        // 디렉토리 내용을 재귀적으로 처리
-        moveFilesRecursive(sourceDirPath, targetDirPath);
-    }
-
-    /**
-     * 디렉토리 내 파일 이동 (재귀적)
-     * @param sourceDirPath
-     * @param targetDirPath
-     * @throws IOException
-     */
-    private static void moveFilesRecursive(Path sourceDirPath, Path targetDirPath) throws IOException {
-        // 디렉토리 내 모든 엔트리를 처리
-        try (var directoryStream = Files.newDirectoryStream(sourceDirPath)) {
-            for (Path entry : directoryStream) {
-                if (Files.isDirectory(entry)) {
-                    // 디렉토리인 경우, targetDir에 동일한 디렉토리 생성 후 재귀 호출
-                    Path newTargetDir = targetDirPath.resolve(sourceDirPath.relativize(entry));
-                    if (!Files.exists(newTargetDir)) {
-                        Files.createDirectories(newTargetDir);
-                    }
-                    moveFilesRecursive(entry, newTargetDir);
-                } else if (Files.isRegularFile(entry)) {
-                    // 파일인 경우, targetDir로 이동
-                    Path targetPath = targetDirPath.resolve(entry.getFileName());
-                    Files.move(entry, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Delete a single file
-     * @param filePath
-     * @param fileName
-     * @throws IOException
-     */
-    public static void deleteFile(Path filePath, String fileName) throws IOException {
-        Path file = filePath.resolve(fileName).normalize();
-        Files.delete(file);
-    }
-
-    /**
-     * Delete files in a directory
-     * @param targetDirPath
-     * @return
-     * @throws IOException
-     */
-    public static Long deleteFiles(Path targetDirPath) throws IOException {
-        long deletedFilesCount = 0;
-
-        if (Files.exists(targetDirPath) && Files.isDirectory(targetDirPath)) {
-            try (var paths = Files.walk(targetDirPath)) {
-                deletedFilesCount = paths
-                    .map(Path::toFile)
-                    .peek(File::delete)
-                    .count();
-            }
-
-            Files.delete(targetDirPath); // Finally, delete the directory itself
-        }
-    
-        return deletedFilesCount;
-    }
-
-    /**
-     * Change file name
-     * @param fileName
-     * @return
-     */
-	public static String fileNameChange(String fileName) {
-        return fileName
-                .replaceAll( "[\\\\]" , "＼")
-                .replaceAll( "[/]" , "／")
-                .replaceAll( "[:]" , "：")
-                .replaceAll( "[*]" , "＊")
-                .replaceAll( "[?]" , "？")
-                .replaceAll( "[\"]" , "＂")
-                .replaceAll( "[<]" , "＜")
-                .replaceAll( "[>]" , "＞")
-                .replaceAll( "[|]" , "｜")
-                .trim();
-	}
 
     /**
      * Extracts the file extension from a given file name.
@@ -258,4 +228,5 @@ public class CustomFileUtil {
                 && validateFileExtension(file.getOriginalFilename(), allowedExtensions)
                 && validateFileSize(file, maxSize);
     }
+
 }

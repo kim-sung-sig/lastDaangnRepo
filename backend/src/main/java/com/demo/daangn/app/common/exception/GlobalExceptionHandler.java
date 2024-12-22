@@ -1,6 +1,7 @@
 package com.demo.daangn.app.common.exception;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +91,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<RsData< String >> handleFileNotFoundExceptions(FileNotFoundException ex) {
         /*
          * FileNotFoundException handler (File 관련 IOException)
+         */
+        return new ResponseEntity<>(RsData.of(ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<RsData< String >> handleIOExceptions(IOException ex) {
+        /*
+         * IOException handler (File 관련 IOException)
          */
         return new ResponseEntity<>(RsData.of(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
