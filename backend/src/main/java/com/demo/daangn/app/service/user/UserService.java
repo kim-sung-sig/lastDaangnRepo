@@ -8,8 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.demo.daangn.app.common.exception.AuthException;
 import com.demo.daangn.app.common.exception.CustomBusinessException;
-import com.demo.daangn.app.common.exception.CustomSystemException;
 import com.demo.daangn.app.config.security.dto.UserLoggedInEvent;
 import com.demo.daangn.app.dao.temp.nickname.UserNickNameRepository;
 import com.demo.daangn.app.dao.user.user.UserRepository;
@@ -85,11 +85,7 @@ public class UserService {
 
             return 1;
         } catch (Exception e) {
-            log.error("***********************************");
-            log.error("** fail userSignUp");
-            log.error("** LOG LINE : {}", e.getStackTrace()[0].getLineNumber());
-            log.error("** LOG MSG : {}", e.getMessage());
-            throw new CustomSystemException("회원가입 실패", e);
+            throw e;
         }
     }
 
@@ -117,7 +113,7 @@ public class UserService {
     @Transactional(rollbackFor = {Exception.class})
     public void userWithdrawal(){
         User user = CommonUtil.getLoginUser()
-                .orElseThrow(() -> new CustomSystemException("로그인 정보가 없습니다."));
+                .orElseThrow(() -> new AuthException("로그인 정보가 없습니다."));
         user.deleteUser();
         userRepository.save(user);
     }
@@ -128,19 +124,12 @@ public class UserService {
      */
     @EventListener
     public void handleUserLoggedInEvent(UserLoggedInEvent event) {
-        try {
-            User user = event.getUser();
-            user.setPwdFailCount(0);
-            user.setLastLoginAt(LocalDateTime.now());
-            user.setPwdUnlockCode(null);
-            userRepository.save(user);
-            log.debug("로그인 성공 후 유저 정보 업데이트 완료");
-        } catch (Exception e) {
-            log.error("***********************************");
-            log.error("** fail handleUserLoggedInEvent");
-            log.error("** LOG LINE : {}", e.getStackTrace()[0].getLineNumber());
-            log.error("** LOG MSG : {}", e.getMessage());
-        }
+        User user = event.getUser();
+        user.setPwdFailCount(0);
+        user.setLastLoginAt(LocalDateTime.now());
+        user.setPwdUnlockCode(null);
+        userRepository.save(user);
+        log.debug("로그인 성공 후 유저 정보 업데이트 완료");
     }
 
 }

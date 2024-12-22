@@ -12,6 +12,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
@@ -64,11 +66,17 @@ public class FileStorageService {
      * @return
      * @throws FileNotFoundException
      */
-    public Resource loadTempFileAsResource(String randomKey, String fileName) throws FileNotFoundException {
-        Path randomKeyTempDir = tempRootLocation.resolve(randomKey);
-        Resource resource = CustomFileUtil.getFileResource(randomKeyTempDir, fileName)
-                .orElseThrow(() -> new FileNotFoundException("File not found: " + fileName));
-        return null;
+    public ResponseEntity<Resource> loadTempFileAsResource(String randomKey, String fileName) {
+        var randomKeyTempDir = tempRootLocation.resolve(randomKey);
+        var resource = CustomFileUtil.getFileResource(randomKeyTempDir, fileName)
+                .orElseThrow(() -> new CustomBusinessException("해당 파일이 존재하지 않습니다."));
+
+        var headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
     }
 
     // insert
@@ -82,19 +90,19 @@ public class FileStorageService {
      * @throws Exception
      */
     // 트랜잭션 처리하지 않음
-    public FileStoreTempResponse saveTempFile(MultipartRequest multipartRequest) throws Exception {
-        List<MultipartFile> files = multipartRequest.getFiles(FILE_REQUEST_PARAM);
-        if(files == null || files.isEmpty()) {
-            throw new CustomBusinessException("No files to upload.");
-        }
-
-        // 파일 유효성 검증
-        if(files.stream().anyMatch(file -> !CustomFileUtil.validateFile(file, ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE))) {
-            throw new CustomBusinessException("Invalid file.");
-        }
-
+    public FileStoreTempResponse saveTempFile(MultipartRequest multipartRequest){
         // 로직 시작
         try {
+            List<MultipartFile> files = multipartRequest.getFiles(FILE_REQUEST_PARAM);
+            if(files == null || files.isEmpty()) {
+                throw new CustomBusinessException("No files to upload.");
+            }
+
+            // 파일 유효성 검증
+            if(files.stream().anyMatch(file -> !CustomFileUtil.validateFile(file, ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE))) {
+                throw new CustomBusinessException("Invalid file.");
+            }
+
             List<FileStoreRs> fileStoreRs = new ArrayList<>();
             for (MultipartFile file : files) {
                 // 1. 랜덤키 생성
@@ -118,6 +126,8 @@ public class FileStorageService {
                     .files(fileStoreRs)
                     .build();
 
+        } catch (CustomBusinessException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to store files.", e);
             throw new FileStorageException("Failed to store files.", e);

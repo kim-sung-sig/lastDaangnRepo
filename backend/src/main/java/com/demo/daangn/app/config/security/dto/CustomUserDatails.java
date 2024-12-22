@@ -1,8 +1,9 @@
 package com.demo.daangn.app.config.security.dto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,25 +35,13 @@ public class CustomUserDatails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole()));
-        return authorities;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        // 비밀번호 갱신 필요 여부 TODO 비밀번호 갱신 로직 추가
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        boolean isLocked = user.getIsUsed().equals(IsUsedEnum.LOCKED);
+        IsUsedEnum isUsed = user.getIsUsed();
+        boolean isLocked = Objects.equals(isUsed, IsUsedEnum.LOCKED);
         if(isLocked) { // 계정 잠김
             return false;
         }
@@ -73,7 +62,19 @@ public class CustomUserDatails implements UserDetails {
 
     @Override
     public boolean isEnabled() { // 계정 만료 또는 삭제
-        return !user.getIsUsed().equals(IsUsedEnum.DISABLED); // 0: 삭제, 1: 사용, 2: 잠김
+        IsUsedEnum isUsed = user.getIsUsed();
+        return Objects.equals(isUsed, IsUsedEnum.ENABLED);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        // 비밀번호 갱신 필요 여부 TODO 비밀번호 갱신 로직 추가
+        return true;
     }
 
 }

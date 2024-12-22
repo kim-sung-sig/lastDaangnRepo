@@ -37,8 +37,8 @@ public class UserProfileResponse {
         String fileDownloadUrl = fileUrl + "/download";
 
         UserProfileResponse response = new UserProfileResponse();
-        response.setFileId(profileId.toString());
-        response.setUserId(userId.toString());
+        response.setFileId(UuidUtil.encrypt(profileId));
+        response.setUserId(UuidUtil.encrypt(userId));
         response.setFileName(userProfile.getFileName());
         response.setFileUrl(fileUrl);
         response.setFileDownloadUrl(fileDownloadUrl);

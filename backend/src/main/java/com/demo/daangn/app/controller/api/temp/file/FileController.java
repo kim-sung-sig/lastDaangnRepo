@@ -1,27 +1,24 @@
 package com.demo.daangn.app.controller.api.temp.file;
 
-import java.io.FileNotFoundException;
-
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartRequest;
 
 import com.demo.daangn.app.common.dto.response.RsData;
-import com.demo.daangn.app.common.exception.AuthException;
+import com.demo.daangn.app.common.exception.CustomBusinessException;
 import com.demo.daangn.app.common.exception.FileStorageException;
 import com.demo.daangn.app.service.temp.file.FileStorageService;
 import com.demo.daangn.app.service.temp.file.response.FileStoreTempResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 /*
@@ -31,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/file")
+@RestControllerAdvice(basePackageClasses = FileController.class)
 public class FileController {
 
 
@@ -42,103 +40,26 @@ public class FileController {
      * @return
      */
     @GetMapping("/temp/{randomKey}/{fileName:.+}")
-    public ResponseEntity<?> viewTempMedia(HttpServletRequest request,
-                                                    @Valid @NotEmpty @PathVariable("randomKey") String randomKey,
-                                                    @Valid @NotEmpty @PathVariable("fileName") String fileName) {
-        log.debug("randomeKey => {}", randomKey);
-        log.debug("fileName => {}", fileName);
-        try {
-            Resource resource = fileStorageService.loadTempFileAsResource(randomKey, fileName);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
-
-        } catch (FileNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            log.debug("여기문제터짐,, {}", fileName);
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<Resource> viewTempMedia(HttpServletRequest request, @PathVariable("randomKey") String randomKey, @PathVariable("fileName") String fileName) {
+        return fileStorageService.loadTempFileAsResource(randomKey, fileName);
     }
 
     // 1. 파일 임시저장
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<RsData< FileStoreTempResponse >> uploadFile(HttpServletRequest request, MultipartRequest multipartRequest) {
-        try {
-            // 임시 파일 저장 및 randomKey 생성
-            FileStoreTempResponse fileStoreTempResponse = fileStorageService.saveTempFile(multipartRequest);
-
-            // randomKey 반환
-            return new ResponseEntity<>(RsData.of("ok", fileStoreTempResponse), HttpStatus.OK);
-
-        } catch (AuthException e) {
-            // 인증 실패 시 401 응답
-            return new ResponseEntity<>(RsData.of("Unauthorized"), HttpStatus.UNAUTHORIZED);
-        } catch (FileStorageException e) {
-            // 파일 저장 실패 시 500 응답
-            return new ResponseEntity<>(RsData.of("File storage failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            // 기타 예외 발생 시 500 응답
-            return new ResponseEntity<>(RsData.of("An unexpected error occurred: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        FileStoreTempResponse fileStoreTempResponse = fileStorageService.saveTempFile(multipartRequest);
+        return new ResponseEntity<>(RsData.of("ok", fileStoreTempResponse), HttpStatus.OK);
     }
 
-    /**
-     * 파일 읽기 주소
-     * @param request
-     * @param fileName
-     * @return
-     */
-    // @GetMapping("/upload/dir/**")
-    // public ResponseEntity<?> viewMedia2(HttpServletRequest request) {
-    //     try {
-    //         // `/uploaded/` 이후의 전체 경로를 가져옴
-    //         String fullPath = request.getRequestURI().substring("/upload/dir/".length());
-    //         log.debug("fullPath => {}", fullPath);
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<RsData<String>> handleFileStorageException(FileStorageException e) {
+        return new ResponseEntity<>(RsData.of("File storage failed: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-    //         // fileName을 제외한 경로 추출
-    //         String targetDirs = fullPath.substring(0, fullPath.lastIndexOf("/"));
-    //         String fileName = fullPath.substring(fullPath.lastIndexOf("/") + 1);
-    //         log.debug("targetDirs => {}", targetDirs);
-
-    //         // 파일 로드
-    //         Resource resource = fileStorageService.loadFileAsResource(targetDirs, fileName);
-    //         return ResponseEntity.ok()
-    //                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-    //                 .body(resource);
-
-    //     } catch (FileNotFoundException e) {
-    //         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    //     } catch (Exception e) {
-    //         log.debug("여기문제터짐");
-    //         e.printStackTrace();
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
-
-    /**
-     * 파일 다운로드 주소
-     * @param fileName
-     * @return
-     */
-    // @GetMapping("/download/{fileName:.+}")
-    // public ResponseEntity<?> downloadFile(@PathVariable("fileName") String fileName) {
-    //     log.info("fileName => {}", fileName);
-    //     try {
-    //         Resource resource = fileStorageService.loadFileAsResource(fileName);
-    //         return ResponseEntity.ok()
-    //                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-    //                 .body(resource);
-
-    //     } catch (FileNotFoundException e) {
-    //         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-    //     } catch (Exception e) {
-    //         log.error("여기문제터짐,, {}", fileName);
-    //         e.printStackTrace();
-    //         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    //     }
-    // }
+    @ExceptionHandler(CustomBusinessException.class)
+    public ResponseEntity<RsData<String>> handleServerBusinessException(CustomBusinessException e) {
+        return new ResponseEntity<>(RsData.of(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 
     /**
      * 파일 스트리밍 주소

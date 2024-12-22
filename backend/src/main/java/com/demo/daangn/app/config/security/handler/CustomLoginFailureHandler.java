@@ -41,25 +41,27 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String message = exception.getMessage();
+        log.debug("Login Fail Message : {}", message);
         String username = request.getParameter("username");
 
-        if(exception instanceof InternalAuthenticationServiceException) { // 0. db 에러
-            message = "INTERNAL_SERVER_ERROR";
-        } else if (exception instanceof AccountExpiredException) {      // 1. 계정 만료로 잠김 isAccountNonExpired
-            message = "LOCKED";
+        if (exception instanceof BadCredentialsException) {             // 1. 비밀번호 불일치
+            message = BadCredentialsExceptionHandle(username);
         } else if (exception instanceof LockedException) {              // 2. 계정 잠김 isAccountNonLocked
             message = "LOCKED";
-        } else if (exception instanceof CredentialsExpiredException) {  // 3. 비밀번호 변경 필요 isCredentialsNonExpired (이건 나중에 판별)
-            message = "LOCKED";
-        } else if (exception instanceof DisabledException) {            // 4. 계정 사용 불가 isAccountNonExpired
+        } else if (exception instanceof DisabledException) {            // 3. 계정 사용 불가 isAccountNonExpired
             message = "DISABLED";
-        } else if (exception instanceof UsernameNotFoundException) {    // 5. UserDetailsService에서 유저를 찾을 수 없음
+        } else if (exception instanceof AccountExpiredException) {      // 4. 계정 만료로 잠김 isAccountNonExpired
+            message = "LOCKED";
+        } else if (exception instanceof CredentialsExpiredException) {  // 5. 비밀번호 변경 필요 isCredentialsNonExpired (이건 나중에 판별)
+            message = "LOCKED";
+        } else if (exception instanceof UsernameNotFoundException) {    // 6. UserDetailsService에서 유저를 찾을 수 없음
             message = "USERNAME_NOT_FOUND";
-        } else if (exception instanceof BadCredentialsException) {      // 6. 비밀번호 불일치
-            message = BadCredentialsExceptionHandle(username);
+        } else if(exception instanceof InternalAuthenticationServiceException) { // 7. db 에러
+            message = "INTERNAL_SERVER_ERROR";
+        } else {
+            message = "UNKNOWN_ERROR";
         }
-
-        // 응답을 작성
+        log.debug("Login Fail Message Convert to : {}", message);
         returnMessage(response, message);
     }
 
@@ -71,10 +73,11 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
             return "USERNAME_NOT_FOUND";
         }
         User user = userOp.get();
-        if(user.getIsUsed().equals(IsUsedEnum.DISABLED)) {
+        IsUsedEnum isUsed = user.getIsUsed();
+        if(isUsed.equals(IsUsedEnum.DELETED)) {
             return "DISABLED";
         }
-        if (user.getIsUsed().equals(IsUsedEnum.LOCKED)) {
+        if (isUsed.equals(IsUsedEnum.LOCKED)) {
             return "LOCKED";
         }
 

@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ import com.demo.daangn.app.domain.user.User;
 import com.demo.daangn.app.domain.user.UserProfile;
 import com.demo.daangn.app.service.user.response.UserProfileResponse;
 import com.demo.daangn.app.util.CommonUtil;
+import com.demo.daangn.app.util.CustomFileUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,44 +117,33 @@ public class UserProfileService {
         throw new UnsupportedOperationException("Unimplemented method 'getUserProfileList'");
     }
 
-    // 3. 프로필 사진 상세 조회하기(이미지로드)
+    // 3. 프로필 사진 상세 조회하기(이미지로드 and 다운로드)
     public ResponseEntity<Resource> getUserProfile(UUID userId, UUID profileId, Integer width, Integer height, boolean isDownload) {
         try {
             // 1. 프로필 사진 찾기
             UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
                     .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
-            
+
             // 2. 파일 경로 찾기
-            // 2.1 사이즈로 파일 경로 찾기
-            Path filePathWithFileName = Paths.get(userProfile.getFileFullPath());
-            if(!Files.exists(filePathWithFileName)) {
-                throw new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다.");
-            }
+            Path filePath = Paths.get(userProfile.getFilePath());
+            String fileName = userProfile.getFileName();
+            Resource resource = CustomFileUtil.getFileResource(filePath, fileName)
+                    .orElseThrow(() -> new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다."));
 
-            // 3. 파일 리소스 로드
-            Resource resource = new UrlResource(filePathWithFileName.toUri());
-            if (!resource.exists()) {
-                throw new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다.");
-            }
-
-            // 4. 응답 헤더 설정
-            HttpHeaders headers = new HttpHeaders();
+            // 3. 응답 헤더 설정
             String encodedFileName = URLEncoder.encode(userProfile.getFileName(), StandardCharsets.UTF_8);
-            if (isDownload) {
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"");
-            } else {
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + encodedFileName + "\"");
-            }
+
+            HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_TYPE, userProfile.getFileType());
+            String contentDispositionTemplate = isDownload ? "attachment; filename=\"%s\"" : "inline; filename=\"%s\"";
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, String.format(contentDispositionTemplate, encodedFileName));
 
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(resource);
+
         } catch (CustomBusinessException e) {
             throw e;
-        } catch (IOException e) {
-            log.error("파일 작업 중 오류 발생", e);
-            throw new CustomBusinessException("파일 작업 중 오류가 발생했습니다.");
         } catch (Exception e) {
             log.error("Exception", e);
             throw new CustomBusinessException("프로필 사진을 찾을 수 없습니다.");
@@ -162,9 +151,7 @@ public class UserProfileService {
 
     }
 
-    // 4. 프로필 사진 다운로드하기
-
-    // 5. 프로필 사진 삭제하기
+    // 4. 프로필 사진 삭제하기
     public String deleteUserProfile(UUID userId, UUID profileId) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteUserProfile'");
     }
