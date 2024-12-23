@@ -51,7 +51,7 @@ public class FileCleanupTasklet implements Tasklet {
             try {
                 log.debug("Processing uuid: " + uuid);
                 Path deleteFilePath = tempRootLocation.resolve(uuid.toString()).normalize();
-                CustomFileUtil.deleteFiles(deleteFilePath);
+                CustomFileUtil.delete(deleteFilePath);
                 deletedUuids.add(uuid);
             } catch (Exception e) {
                 log.error("Unexpected error occurred while processing uuid key: " + uuid, e);
@@ -73,4 +73,5 @@ public class FileCleanupTasklet implements Tasklet {
         log.info("************************************");
         return RepeatStatus.FINISHED;
     }
+
 }

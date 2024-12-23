@@ -2,6 +2,8 @@ package com.demo.daangn.app.service.temp.file;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -67,12 +69,13 @@ public class FileStorageService {
      * @throws FileNotFoundException
      */
     public ResponseEntity<Resource> loadTempFileAsResource(String randomKey, String fileName) {
-        var randomKeyTempDir = tempRootLocation.resolve(randomKey);
-        var resource = CustomFileUtil.getFileResource(randomKeyTempDir, fileName)
+        Path randomKeyTempDir = tempRootLocation.resolve(randomKey);
+
+        Resource resource = CustomFileUtil.getFileResource(randomKeyTempDir, fileName)
                 .orElseThrow(() -> new CustomBusinessException("해당 파일이 존재하지 않습니다."));
 
-        var headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8) + "\"");
 
         return ResponseEntity.ok()
                 .headers(headers)
@@ -111,8 +114,7 @@ public class FileStorageService {
 
                 // 2. 파일 저장
                 Path randomTempDir = tempRootLocation.resolve(randomKey); // random Temp 디렉토리
-                Files.createDirectories(randomTempDir);
-                String savedFileName = CustomFileUtil.storeFile(randomTempDir, file);
+                String savedFileName = CustomFileUtil.save(randomTempDir, file);
 
                 // 3. DB 저장
                 TempFile tempEntity = saveRandomKeyInDatabase(randomUuid, randomTempDir, savedFileName, file); // DB 저장

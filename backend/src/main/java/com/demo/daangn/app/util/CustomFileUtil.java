@@ -152,13 +152,17 @@ public class CustomFileUtil {
         return files.stream().map(file -> save(targetPath, file)).toList();
     }
 
-    public static Optional<Resource> getFileResource(Path file) {
+    public static Optional<Resource> getFileResource(Path path, String fileName) {
         try {
-            if(file == null || !Files.exists(file)) {
+            if(path == null || !Files.exists(path) || !Files.isDirectory(path)) {
+                return Optional.empty();
+            }
+            if(fileName == null || fileName.isEmpty()) {
                 return Optional.empty();
             }
 
-            if(Files.isDirectory(file)) {
+            Path file = path.resolve(fileName);
+            if(file == null || !Files.exists(file) || Files.isDirectory(file)) {
                 return Optional.empty();
             }
 

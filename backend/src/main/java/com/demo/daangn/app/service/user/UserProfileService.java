@@ -2,10 +2,8 @@ package com.demo.daangn.app.service.user;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -94,9 +92,7 @@ public class UserProfileService {
         userProfileRepository.save(userProfile);
 
         // 2.2. 파일 이동
-        Files.createDirectories(userProfileLocation);
-        CustomFileUtil.copy(tempFile.getFileFullPath(), Paths.get(userProfileLocation.toString(), tempFile.getFileName()).toString());
-        Files.copy(Paths.get(tempFile.getFileFullPath()), Paths.get(userProfileLocation.toString(), tempFile.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+        CustomFileUtil.copy(Paths.get(tempFile.getFileFullPath()), userProfileLocation.resolve(tempFile.getFileName()));
 
         // 2.3 webp 파일로 변환
         // WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150); // TODO 변환 작업이 오래걸릴수 있으므로 백그라운드로 처리하고 조회시 변환된 파일이 없는지 있는지 확인하여야함
@@ -144,6 +140,7 @@ public class UserProfileService {
     }
 
     // 4. 프로필 사진 삭제하기
+    @Transactional(rollbackFor = Exception.class)
     public String deleteUserProfile(UUID userId, UUID profileId) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteUserProfile'");
     }
