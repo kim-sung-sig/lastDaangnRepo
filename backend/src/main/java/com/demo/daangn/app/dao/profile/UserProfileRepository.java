@@ -29,7 +29,7 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
                     WHEN u.isUsed = 'ENABLED' THEN 1
                     ELSE 2
                 END
-                , u.createdDate DESC
+                , u.createdAt DESC
             """)
     List<UserProfile> findByUserIdAndIsUsedNotOrderByIsUsed(UUID userId, IsUsedEnum isUsed);
 
