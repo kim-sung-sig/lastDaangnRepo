@@ -46,47 +46,47 @@ public class UserService {
         String nickName = signUpRequest.getNickName();
         String token = signUpRequest.getToken();
 
-        if (!CommonUtil.isNotBlank(username, password, email, nickName, token)) { // valid 에서 막을테지만 혹시 몰라..
+        if (!CommonUtil.isNotBlank(username, password, email, nickName, token)) {
+            log.warn("필수값 누락 : {}", signUpRequest);
             throw new CustomBusinessException("필수값이 누락되었습니다.");
         }
 
         // 1. username 중복 체크
-        userRepository.findByUsername(username).ifPresent(user -> {
-            throw new CustomBusinessException("이미 존재하는 아이디입니다.");
-        });
+        userRepository.findByUsername(username)
+                .ifPresentOrElse(
+                    user -> {
+                        log.warn("username 중복 : {}", username);
+                        throw new CustomBusinessException("이미 존재하는 아이디입니다.");
+                    }
+                    , () -> { log.debug("username 사용가능 : {}", username); }
+                );
+
         // 2. 이메일 검증 체크 -> email regex + email DB 체크
         boolean emailCheck = emailService.verifyEmail(email, token);
         if (!emailCheck) {
-            throw new CustomBusinessException("이메일 인증에 실패하였습니다. 잠시후 다시 시도해 주세요.");
+            log.warn("이메일 인증 실패 : {}", email);
+            throw new CustomBusinessException("이메일 인증에 실패하였습니다. 이메일 인증 후 다시 시도해 주세요.");
         }
 
-        // 로직 시작
-        try {
-            // 3. 닉네임 seq 계산
-            userNickNameRepository.save(UserNickName.builder().nickName(nickName).build());
-            Long nickNameSeq = userNickNameRepository.countByNickName(nickName);
+        // 3. 닉네임 seq 계산
+        userNickNameRepository.save(UserNickName.builder().nickName(nickName).build());
+        Long nickNameSeq = userNickNameRepository.countByNickName(nickName);
 
-            // 4. 비밀번호 암호화
-            String encrptedPassword = passwordEncoder.encode(password);
+        // 4. 회원가입
+        User user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .email(email)
+                .nickName(nickName)
+                .nickNameSeq(nickNameSeq)
+                .nickNameSeqFinal(nickName + "#_" + nickNameSeq)
+                .build();
+        userRepository.save(user);
 
-            // 5. 회원가입
-            User user = User.builder()
-                    .username(username)
-                    .password(encrptedPassword)
-                    .email(email)
-                    .nickName(nickName)
-                    .nickNameSeq(nickNameSeq)
-                    .nickNameSeqFinal(nickName + "#_" + nickNameSeq)
-                    .build();
-            userRepository.save(user);
+        // 6. 회원가입했음을 이벤트로 알림
+        eventPublisher.publishEvent(new UserSignUpEvent(user));
 
-            // 6. 회원가입했음을 이벤트로 알림
-            eventPublisher.publishEvent(new UserSignUpEvent(user));
-
-            return 1;
-        } catch (Exception e) {
-            throw e;
-        }
+        return 1;
     }
 
     // 2 회원정보조회

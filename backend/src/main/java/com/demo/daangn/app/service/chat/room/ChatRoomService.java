@@ -10,4 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
+    // 1:1 채팅인 경우
+    public void createOrFindChatRoom() {
+
+    }
+
 }

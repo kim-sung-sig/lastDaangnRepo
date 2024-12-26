@@ -35,6 +35,8 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> 
 
     Optional<UserProfile> findByUserIdAndIdAndIsUsed(UUID userId, UUID id, IsUsedEnum isUsed);
 
+    Optional<UserProfile> findByUserIdAndIdAndIsUsedNot(UUID userId, UUID id, IsUsedEnum isUsed);
+
     Optional<UserProfile> findByUserIdAndId(UUID userId, UUID id);
 
 }

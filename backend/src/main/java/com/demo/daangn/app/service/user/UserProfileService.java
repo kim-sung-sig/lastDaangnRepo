@@ -124,9 +124,9 @@ public class UserProfileService {
      * @return
      */
     public ResponseEntity<Resource> getUserProfile(UUID userId, UUID profileId, Integer width, Integer height, boolean isDownload) {
+
         // 1. 프로필 사진 찾기
-        UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
-                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+        UserProfile userProfile = validateUserProfile(userId, profileId);
 
         // 2. 파일 경로 찾기
         Path filePath = Paths.get(userProfile.getFilePath());
@@ -149,16 +149,51 @@ public class UserProfileService {
     }
 
     /**
-     * 프로필 사진 삭제하기
+     * 프로필 사진 활성화하기
      * @param userId 사용자 ID
      * @param profileId 프로필 사진 ID
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public void deleteUserProfile(UUID userId, UUID profileId) {
+    public UserProfileResponse enableUserProfile(UUID userId, UUID profileId) {
 
         // 1. 프로필 사진 찾기
-        UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
+        UserProfile selectedUserProfile = validateUserProfile(userId, profileId);
+        validateUserAuthorization(userId, selectedUserProfile);
+        if(selectedUserProfile.getIsUsed() == IsUsedEnum.ENABLED) { // 이미 활성화된 프로필 사진인 경우
+            return UserProfileResponse.of(selectedUserProfile);
+        }
+
+        // 2. 일치 여부 확인
+        if(!selectedUserProfile.getUser().getId().equals(CommonUtil.authCheck(userId).getId())) {
+            throw new AuthException("사용자가 일치하지 않습니다.");
+        }
+
+        // 3. 기존 활성화된 프로필 사진 비활성화
+        userProfileRepository.findByUserIdAndIsUsed(userId, IsUsedEnum.ENABLED).ifPresent(existingProfile -> {
+            existingProfile.DISABLED();
+            userProfileRepository.save(existingProfile);
+        });
+
+        // 4. 선택된 프로필 사진 활성화
+        selectedUserProfile.ENABLED();
+        userProfileRepository.save(selectedUserProfile);
+
+        return UserProfileResponse.of(selectedUserProfile);
+    }
+
+
+    /**
+     * 프로필 사진 비활성화하기
+     * @param userId 사용자 ID
+     * @param profileId 프로필 사진 ID
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void disableUserProfile(UUID userId, UUID profileId) {
+
+        // 1. 프로필 사진 찾기
+        UserProfile userProfile = userProfileRepository.findByUserIdAndIdAndIsUsedNot(userId, profileId, IsUsedEnum.DELETED)
                 .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
         // 2. 권한 확인
@@ -175,37 +210,44 @@ public class UserProfileService {
     }
 
     /**
-     * 프로필 사진 활성화하기
+     * 프로필 사진 삭제하기
      * @param userId 사용자 ID
      * @param profileId 프로필 사진 ID
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public UserProfileResponse enableUserProfile(UUID userId, UUID profileId) {
-        
+    public void deleteUserProfile(UUID userId, UUID profileId) {
+
         // 1. 프로필 사진 찾기
-        UserProfile selectedUserProfile = userProfileRepository.findByUserIdAndIdAndIsUsed(userId, profileId, IsUsedEnum.DISABLED)
+        UserProfile userProfile = userProfileRepository.findByUserIdAndIdAndIsUsedNot(userId, profileId, IsUsedEnum.DELETED)
                 .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
-        // 2. 로그인 유저 확인
+        // 2. 권한 확인
         User loginUser = CommonUtil.authCheck(userId);
 
         // 3. 일치 여부 확인
-        if(!selectedUserProfile.getUser().getId().equals(loginUser.getId())) {
+        if(!userProfile.getUser().getId().equals(loginUser.getId())) {
             throw new AuthException("사용자가 일치하지 않습니다.");
         }
 
-        // 4. 기존 활성화된 프로필 사진 비활성화
-        userProfileRepository.findByUserIdAndIsUsed(userId, IsUsedEnum.ENABLED).ifPresent(userProfile1 -> {
-            userProfile1.DISABLED();
-            userProfileRepository.save(userProfile1);
-        });
-
-        // 5. 선택된 프로필 사진 활성화
-        selectedUserProfile.ENABLED();
-        userProfileRepository.save(selectedUserProfile);
-
-        return UserProfileResponse.of(selectedUserProfile);
+        // 4. 파일 삭제
+        userProfile.DELETED();
+        userProfileRepository.save(userProfile);
     }
 
+
+
+    // 공통: 프로필 사진 검증 로직
+    private UserProfile validateUserProfile(UUID userId, UUID profileId) {
+        return userProfileRepository.findByUserIdAndIdAndIsUsedNot(userId, profileId, IsUsedEnum.DELETED)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+    }
+
+    // 공통: 권한 검증 로직
+    private void validateUserAuthorization(UUID userId, UserProfile userProfile) {
+        User loginUser = CommonUtil.authCheck(userId);
+        if (!userProfile.getUser().getId().equals(loginUser.getId())) {
+            throw new AuthException("사용자가 일치하지 않습니다.");
+        }
+    }
 }

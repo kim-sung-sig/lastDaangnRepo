@@ -3,6 +3,7 @@ package com.demo.daangn.app.service.temp.file.response;
 import java.nio.file.Path;
 
 import com.demo.daangn.app.domain.temp.file.TempFile;
+import com.demo.daangn.app.util.UuidUtil;
 
 import lombok.Data;
 
@@ -18,7 +19,7 @@ public class FileStoreRs {
 
 
     public FileStoreRs(Path previewPath, TempFile tempFile) {
-        this.fileId = tempFile.getId().toString();
+        this.fileId = UuidUtil.encrypt(tempFile.getId());
         this.previewPath = previewPath.toString().replaceAll("\\\\", "/");
         this.fileName = tempFile.getFileName();
         this.fileSize = tempFile.getFileSize();
