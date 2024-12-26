@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -28,9 +30,7 @@ import com.demo.daangn.app.util.CommonUtil;
 import com.demo.daangn.app.util.CustomFileUtil;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
@@ -44,10 +44,14 @@ public class UserProfileService {
     @Value("${custom.fileDirPath}")
     private String SAVE_DIR;
     private final String PROFILE_PATH = "profile";
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    /* --- 로그 --- */
-
-    // 1. 프로필 사진 등록하기(등록시 이전 사진 업데이트 처리)
+    /**
+     * 프로필 사진 등록하기
+     * @param userId 사용자 ID
+     * @param fileId 파일 ID
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public UserProfileResponse upsertUserProfile(UUID userId, UUID fileId) {
         // 사용자 확인
@@ -100,49 +104,108 @@ public class UserProfileService {
         return response;
     }
 
-    // 2. 프로필 사진 조회하기
+    /**
+     * 사용자 프로필 사진 목록 조회
+     * @param userId 사용자 ID
+     * @return
+     */
     public List<UserProfileResponse> getUserProfileList(UUID userId) {
-        throw new UnsupportedOperationException("Unimplemented method 'getUserProfileList'");
+        List<UserProfile> profileList = userProfileRepository.findByUserIdAndIsUsedNotOrderByIsUsed(userId, IsUsedEnum.DISABLED);
+        return UserProfileResponse.of(profileList);
     }
 
-    // 3. 프로필 사진 상세 조회하기(이미지로드 and 다운로드)
+    /**
+     * 프로필 사진 조회하기
+     * @param userId 사용자 ID
+     * @param profileId 프로필 사진 ID
+     * @param width 요청 사진 가로 길이
+     * @param height 요청 사진 세로 길이
+     * @param isDownload 다운로드 여부
+     * @return
+     */
     public ResponseEntity<Resource> getUserProfile(UUID userId, UUID profileId, Integer width, Integer height, boolean isDownload) {
-        try {
-            // 1. 프로필 사진 찾기
-            UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
-                    .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+        // 1. 프로필 사진 찾기
+        UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
-            // 2. 파일 경로 찾기
-            Path filePath = Paths.get(userProfile.getFilePath());
-            String fileName = userProfile.getFileName();
-            Resource resource = CustomFileUtil.getFileResource(filePath, fileName)
-                    .orElseThrow(() -> new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다."));
+        // 2. 파일 경로 찾기
+        Path filePath = Paths.get(userProfile.getFilePath());
+        String fileName = userProfile.getFileName();
+        Resource resource = CustomFileUtil.getFileResource(filePath, fileName)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진 파일을 찾을 수 없습니다."));
 
-            // 3. 응답 헤더 설정
-            String encodedFileName = URLEncoder.encode(userProfile.getFileName(), StandardCharsets.UTF_8);
+        // 3. 응답 헤더 설정
+        String encodedFileName = URLEncoder.encode(userProfile.getFileName(), StandardCharsets.UTF_8);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_TYPE, userProfile.getFileType());
-            String contentDispositionTemplate = isDownload ? "attachment; filename=\"%s\"" : "inline; filename=\"%s\"";
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, String.format(contentDispositionTemplate, encodedFileName));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, userProfile.getFileType());
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, String.format(
+            isDownload ? "attachment; filename=\"%s\"" : "inline; filename=\"%s\""
+            , encodedFileName));
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(resource);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(resource);
+    }
 
-        } catch (CustomBusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Exception", e);
-            throw new CustomBusinessException("프로필 사진을 찾을 수 없습니다.");
+    /**
+     * 프로필 사진 삭제하기
+     * @param userId 사용자 ID
+     * @param profileId 프로필 사진 ID
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUserProfile(UUID userId, UUID profileId) {
+
+        // 1. 프로필 사진 찾기
+        UserProfile userProfile = userProfileRepository.findByUserIdAndId(userId, profileId)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+
+        // 2. 권한 확인
+        User loginUser = CommonUtil.authCheck(userId);
+
+        // 3. 일치 여부 확인
+        if(!userProfile.getUser().getId().equals(loginUser.getId())) {
+            throw new AuthException("사용자가 일치하지 않습니다.");
         }
 
+        // 4. 파일 삭제
+        userProfile.DELETED();
+        userProfileRepository.save(userProfile);
     }
 
-    // 4. 프로필 사진 삭제하기
+    /**
+     * 프로필 사진 활성화하기
+     * @param userId 사용자 ID
+     * @param profileId 프로필 사진 ID
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
-    public String deleteUserProfile(UUID userId, UUID profileId) {
-        throw new UnsupportedOperationException("Unimplemented method 'deleteUserProfile'");
+    public UserProfileResponse enableUserProfile(UUID userId, UUID profileId) {
+        
+        // 1. 프로필 사진 찾기
+        UserProfile selectedUserProfile = userProfileRepository.findByUserIdAndIdAndIsUsed(userId, profileId, IsUsedEnum.DISABLED)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+
+        // 2. 로그인 유저 확인
+        User loginUser = CommonUtil.authCheck(userId);
+
+        // 3. 일치 여부 확인
+        if(!selectedUserProfile.getUser().getId().equals(loginUser.getId())) {
+            throw new AuthException("사용자가 일치하지 않습니다.");
+        }
+
+        // 4. 기존 활성화된 프로필 사진 비활성화
+        userProfileRepository.findByUserIdAndIsUsed(userId, IsUsedEnum.ENABLED).ifPresent(userProfile1 -> {
+            userProfile1.DISABLED();
+            userProfileRepository.save(userProfile1);
+        });
+
+        // 5. 선택된 프로필 사진 활성화
+        selectedUserProfile.ENABLED();
+        userProfileRepository.save(selectedUserProfile);
+
+        return UserProfileResponse.of(selectedUserProfile);
     }
 
 }

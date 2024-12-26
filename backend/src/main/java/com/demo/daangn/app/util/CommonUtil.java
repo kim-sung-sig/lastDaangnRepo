@@ -46,10 +46,6 @@ public class CommonUtil {
         return loggedUser;
     }
 
-    public static UUID inputToUUID(String input) throws IllegalArgumentException {
-        return UUID.fromString(input);
-    }
-
     /**
      * 현재 로그인한 유저 조회
      * @return
@@ -76,10 +72,6 @@ public class CommonUtil {
             }
         }
         return true;
-    }
-
-    public static boolean isNotBlank(String str) {
-        return str != null && !str.isEmpty();
     }
 
     public static boolean isNotBlank(Collection<?> collection) {

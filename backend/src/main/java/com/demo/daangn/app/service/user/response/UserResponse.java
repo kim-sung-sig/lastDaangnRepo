@@ -7,6 +7,10 @@ public class UserResponse {
 
     private String id;
 
-    private String userName;
+    private String nickName;
+
+    private String nickNameSeq;
+
+    private String nickNameSeqFinal;
 
 }

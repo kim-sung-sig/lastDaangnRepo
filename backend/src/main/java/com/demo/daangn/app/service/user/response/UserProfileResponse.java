@@ -1,6 +1,7 @@
 package com.demo.daangn.app.service.user.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.demo.daangn.app.domain.user.User;
@@ -29,6 +30,9 @@ public class UserProfileResponse {
     private LocalDateTime createdAt;
 
     public static UserProfileResponse of(UserProfile userProfile) {
+        if(userProfile == null) {
+            return new UserProfileResponse();
+        }
         User user = userProfile.getUser();
         UUID userId = user.getId();
         UUID profileId = userProfile.getId();
@@ -48,4 +52,12 @@ public class UserProfileResponse {
         return response;
     }
 
+    public static List<UserProfileResponse> of(List<UserProfile> userProfiles) {
+        if(userProfiles == null) {
+            return List.of();
+        }
+        return userProfiles.stream()
+                .map(UserProfileResponse::of)
+                .toList();
+    }
 }

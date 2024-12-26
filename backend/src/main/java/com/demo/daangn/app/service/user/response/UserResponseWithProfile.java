@@ -1,14 +1,17 @@
 package com.demo.daangn.app.service.user.response;
 
-import lombok.EqualsAndHashCode;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
 
-@Setter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class UserResponseWithProfile extends UserResponse {
+@Data
+public class UserResponseWithProfile {
+
+    private UserResponse user;
 
     private UserProfileResponse userProfile;
+
+    public UserResponseWithProfile(UserResponse user, UserProfileResponse userProfile) {
+        this.user = user;
+        this.userProfile = userProfile;
+    }
 
 }

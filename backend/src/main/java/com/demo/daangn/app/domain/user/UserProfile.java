@@ -66,6 +66,10 @@ public class UserProfile extends BaseFileEntity {
         this.isUsed = IsUsedEnum.DISABLED;
     }
 
+    public void DELETED() {
+        this.isUsed = IsUsedEnum.DELETED;
+    }
+
     public UserProfile(UUID id, Path savedfilePath, User user, TempFile tempFile) {
         super();
         this.id = id;
