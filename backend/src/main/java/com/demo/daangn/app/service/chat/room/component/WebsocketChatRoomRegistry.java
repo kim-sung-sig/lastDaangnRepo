@@ -38,7 +38,10 @@ public class WebsocketChatRoomRegistry {
     }
 
     public Set<UUID> getRoomUsers(UUID roomId) {
-        return redisTemplate.opsForSet().members(getRoomKey(roomId)).stream()
+        Set<Object> members = redisTemplate.opsForSet().members(getRoomKey(roomId));
+        if(members == null) return Set.of();
+
+        return members.stream()
                 .filter(String.class::isInstance)
                 .map(String.class::cast)
                 .map(o -> UUID.fromString(o))
