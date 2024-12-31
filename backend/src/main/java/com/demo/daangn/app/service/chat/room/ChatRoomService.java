@@ -15,4 +15,19 @@ public class ChatRoomService {
 
     }
 
+    // 단체체팅 중도가입
+    public void joinGroupChat() {
+
+    }
+
+    // 채팅방 정보 업데이트
+    public void updateChatRoomInfo() {
+
+    }
+
+    // 채팅방 나가기
+    public void leaveChatRoom() {
+
+    }
+
 }

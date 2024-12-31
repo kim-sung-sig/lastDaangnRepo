@@ -20,6 +20,7 @@ export default createStore({
                 const formData = new FormData();
                 formData.append('username', username);
                 formData.append('password', password);
+
                 const res = await axios.post('/login', formData);
                 if (res.status === 200 && res.data.success) {
                     commit('setIsAuthenticated', true);

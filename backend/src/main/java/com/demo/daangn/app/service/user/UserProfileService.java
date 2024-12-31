@@ -28,6 +28,7 @@ import com.demo.daangn.app.domain.user.UserProfile;
 import com.demo.daangn.app.service.user.response.UserProfileResponse;
 import com.demo.daangn.app.util.CommonUtil;
 import com.demo.daangn.app.util.CustomFileUtil;
+import com.drew.lang.annotations.NotNull;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,13 +58,7 @@ public class UserProfileService {
         // 사용자 확인
         User targetUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
-        User loginUser = CommonUtil.getLoginUser()
-                .orElseThrow(() -> new AuthException("로그인이 필요합니다."));
-
-        // 로그인한 유저와 프로필 사진의 유저가 일치하는지 확인
-        if(!targetUser.getId().equals(loginUser.getId())) {
-            throw new AuthException("사용자가 일치하지 않습니다.");
-        }
+        checkUserPermission(targetUser);
 
         // 임시 파일 확인
         TempFile tempFile = tempFileRepository.findById(fileId)
@@ -80,7 +75,7 @@ public class UserProfileService {
             *  2.3 webp 파일로 변환
             */
         // 1. 기존 프로필 사진이 존재하는지 확인
-        userProfileRepository.findByUserIdAndIsUsed(userId, IsUsedEnum.ENABLED).ifPresent(userProfile -> {
+        userProfileRepository.findByUserAndIsUsed(targetUser, IsUsedEnum.ENABLED).ifPresent(userProfile -> {
             // 1.1. 존재한다면 is_used를 DISABLED로 변경
             userProfile.DISABLED();
             userProfileRepository.save(userProfile);
@@ -92,14 +87,15 @@ public class UserProfileService {
         log.debug("userProfileLocation: {}", userProfileLocation.toString());
 
         // 2.1. DB에 저장
-        UserProfile userProfile = new UserProfile(userProfileId, userProfileLocation, loginUser, tempFile);
+        UserProfile userProfile = new UserProfile(userProfileId, userProfileLocation, targetUser, tempFile);
         userProfileRepository.save(userProfile);
 
         // 2.2. 파일 이동
         CustomFileUtil.copy(Paths.get(tempFile.getFileFullPath()), userProfileLocation.resolve(tempFile.getFileName()));
 
-        // 2.3 webp 파일로 변환
-        // WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150); // TODO 변환 작업이 오래걸릴수 있으므로 백그라운드로 처리하고 조회시 변환된 파일이 없는지 있는지 확인하여야함
+        // webp 변환 (TODO: 비동기 처리 고려)
+        // WebpFileUtil.convertToWebp(userProfileLocation, userProfile.getFileName(), 150, 150);
+
         UserProfileResponse response = UserProfileResponse.of(userProfile);
         return response;
     }
@@ -110,7 +106,10 @@ public class UserProfileService {
      * @return
      */
     public List<UserProfileResponse> getUserProfileList(UUID userId) {
-        List<UserProfile> profileList = userProfileRepository.findByUserIdAndIsUsedNotOrderByIsUsed(userId, IsUsedEnum.DISABLED);
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
+
+        List<UserProfile> profileList = userProfileRepository.findByUserAndIsUsedNotOrderByIsUsed(targetUser, IsUsedEnum.DISABLED);
         return UserProfileResponse.of(profileList);
     }
 
@@ -124,9 +123,12 @@ public class UserProfileService {
      * @return
      */
     public ResponseEntity<Resource> getUserProfile(UUID userId, UUID profileId, Integer width, Integer height, boolean isDownload) {
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
 
         // 1. 프로필 사진 찾기
-        UserProfile userProfile = validateUserProfile(userId, profileId);
+        UserProfile userProfile = userProfileRepository.findByUserAndIdAndIsUsedNot(targetUser, profileId, IsUsedEnum.DELETED)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
         // 2. 파일 경로 찾기
         Path filePath = Paths.get(userProfile.getFilePath());
@@ -156,32 +158,26 @@ public class UserProfileService {
      */
     @Transactional(rollbackFor = Exception.class)
     public UserProfileResponse enableUserProfile(UUID userId, UUID profileId) {
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
+        checkUserPermission(targetUser);
 
         // 1. 프로필 사진 찾기
-        UserProfile selectedUserProfile = validateUserProfile(userId, profileId);
-        validateUserAuthorization(userId, selectedUserProfile);
-        if(selectedUserProfile.getIsUsed() == IsUsedEnum.ENABLED) { // 이미 활성화된 프로필 사진인 경우
-            return UserProfileResponse.of(selectedUserProfile);
-        }
+        UserProfile selectedUserProfile = userProfileRepository.findByUserAndIdAndIsUsedNot(targetUser, profileId, IsUsedEnum.DELETED)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
-        // 2. 일치 여부 확인
-        if(!selectedUserProfile.getUser().getId().equals(CommonUtil.authCheck(userId).getId())) {
-            throw new AuthException("사용자가 일치하지 않습니다.");
-        }
-
-        // 3. 기존 활성화된 프로필 사진 비활성화
-        userProfileRepository.findByUserIdAndIsUsed(userId, IsUsedEnum.ENABLED).ifPresent(existingProfile -> {
+        // 2. 기존 활성화된 프로필 사진 비활성화
+        userProfileRepository.findByUserAndIsUsed(targetUser, IsUsedEnum.ENABLED).ifPresent(existingProfile -> {
             existingProfile.DISABLED();
             userProfileRepository.save(existingProfile);
         });
 
-        // 4. 선택된 프로필 사진 활성화
+        // 3. 선택된 프로필 사진 활성화
         selectedUserProfile.ENABLED();
         userProfileRepository.save(selectedUserProfile);
 
         return UserProfileResponse.of(selectedUserProfile);
     }
-
 
     /**
      * 프로필 사진 비활성화하기
@@ -191,21 +187,21 @@ public class UserProfileService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void disableUserProfile(UUID userId, UUID profileId) {
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
+        checkUserPermission(targetUser);
 
         // 1. 프로필 사진 찾기
-        UserProfile userProfile = userProfileRepository.findByUserIdAndIdAndIsUsedNot(userId, profileId, IsUsedEnum.DELETED)
+        UserProfile userProfile = userProfileRepository.findByUserAndIdAndIsUsedNot(targetUser, profileId, IsUsedEnum.DELETED)
                 .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
-        // 2. 권한 확인
-        User loginUser = CommonUtil.authCheck(userId);
-
-        // 3. 일치 여부 확인
-        if(!userProfile.getUser().getId().equals(loginUser.getId())) {
+        // 2. 일치 여부 확인
+        if(!userProfile.getUser().getId().equals(targetUser.getId())) {
             throw new AuthException("사용자가 일치하지 않습니다.");
         }
 
-        // 4. 파일 삭제
-        userProfile.DELETED();
+        // 3. 프로필 삭제
+        userProfile.DISABLED();
         userProfileRepository.save(userProfile);
     }
 
@@ -217,37 +213,35 @@ public class UserProfileService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteUserProfile(UUID userId, UUID profileId) {
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomBusinessException("사용자가 존재하지 않습니다."));
+        checkUserPermission(targetUser);
 
         // 1. 프로필 사진 찾기
-        UserProfile userProfile = userProfileRepository.findByUserIdAndIdAndIsUsedNot(userId, profileId, IsUsedEnum.DELETED)
+        UserProfile userProfile = userProfileRepository.findByUserAndIdAndIsUsedNot(targetUser, profileId, IsUsedEnum.DELETED)
                 .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
 
-        // 2. 권한 확인
-        User loginUser = CommonUtil.authCheck(userId);
-
-        // 3. 일치 여부 확인
-        if(!userProfile.getUser().getId().equals(loginUser.getId())) {
+        // 2. 일치 여부 확인
+        if(!userProfile.getUser().getId().equals(targetUser.getId())) {
             throw new AuthException("사용자가 일치하지 않습니다.");
         }
 
-        // 4. 파일 삭제
+        // 3. 프로필 삭제
         userProfile.DELETED();
         userProfileRepository.save(userProfile);
     }
 
-
-
-    // 공통: 프로필 사진 검증 로직
-    private UserProfile validateUserProfile(UUID userId, UUID profileId) {
-        return userProfileRepository.findByUserIdAndIdAndIsUsedNot(userId, profileId, IsUsedEnum.DELETED)
-                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
-    }
-
-    // 공통: 권한 검증 로직
-    private void validateUserAuthorization(UUID userId, UserProfile userProfile) {
-        User loginUser = CommonUtil.authCheck(userId);
-        if (!userProfile.getUser().getId().equals(loginUser.getId())) {
+    /**
+     * 로그인 유저와 타겟 유저가 일치하는지 체크하는 메서드
+     * @param userId 사용자 ID
+     * @param targetUser 확인할 대상 유저
+     */
+    private void checkUserPermission(@NotNull User targetUser) {
+        User loginUser = CommonUtil.getLoginUser()
+                .orElseThrow(() -> new AuthException("로그인이 필요합니다."));
+        if (!targetUser.getId().equals(loginUser.getId())) {
             throw new AuthException("사용자가 일치하지 않습니다.");
         }
     }
+
 }

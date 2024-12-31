@@ -21,9 +21,6 @@ public class InitData {
     @Autowired
     private UserRepository userRepository;
 
-    // @Autowired
-    // private RedisTemplate<String, Object> redisTemplate;
-
     @Bean
     CommandLineRunner init() {
         return args -> {
@@ -61,7 +58,7 @@ public class InitData {
                     }
             );
 
-            userRepository.findAll().forEach(System.out::println);
+            userRepository.findAll().forEach(user -> log.debug("user: {}", user));
         };
     }
 
