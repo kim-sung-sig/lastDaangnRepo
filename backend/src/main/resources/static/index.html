@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <title>메인 페이지</title>
     <meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <th:block th:insert = "~{component/default/defaultCss.html}"></th:block>
-    <th:block th:insert = "~{component/default/defaultScript.html}"></th:block>
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.17.11/dist/css/uikit.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@40,200,0,0" />
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.17.11/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.17.11/dist/js/uikit-icons.min.js"></script>
+    <!-- Ajax처리를 위한 포함 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Vue.js 3 최신 CDN -->
+    <script src="https://unpkg.com/vue@3.3.4"></script>
+    <!-- Vue Router 최신 CDN -->
+    <script src="https://unpkg.com/vue-router@4.2.5"></script>
+
     <style>
         #main_nav {
             width: 600px;
@@ -20,9 +38,9 @@
             border-left: 1px solid rgba(204, 204, 204, 0.5);
             border-top: 1px solid rgba(204, 204, 204, 0.5);
             border-right: 1px solid rgba(204, 204, 204, 0.5);
-    
+
         }
-    
+
         #main_nav > div {
             width: 100%;
         }
@@ -33,9 +51,9 @@
             text-align: center;
             padding: 6px 0;
             height: 55px;
-    
+
         }
-    
+
         #main_nav {
             .navBtn {
                 font-size: 12px;

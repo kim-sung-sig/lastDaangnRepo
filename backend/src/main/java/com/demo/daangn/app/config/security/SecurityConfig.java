@@ -72,6 +72,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests((authorize) -> {
             authorize
+                .requestMatchers("/components/**", "/css/**", "/js/**", "/img/**").permitAll() // static resources
                 // user
                 .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // 회원가입
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/check/**").permitAll() // 중복확인

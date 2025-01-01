@@ -14,14 +14,10 @@ public class PageController {
      * @param model
      * @return
      */
-    @GetMapping(value = {"/"})
-    public String redirect(){
-        return "forward:/index.html";
+    @GetMapping(value = {"/{path:^(?!api|css|js|img|components).*}/**", "/", "/index.html"})
+    public String redirect() {
+        return "pages/index";
     }
-    // @GetMapping(value = {"/", "/{path:[^\\.]*}", "/**/{path:[^\\.]*}"})
-    // public String redirect(){
-    //     return "index";
-    // }
 
     /**
      * 로그인 페이지
