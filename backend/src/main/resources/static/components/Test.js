@@ -14,7 +14,7 @@ export default {
         </ul>
 
         <!-- 자식 컴포넌트로 selectedItem 전달 -->
-        <Child v-if="selectedItem" :result="selectedItem" />
+        <Child v-if="selectedItem" :input="selectedItem" />
     `,
     components: {
         Child
