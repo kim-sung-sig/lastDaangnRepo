@@ -150,6 +150,12 @@ public class UserProfileService {
                 .body(resource);
     }
 
+    public UserProfileResponse getProfileDetail(UUID profileId) {
+        UserProfile userProfile = userProfileRepository.findById(profileId)
+                .orElseThrow(() -> new CustomBusinessException("프로필 사진이 존재하지 않습니다."));
+        return UserProfileResponse.of(userProfile);
+    }
+
     /**
      * 프로필 사진 활성화하기
      * @param userId 사용자 ID

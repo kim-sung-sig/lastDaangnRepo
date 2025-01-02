@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1")
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
@@ -36,7 +36,7 @@ public class UserProfileController {
      * @param userId the user id
      * @return
      */
-    @GetMapping("/{userId}/profiles")
+    @GetMapping("/users/{userId}/profiles")
     public List<UserProfileResponse> getUserProfileList(@PathVariable("userId") String userId) {
         UUID decryptedUserId = UuidUtil.decrypt(userId);
         List<UserProfileResponse> result = userProfileService.getUserProfileList(decryptedUserId);
@@ -44,12 +44,12 @@ public class UserProfileController {
     }
 
     /**
-     * 사용자 프로필 조회
+     * 사용자 프로필 조회 (Resource)
      * @param userId the user id
      * @param profileId the profile id
      * @return
      */
-    @GetMapping("/{userId}/profiles/{profileId}")
+    @GetMapping("/users/{userId}/profiles/{profileId}")
     public ResponseEntity<Resource> getUserProfile(@PathVariable("userId") String userId, @PathVariable("profileId") String profileId) {
         UUID decryptedUserId = UuidUtil.decrypt(userId);
         UUID decryptedProfileId = UuidUtil.decrypt(profileId);
@@ -58,12 +58,24 @@ public class UserProfileController {
     }
 
     /**
+     * 사용자 프로필 정보 조회
+     * @param profileId the profile id
+     * @return the profile info
+     */
+    @GetMapping("/profiles/{profileId}/info")
+    public ResponseEntity<UserProfileResponse> getProfileInfo(@PathVariable("profileId") String profileId) {
+        UUID decryptedProfileId = UuidUtil.decrypt(profileId);
+        UserProfileResponse response =  userProfileService.getProfileDetail(decryptedProfileId);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * 사용자 프로필 사진 등록하기
      * @param userId the user id
      * @param fileId the file id
      * @return
      */
-    @PostMapping("/{userId}/profiles")
+    @PostMapping("/users/{userId}/profiles")
     public UserProfileResponse upsertUserProfile(@PathVariable("userId") String userId, @RequestBody String fileId) {
         UUID decryptedUserId = UuidUtil.decrypt(userId);
         UUID decryptedFileId = UuidUtil.decrypt(fileId);
@@ -77,7 +89,7 @@ public class UserProfileController {
      * @param profileId the profile id
      * @return
      */
-    @PutMapping("/{userId}/profiles/{profileId}/enable")
+    @PutMapping("/users/{userId}/profiles/{profileId}/enable")
     public UserProfileResponse enableUserProfile(@PathVariable("userId") String userId, @PathVariable("profileId") String profileId) {
         UUID decryptedUserId = UuidUtil.decrypt(userId);
         UUID decryptedProfileId = UuidUtil.decrypt(profileId);
@@ -90,7 +102,7 @@ public class UserProfileController {
      * @param userId the user id
      * @param profileId the profile id
      */
-    @DeleteMapping("/{userId}/profiles/{profileId}/disable")
+    @PutMapping("/users/{userId}/profiles/{profileId}/disable")
     public void disableUserProfile(@PathVariable("userId") String userId, @PathVariable("profileId") String profileId) {
         UUID decryptedUserId = UuidUtil.decrypt(userId);
         UUID decryptedProfileId = UuidUtil.decrypt(profileId);
@@ -102,7 +114,7 @@ public class UserProfileController {
      * @param userId
      * @param profileId
      */
-    @DeleteMapping("/{userId}/profiles/{profileId}")
+    @DeleteMapping("/users/{userId}/profiles/{profileId}")
     public void deleteUserProfile(@PathVariable("userId") String userId, @PathVariable("profileId") String profileId) {
         UUID decryptedUserId = UuidUtil.decrypt(userId);
         UUID decryptedProfileId = UuidUtil.decrypt(profileId);
