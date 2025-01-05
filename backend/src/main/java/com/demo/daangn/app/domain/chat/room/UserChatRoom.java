@@ -84,10 +84,10 @@ public class UserChatRoom {
     public void recreate() {
         this.isUsed = IsUsedEnum.ENABLED;
         this.chatRoomName = null;
+        this.pointer = LocalDateTime.now();
     }
 
     public void delete() {
-        this.pointer = LocalDateTime.now();
         this.isUsed = IsUsedEnum.DISABLED;
     }
 
