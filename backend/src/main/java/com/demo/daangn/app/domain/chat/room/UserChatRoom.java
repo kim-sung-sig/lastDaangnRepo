@@ -3,6 +3,7 @@ package com.demo.daangn.app.domain.chat.room;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.demo.daangn.app.common.dto.entity.BaseAuditEntity;
 import com.demo.daangn.app.common.enums.IsUsedEnum;
 import com.demo.daangn.app.domain.user.User;
 
@@ -17,23 +18,25 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Table(name = "user__dn_chat_room")
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class UserChatRoom {
+@SuperBuilder
+@ToString(callSuper = true)
+public class UserChatRoom extends BaseAuditEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,6 +45,7 @@ public class UserChatRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)
+    @ToString.Exclude
     private ChatRoom chatRoom;
 
     @Column(name = "chat_room_name")
@@ -51,34 +55,24 @@ public class UserChatRoom {
     @Enumerated(EnumType.STRING)
     private IsUsedEnum isUsed;
 
-    @Column(name = "create_date")
-    private LocalDateTime createDate;
-
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
-
     @Column(name = "pointer")
     private LocalDateTime pointer;
 
     @PrePersist
     private void prePersist() {
-        if(this.id == null) {
-            this.id = UUID.randomUUID();
-        }
+        // if(this.id == null) {
+        //     this.id = UUID.randomUUID();
+        // }
         if(this.pointer == null) {
             this.pointer = LocalDateTime.now();
         }
         if(this.isUsed == null) {
             this.isUsed = IsUsedEnum.ENABLED;
         }
-        if(this.createDate == null) {
-            this.createDate = LocalDateTime.now();
-        }
     }
 
-    @PreUpdate
-    private void preUpdate() {
-        this.updateDate = LocalDateTime.now();
+    public void updateChatRoomName(String newChatRoomName) {
+        this.chatRoomName = newChatRoomName;
     }
 
     public void recreate() {

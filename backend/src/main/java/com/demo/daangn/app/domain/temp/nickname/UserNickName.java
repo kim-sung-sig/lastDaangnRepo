@@ -6,8 +6,6 @@ import com.demo.daangn.app.common.dto.entity.BaseAuditEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
@@ -31,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UserNickName extends BaseAuditEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
     @Column(name = "nick_name", nullable = false, updatable = false)

@@ -7,7 +7,6 @@ import com.demo.daangn.app.common.dto.entity.BaseFileEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -17,9 +16,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(
-    name = "dn_temp_file",
-    indexes = {
-        @Index(name = "idx_temp_file_random_key", columnList = "random_key")})
+    name = "dn_temp_file")
 @Entity
 @EqualsAndHashCode(callSuper = false)
 @Getter

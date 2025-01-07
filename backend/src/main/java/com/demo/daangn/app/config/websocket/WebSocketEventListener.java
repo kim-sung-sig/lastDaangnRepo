@@ -1,7 +1,10 @@
 package com.demo.daangn.app.config.websocket;
 
+import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
@@ -21,37 +24,54 @@ public class WebSocketEventListener {
 
     private final WebsocketChatRoomRegistry chatRoomRegistry;
 
-    // 웹소캣이 연결되었을 때 감지
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /**
+     * 웹소켓 연결이 열렸을 때 감지
+     * @param event websocket session connect event
+     */
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
-        log.info("WebSocket connection opened");
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String webSocketSessionId = headerAccessor.getSessionId();
-        log.info("Received a new web socket connection, sessionId: {}", webSocketSessionId);
+        String methodName = "handleWebSocketConnectListener";
+        try {
+            logger.info("[{}] WebSocket connection opened", methodName);
+            StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+            String webSocketSessionId = headerAccessor.getSessionId();
+            logger.info("[{}] Received a new web socket connection, sessionId: {}", methodName, webSocketSessionId);
+        } catch (Exception e) {
+            logger.error("[{}] Error", methodName, e);
+        }
     }
 
-    // 웹소캣이 끊김을 감지
+    /**
+     * 웹소켓 연결이 끊어졌을 때 감지
+     * @param event websocket session disconnect event
+     */
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        log.info("WebSocket connection closed");
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        String methodName = "handleWebSocketDisconnectListener";
+        try {
 
-        String sessionId = headerAccessor.getSessionId();
-        log.info("Web socket connection closed, sessionId: {}", sessionId);
+            logger.info("[{}] WebSocket connection closed", methodName);
+            StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        UUID roomId = UUID.fromString(headerAccessor.getSessionAttributes().get("roomId").toString());
-        UUID userId = UUID.fromString(headerAccessor.getSessionAttributes().get("userId").toString());
-        
-        if(userId != null && roomId != null){
-            chatRoomRegistry.removeUserFromRoom(roomId, userId);
-            log.info("userId => {}", userId);
-            log.info("roomId => {}", roomId);
+            String sessionId = headerAccessor.getSessionId();
+            logger.info("[{}] Web socket connection closed, sessionId: {}", methodName, sessionId);
 
-            if(chatRoomRegistry.getRoomUsers(roomId) != null && chatRoomRegistry.getRoomUsers(roomId).contains(userId)) {
-                chatRoomRegistry.getRoomUsers(roomId).remove(userId);
+            Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+
+            if(sessionAttributes == null) return;
+
+            UUID roomId = UUID.fromString(sessionAttributes.get("roomId").toString());
+            UUID userId = UUID.fromString(sessionAttributes.get("userId").toString());
+
+            if(userId != null && roomId != null){
+                chatRoomRegistry.removeUserFromRoom(roomId, userId);
             }
+
+        } catch (Exception e) {
+            logger.error("[{}] Error", methodName, e);
         }
-        // log.info("roomUserMap -> {}", chatRoomRegistry.getcheck());
     }
 
 }

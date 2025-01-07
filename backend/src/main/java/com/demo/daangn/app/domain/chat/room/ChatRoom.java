@@ -1,6 +1,7 @@
 package com.demo.daangn.app.domain.chat.room;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import com.demo.daangn.app.common.dto.entity.BaseAuditEntity;
 import com.demo.daangn.app.common.enums.IsUsedEnum;
 import com.demo.daangn.app.domain.chat.message.ChatMessage;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,6 +24,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Table(name = "dn_chat_room")
@@ -30,6 +33,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@ToString(callSuper = true)
 public class ChatRoom extends BaseAuditEntity {
 
     @Id
@@ -43,7 +47,7 @@ public class ChatRoom extends BaseAuditEntity {
     @Column(name = "last_message_date")
     private LocalDateTime lastMessageDate;
 
-    @OneToMany(mappedBy = "chatRoom", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private Set<UserChatRoom> chatRoomUsers;
 
     @Column(name = "is_used")
@@ -63,4 +67,14 @@ public class ChatRoom extends BaseAuditEntity {
         }
     }
 
+    public void addUser(UserChatRoom userChatRoom) {
+        if(chatRoomUsers == null) {
+            chatRoomUsers = new HashSet<>();
+        }
+
+        if (chatRoomUsers.contains(userChatRoom)) {
+            return;
+        }
+        this.chatRoomUsers.add(userChatRoom);
+    }
 }

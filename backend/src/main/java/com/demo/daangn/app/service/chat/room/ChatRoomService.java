@@ -2,7 +2,10 @@ package com.demo.daangn.app.service.chat.room;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.demo.daangn.app.common.exception.AuthException;
 import com.demo.daangn.app.dao.chat.room.jpa.ChatRoomRepository;
@@ -22,12 +25,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ChatRoomService {
 
-    private final UserRepository userRepository;
-    private final ChatRoomRepository chatRoomRepository;
-    private final UserChatRoomRepository userChatRoomRepository;
+    private final UserRepository userRepository;                    // 유저
+    private final ChatRoomRepository chatRoomRepository;            // 채팅방
+    private final UserChatRoomRepository userChatRoomRepository;    // 유저-채팅방 매핑
+
+    private final Logger loger = LoggerFactory.getLogger(this.getClass());
 
     // 1:1 채팅인 경우
-    public ChatRoom findOrCreateChatRoom(UUID targetUserId) { // TODO : 반환 타입 수정
+    public ChatRoom findOrCreateChatRoom(UUID targetUserId) {
         User loginUser = CommonUtil.getLoginUser()
                 .orElseThrow(() -> new AuthException("로그인 유저가 존재하지 않습니다."));
 
@@ -67,9 +72,24 @@ public class ChatRoomService {
         return newChatRoom;
     }
 
-    // 단체체팅 중도가입
-    public void joinGroupChat() {
+    // 채팅방 참가하기
+    @Transactional
+    public void addUserToChatRoom(UUID chatRoomId) {
 
+        User loginUser = CommonUtil.getLoginUser()
+                .orElseThrow(() -> new AuthException("로그인 유저가 존재하지 않습니다."));
+
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new EntityNotFoundException("채팅방이 존재하지 않습니다."));
+
+        UserChatRoom userChatRoom = UserChatRoom.builder()
+                .user(loginUser)
+                .chatRoom(chatRoom)
+                .build();
+
+        chatRoom.addUser(userChatRoom);
+
+        chatRoomRepository.save(chatRoom);
     }
 
     // 채팅방 정보 업데이트
