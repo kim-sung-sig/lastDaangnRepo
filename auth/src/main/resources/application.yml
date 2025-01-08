@@ -1,0 +1,42 @@
+server:
+    port: 8081
+
+spring:
+    application:
+        name: auth
+
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: true
+
+    jpa:
+        show-sql: true
+        hibernate:
+            ddl-auto: create
+            naming:
+                physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        properties:
+            hibernate:
+                format_sql: true
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+
+    servlet:
+        multipart:
+            enabled: true
+            max-file-size: 10MB
+            max-request-size: 50MB
+
+    output:
+        ansi:
+            enabled: ALWAYS
+
+    profiles:
+        include: secret
+
+    config:
+        import: custom.properties
+
+logging:
+    config: classpath:logback.xml
