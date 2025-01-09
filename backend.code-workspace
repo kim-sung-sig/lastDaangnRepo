@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "backend",
+			"path": "backend"
+		},
+		{
+			"name": "auth",
+			"path": "auth"
+		},
+		{
+			"name": "frontend",
+			"path": "frontend"
+		},
+		{
+			"name": "lastDaangnRepo",
+			"path": "."
+		}
+	],
+	"settings": {
+		"vue3snippets.enable-compile-vue-file-on-did-save-code": false,
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}
